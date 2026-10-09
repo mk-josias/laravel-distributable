@@ -1,6 +1,6 @@
-# Laravel Distributable
+# Laravel Distributable Modules
 
-Laravel Distributable makes your Laravel modules independently deployable microservices: each one owns
+Laravel Distributable Modules makes your Laravel modules independently deployable microservices: each one owns
 its data, on its own connection, and talks to the others only through events and contracts. Run
 them as one application, or split them apart whenever you want. The code doesn't change.
 
@@ -20,9 +20,9 @@ another. The package sets up what is missing:
   doesn't run, and `distributable:unused-packages` the Composer packages only they required.
 
 ```bash
-composer require mbiakova/laravel-distributable
-php artisan distributable:install                      # config/distributable.php, apps/, foundation/FoundationServiceProvider.php
-php artisan distributable:make-module iam --database   # apps/Iam and foundation/Iam, declared in config/distributable.php
+composer require mbiakova/laravel-distributable-modules
+php artisan distributable:install                      # config/modules.php, apps/, foundation/FoundationServiceProvider.php
+php artisan distributable:make-module iam --database   # apps/Iam and foundation/Iam, declared in config/modules.php
 ```
 
 [laravel-skeleton](https://github.com/mbiakova/laravel-skeleton) is the example
@@ -53,7 +53,7 @@ The rest of the documentation is in `docs/`:
 | [Calls between modules (RPC)](docs/rpc.md) | contracts and `RpcService` in the foundation, the direct call in one process |
 | [Read-only copies (shadows)](docs/shadows.md) | keeping another module's rows locally |
 | [Services in other languages](docs/other-languages.md) | a non-PHP service next to the modules |
-| [Configuration](docs/configuration.md) | every key of `config/distributable.php`, the source layout |
+| [Configuration](docs/configuration.md) | every key of `config/modules.php`, the source layout |
 
 ## Why
 
@@ -119,7 +119,7 @@ Shadows, the read-only copies described below, are built on events.
 
 When the application boots, the package:
 
-1. reads the modules declared in `config/distributable.php`, and autoloads the ones this process runs
+1. reads the modules declared in `config/modules.php`, and autoloads the ones this process runs
    under `Apps\{Module}\`;
 2. registers the service provider of every module this process runs. The provider merges the
    module's config files, loads its routes, translations and commands, and records the
@@ -247,7 +247,7 @@ under one cache key, such as spatie/laravel-permission: keep it in one module.
 
 ### Compared to other packages
 
-| | nwidart/laravel-modules | Spring Modulith | laravel-distributable |
+| | nwidart/laravel-modules | Spring Modulith | laravel-distributable-modules |
 |---|---|---|---|
 | Built for | organising code in modules | module boundaries and events inside one application | modules that are microservices: one codebase, deployed together or apart |
 | Data | one shared database | one datasource | each module owns its data, on its own connection |
@@ -269,7 +269,7 @@ under one cache key, such as spatie/laravel-permission: keep it in one module.
 `app/` is still your Laravel application. Each module lives in `apps/`.
 
 ```
-config/distributable.php                   declares the modules: 'modules' => ['iam' => [], …]
+config/modules.php                         declares the modules: 'declared' => ['iam' => [], …]
 
 apps/Iam/
 ├── app/                              Apps\Iam\, laid out like a Laravel app
@@ -291,8 +291,8 @@ foundation/
 ```
 
 ```php
-// config/distributable.php
-'modules' => [
+// config/modules.php
+'declared' => [
     'iam'       => [],
     'analytics' => [],
 ],
@@ -363,7 +363,7 @@ php artisan distributable:doctor
 
 ```
 Boundary crossed: apps/Analytics/app/Models/Report.php: Apps\Iam\Models\User
-[iam] runs elsewhere and serves Foundation\Iam\Contracts\IamService, but distributable.modules.iam.host is not set.
+[iam] runs elsewhere and serves Foundation\Iam\Contracts\IamService, but modules.declared.iam.host is not set.
 ```
 
 It reports a module that imports another module's class or names its tables, an undeclared module,

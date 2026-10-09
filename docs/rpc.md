@@ -70,6 +70,6 @@ the implementation runs in iam's [context](../README.md#the-module-context), so 
 switch to its own database.
 
 The module writes no route: the package serves `POST {module}/rpc/{method}` for every module the
-process runs. A module's host comes from `distributable.modules`; the secret, the cache store and the
+process runs. A module's host comes from `modules.declared`; the secret, the cache store and the
 transports are in `config/microservices.php`. A contract with no `RpcService` stays bound to the
 module's implementation, and works only in a process that runs that module.

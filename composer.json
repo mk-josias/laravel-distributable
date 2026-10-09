@@ -1,5 +1,5 @@
 {
-    "name": "mbiakova/laravel-distributable",
+    "name": "mbiakova/laravel-distributable-modules",
     "description": "Laravel modules built as independently deployable microservices: each owns its data, and they talk through events and RPC. Run them as one app, or split them apart whenever you want.",
     "license": "MIT",
     "type": "library",

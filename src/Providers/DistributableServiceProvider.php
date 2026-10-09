@@ -73,7 +73,7 @@ final class DistributableServiceProvider extends BaseServiceProvider
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/distributable.php', 'distributable');
+        $this->mergeConfigFrom(__DIR__.'/../../config/modules.php', 'modules');
 
         // Every database belongs to a module: until one runs, the default connection refuses every query.
         $this->app['config']->set('database.connections.'.ModuleContext::NO_MODULE, ['driver' => ModuleContext::NO_MODULE]);
@@ -128,7 +128,7 @@ final class DistributableServiceProvider extends BaseServiceProvider
     {
         $config = $this->app['config'];
 
-        $config->set('microservices.services', [...(array) $config->get('distributable.modules', []), ...(array) $config->get('microservices.services', [])]);
+        $config->set('microservices.services', [...(array) $config->get('modules.declared', []), ...(array) $config->get('microservices.services', [])]);
     }
 
     /** Work started in a module but run later or elsewhere (defer, Concurrency, Octane tasks) keeps that module. */
@@ -299,7 +299,7 @@ final class DistributableServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/../../config/distributable.php' => config_path('distributable.php'),
+            __DIR__.'/../../config/modules.php' => config_path('modules.php'),
         ], 'distributable-config');
 
         $this->switchContextOnJobsAndCommands();

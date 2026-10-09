@@ -8,7 +8,7 @@ use Distributable\Services\Modules\ModuleRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-/** For an image that runs only some modules: config/distributable.php still declares the others. */
+/** For an image that runs only some modules: config/modules.php still declares the others. */
 final class PurgeModules extends Command
 {
     protected $signature = 'distributable:purge {--force : Skip the confirmation}';

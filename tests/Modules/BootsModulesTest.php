@@ -21,7 +21,7 @@ it('builds the registry from the configured source', function () {
 
 it('answers which modules this process runs on the status route', function () {
     $this->get('/')->assertOk()->assertExactJson([
-        'message' => 'Hello from laravel-distributable',
+        'message' => 'Hello from laravel-distributable-modules',
         'modules' => ['analytics', 'gateway', 'iam'],
         'status' => 'ok',
     ]);

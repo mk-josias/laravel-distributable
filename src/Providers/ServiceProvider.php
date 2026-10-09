@@ -149,8 +149,8 @@ abstract class ServiceProvider extends BaseServiceProvider
             // A scalar the application already sets is the module's own value: applied while the module runs.
             foreach (Arr::dot($values) as $path => $value) {
                 if (! is_array($value) && $this->overridesApplicationScalar(self::$applicationConfig[$key], $path)) {
-                    config()->set("distributable.overlays.{$this->module->name}.{$key}.{$path}", $value);
-                    config()->set("distributable.overlay_base.{$key}.{$path}", Arr::get(self::$applicationConfig[$key], $path));
+                    config()->set("modules.overlays.{$this->module->name}.{$key}.{$path}", $value);
+                    config()->set("modules.overlay_base.{$key}.{$path}", Arr::get(self::$applicationConfig[$key], $path));
                     Arr::forget($values, $path);
                 }
             }

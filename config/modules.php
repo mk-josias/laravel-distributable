@@ -16,7 +16,7 @@ return [
     | events are configured in config/microservices.php.
     */
 
-    'modules' => [
+    'declared' => [
         // 'iam' => ['host' => env('IAM_HOST')],
     ],
 

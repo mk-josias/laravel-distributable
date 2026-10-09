@@ -2,13 +2,13 @@
 
 ## Declaring a module
 
-A module is a name in `distributable.modules`. Its folder is `apps/` followed by the name in
+A module is a name in `modules.declared`. Its folder is `apps/` followed by the name in
 StudlyCase, and everything else is derived from that folder. The configuration only holds what the
 folder can't tell, such as the URL of a module that runs elsewhere:
 
 ```php
-// config/distributable.php (php artisan vendor:publish --tag=distributable-config)
-'modules' => [
+// config/modules.php (php artisan vendor:publish --tag=distributable-config)
+'declared' => [
     'iam'       => ['host' => env('IAM_HOST')],
     'analytics' => [],
 ],
@@ -139,7 +139,7 @@ module and `local()` the ones this process runs. `get($name)` throws on an unkno
 In production, `php artisan optimize` runs `distributable:cache`, which writes what the module folders
 tell (namespaces, databases, copies and shadow sources) to `bootstrap/cache/distributable.php`, and the
 application reads that file instead of the folders. `optimize:clear` (or `distributable:clear`) deletes
-it. The cache never decides which modules exist: `distributable.modules` does.
+it. The cache never decides which modules exist: `modules.declared` does.
 
 ## Modules this process doesn't run
 
@@ -152,7 +152,7 @@ class of any other module is never loaded, even if its file is on disk: using it
 ```
 
 This catches, at runtime, a call that `Boundaries` would have caught in your tests. A process still
-knows that the other modules exist, because `config/distributable.php` declares them: it listens to
+knows that the other modules exist, because `config/modules.php` declares them: it listens to
 their events, and calls them through the RPC services of the foundation.
 
 When you build an image for some modules only, you can delete the folders of the others:
@@ -197,7 +197,7 @@ A package the root `composer.json` or a module this process runs also requires i
 With `MODULES_STATUS_ROUTE=/`, the process returns the modules it runs:
 
 ```json
-{ "message": "Hello from laravel-distributable", "modules": ["transactions", "analytics"], "status": "ok" }
+{ "message": "Hello from laravel-distributable-modules", "modules": ["transactions", "analytics"], "status": "ok" }
 ```
 
 ## The module service provider
@@ -222,7 +222,7 @@ How the config merge works, and what it can't do:
 |---|---|
 | a list (`['a', 'b']`) | gains the items it lacks; a module can't remove or replace an item, so set the whole list in the root config |
 | any other array, integer keys included (`[404 => …]`) | merged key by key |
-| a scalar the root config already sets (`cache.prefix`, a mailer, a disk root) | the module's own value: applied while its code runs, the root one back outside it. Two modules in one process each keep theirs. A service built once and kept (a resolved cache store, a mailer) holds the value it was built with, unless it is listed in `distributable.per_module` (`['cache', 'cache.store', 'mail.manager', 'mailer', 'filesystem']`, or a package's service): each module then gets its own instance, built once with its config and swapped in as it runs. An object that received the service in its constructor keeps the instance it was given. |
+| a scalar the root config already sets (`cache.prefix`, a mailer, a disk root) | the module's own value: applied while its code runs, the root one back outside it. Two modules in one process each keep theirs. A service built once and kept (a resolved cache store, a mailer) holds the value it was built with, unless it is listed in `modules.per_module` (`['cache', 'cache.store', 'mail.manager', 'mailer', 'filesystem']`, or a package's service): each module then gets its own instance, built once with its config and swapped in as it runs. An object that received the service in its constructor keeps the instance it was given. |
 | a scalar the root config doesn't set, that two local modules set differently | the module registered last wins in one process, while each keeps its own once they run apart: `distributable:doctor` reports it |
 | when it runs | as the module's provider registers, after every package provider: a package reading its config in its own `register()` doesn't see the module's values |
 | its scope | the whole process: a module overriding a package's config changes it for every module running there |
@@ -248,7 +248,7 @@ In a test, `Event::assertListening()` only sees a closure for them: use
 A module never uses another module's classes, because that import would break as soon as the
 modules are deployed separately. What a module shares with the others (its RPC contracts and
 services, the shape of its copies, its event names) goes in `foundation/{Module}/`, autoloaded as
-`Foundation\{Module}\` (`distributable.paths.foundation`, `distributable.namespaces.foundation`). Any module can
+`Foundation\{Module}\` (`modules.paths.foundation`, `modules.namespaces.foundation`). Any module can
 use the foundation, and the foundation uses no module.
 
 ```
@@ -272,10 +272,10 @@ php artisan distributable:doctor
 
 | It reports | Example |
 |---|---|
-| a folder of `apps/` that `distributable.modules` doesn't declare | `[apps/Billing] is not declared in distributable.modules.` |
+| a folder of `apps/` that `modules.declared` doesn't list | `[apps/Billing] is not declared in modules.declared.` |
 | a module whose service provider class doesn't exist | `[gateway] provider Apps\Gateway\Providers\GatewayServiceProvider does not exist.` |
 | a local module with a database but no declared connection | `[iam] connection [iam] is not declared.` |
-| a module running elsewhere that serves a contract, with no host | `[iam] runs elsewhere and serves Foundation\Iam\Contracts\IamService, but distributable.modules.iam.host is not set.` |
+| a module running elsewhere that serves a contract, with no host | `[iam] runs elsewhere and serves Foundation\Iam\Contracts\IamService, but modules.declared.iam.host is not set.` |
 | RPC contracts declared while the secret is empty | `Modules serve RPC contracts but microservices.rpc.secret is empty: set MICROSERVICES_RPC_SECRET or APP_KEY.` |
 | a module using another module's classes, or the foundation or the application (`app/`, `routes/`, `config/`) using a module | `Boundary crossed: apps/Analytics/app/Models/Report.php: Apps\Iam\Models\User` |
 | a module naming another module's connection, or a table that module's migrations create | `Boundary crossed: apps/Analytics/app/Models/Report.php: 'iam_users'` |

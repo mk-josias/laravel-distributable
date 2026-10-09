@@ -14,7 +14,7 @@ final class StatusController
     public function __invoke(ModuleRegistry $registry): JsonResponse
     {
         return new JsonResponse([
-            'message' => 'Hello from laravel-distributable',
+            'message' => 'Hello from laravel-distributable-modules',
             'modules' => array_map(static fn (Module $module): string => $module->name, $registry->local()),
             'status' => 'ok',
         ]);

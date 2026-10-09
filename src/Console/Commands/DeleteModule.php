@@ -42,7 +42,7 @@ final class DeleteModule extends Command
 
     private function undeclare(Module $module): void
     {
-        $config = config_path('distributable.php');
+        $config = config_path('modules.php');
         $contents = is_file($config) ? (string) file_get_contents($config) : '';
         $undeclared = preg_replace("/^[ \t]*'".preg_quote($module->name, '/')."'\s*=>\s*\[[^\]\n]*\],?[ \t]*\n/m", '', $contents, 1, $count);
 
@@ -52,6 +52,6 @@ final class DeleteModule extends Command
             return;
         }
 
-        $this->components->warn("Remove it from config/distributable.php: 'modules' => ['{$module->name}' => …].");
+        $this->components->warn("Remove it from config/modules.php: 'declared' => ['{$module->name}' => …].");
     }
 }
