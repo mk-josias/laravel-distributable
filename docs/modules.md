@@ -137,7 +137,7 @@ module and `local()` the ones this process runs. `get($name)` throws on an unkno
 `forClass($class)` returns the module a class belongs to, based on its namespace.
 
 In production, `php artisan optimize` runs `distributable:cache`, which writes what the module folders
-tell (namespaces, databases, copies and shadow sources) to `bootstrap/cache/distributable.php`, and the
+tell (namespaces, databases and shadow sources) to `bootstrap/cache/distributable.php`, and the
 application reads that file instead of the folders. `optimize:clear` (or `distributable:clear`) deletes
 it. The cache never decides which modules exist: `modules.declared` does.
 

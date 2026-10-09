@@ -55,15 +55,12 @@ final readonly class ModuleMigrations
     {
         $files = [];
 
-        foreach ($this->shadows->localShadows() as $shadow) {
-            if ($this->registry->forClass($shadow)?->name !== $module->name) {
-                continue;
-            }
-
+        foreach ($this->shadows->localShadows($module->name) as $shadow) {
             $owner = $this->registry->get($shadow::owner());
             $files = [...$files, ...(glob($this->config->getFoundationPath($owner).'/database/shadows/*_'.$shadow::sourceTable().'_shadow*.php') ?: [])];
         }
 
+        $files = array_values(array_unique($files));
         sort($files);
 
         return $files;

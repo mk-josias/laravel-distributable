@@ -16,26 +16,34 @@ final class User extends \Illuminate\Database\Eloquent\Model implements \Microse
 }
 
 // foundation/Iam/Shadows/UserShadow.php, the shape of the copy, declared once by iam
-abstract class UserShadow extends \Microservices\Models\ShadowModel
+class UserShadow extends \Microservices\Models\ShadowModel
 {
     public static function owner(): string { return 'iam'; }
 
     public static function sourceTable(): string { return 'iam_users'; }
 }
 
-// apps/Analytics/app/Models/UserShadow.php, analytics keeps a copy in the iam_users table
-final class UserShadow extends \Foundation\Iam\Shadows\UserShadow {}
+// apps/Analytics/app/Providers/AnalyticsServiceProvider.php: the copies analytics keeps
+protected array $shadows = [\Foundation\Iam\Shadows\UserShadow::class];
 ```
+
+A module lists the foundation's class as it is, or a subclass of its own that adds relations,
+casts or a `beforeSync()`. Each listed class is one table: two forms of one source need two
+`$table`s, and `distributable:doctor` reports two copies in one table.
+
+A copy is a model like the module's others: it reads and writes the database of the module
+running. The same `UserShadow` is analytics' copy inside analytics and notifications' inside
+notifications; outside any module it throws, as every query does. When one consumer serves
+several keepers, it enters each in turn before writing its copies.
 
 iam publishes the migration of the copy's table in `foundation/Iam/database/shadows/`, extending
 `Microservices\Migrations\ShadowMigration`. `migrate` runs it in the database of every module that
-keeps a copy. A copy always writes to the database of the module that keeps it, even when one
-consumer serves several keepers.
+keeps a copy.
 
 ```bash
 php artisan microservices:shadows:want [--keepers=reports] [--sources=iam_users]   # on the keeping module
 php artisan microservices:shadows:announce iam_users [--keepers=reports]          # on the owner
 ```
 
-`distributable:cache` records each module's copies and sources, so a process doesn't scan the module
+`distributable:cache` records each module's shadow sources, so a process doesn't scan the module
 folders for them at boot.

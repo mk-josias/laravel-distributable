@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
+use Microservices\Models\ShadowModel;
 use Microservices\Services\Rpc\LocalServices;
 
 /**
@@ -43,12 +44,16 @@ abstract class ServiceProvider extends BaseServiceProvider
     /** @var array<string, list<class-string>> as microservices.events.listen: event name => Handler classes */
     protected array $handlers = [];
 
+    /** @var list<class-string<ShadowModel>> the copies this module keeps: a foundation class, or a subclass of its own */
+    protected array $shadows = [];
+
     public function register(): void
     {
         // A cached config already holds the merge, made while the .env was still loaded.
         if (! $this->app->configurationIsCached()) {
             $this->mergeModuleConfigs();
             $this->mergeModuleHandlers();
+            config()->set("microservices.shadows.{$this->module->name}", $this->shadows);
         }
 
         $local = $this->app->make(LocalServices::class);

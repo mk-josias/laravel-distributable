@@ -71,7 +71,7 @@ it('fills a copy from the announcement alone, so a service in another language c
 });
 
 it('refuses any write to a copy that does not come from the source', function () {
-    expect((new UserShadow)->forceFill(['id' => 1, 'name' => 'forged'])->save())->toBeFalse()
+    expect($this->inModule('analytics', fn (): bool => (new UserShadow)->forceFill(['id' => 1, 'name' => 'forged'])->save()))->toBeFalse()
         ->and(copies()->count())->toBe(0);
 });
 

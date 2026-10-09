@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Microservices\Config\Rpc;
 use Microservices\Services\Rpc\RpcServices;
+use Microservices\Services\Shadows\ShadowRegistry;
 
 final class Doctor extends Command
 {
@@ -19,7 +20,7 @@ final class Doctor extends Command
 
     protected $description = 'Check that every module can run: declaration, provider, connections, remote hosts, boundaries.';
 
-    public function handle(ModuleRegistry $registry, Modules $config, Rpc $rpc, RpcServices $services, Boundaries $boundaries, ComposerAutoload $autoload): int
+    public function handle(ModuleRegistry $registry, Modules $config, Rpc $rpc, RpcServices $services, Boundaries $boundaries, ComposerAutoload $autoload, ShadowRegistry $shadows): int
     {
         $problems = [];
         $modulesPath = $config->getModulesPath();
@@ -46,6 +47,18 @@ final class Doctor extends Command
 
             foreach ($autoload->stale($module) as $namespace => $paths) {
                 $problems[] = "composer.json maps [{$namespace}] to [{$paths['declared']}], but the module lives in [{$paths['expected']}].";
+            }
+
+            $tables = [];
+
+            foreach ($shadows->localShadows($module->name) as $shadow) {
+                $tables[(new $shadow)->getTable()][] = $shadow;
+            }
+
+            foreach ($tables as $table => $copies) {
+                if (count($copies) > 1) {
+                    $problems[] = "[{$module->name}] keeps two copies in table [{$table}]: ".implode(', ', $copies).'. Give each its own $table.';
+                }
             }
         }
 

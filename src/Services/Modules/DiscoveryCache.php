@@ -11,7 +11,6 @@ use Illuminate\Contracts\Foundation\Application;
  *
  * @phpstan-type Cached array{
  *     modules: list<array{name: string, namespace: string, provider: string, path: string, hasDatabase: bool}>,
- *     shadows: array<string, list<class-string>>,
  *     sources: array<string, list<class-string>>,
  * }
  */

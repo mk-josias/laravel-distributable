@@ -5,22 +5,14 @@ declare(strict_types=1);
 namespace Distributable\Services\Modules;
 
 use Microservices\Contracts\Colocation;
-use Microservices\Models\ShadowModel;
 use Microservices\Services\Shadows\ShadowRegistry;
 
-/** The copies and sources of each module, read from distributable:cache when it ran, scanned otherwise. */
+/** The shadow sources of each module, read from distributable:cache when it ran, scanned otherwise; copies come from each module's $shadows. */
 final class CachedShadowRegistry extends ShadowRegistry
 {
     public function __construct(Colocation $colocation, private readonly DiscoveryCache $cache)
     {
         parent::__construct($colocation);
-    }
-
-    /** @return list<class-string<ShadowModel>> */
-    protected function kept(string $service): array
-    {
-        /** @var list<class-string<ShadowModel>> */
-        return $this->cache->load()['shadows'][$service] ?? parent::kept($service);
     }
 
     /** @return list<class-string> */

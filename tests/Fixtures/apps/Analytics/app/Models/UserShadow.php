@@ -6,5 +6,5 @@ namespace Apps\Analytics\Models;
 
 use Foundation\Iam\Shadows\UserShadow as IamUserShadow;
 
-/** Analytics keeps its own copy of iam's users, in its own database. */
+/** Analytics' own form of iam's users: a subclass a keeper declares to add relations or a beforeSync(). */
 final class UserShadow extends IamUserShadow {}

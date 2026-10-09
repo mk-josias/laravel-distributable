@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use Apps\Analytics\Models\UserShadow;
 use Distributable\Data\Module;
 use Distributable\Services\Modules\ComposerAutoload;
 use Distributable\Services\Modules\ModuleRegistry;
 use Distributable\Tests\Support\ModuleAppTestCase;
+use Foundation\Iam\Shadows\UserShadow as IamUserShadow;
 use Illuminate\Support\Facades\File;
 
 uses(ModuleAppTestCase::class);
@@ -199,6 +201,14 @@ it('fails on a module with migrations and no database to run them in', function 
         rmdir($migrations);
         rmdir(dirname($migrations));
     }
+});
+
+it('fails on a module keeping two copies in one table', function () {
+    config()->set('microservices.shadows.analytics', [UserShadow::class, IamUserShadow::class]);
+
+    $this->artisan('distributable:doctor')
+        ->expectsOutputToContain('[analytics] keeps two copies in table [iam_users]')
+        ->assertFailed();
 });
 
 it('passes once every module can run', function () {

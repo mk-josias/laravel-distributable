@@ -7,7 +7,7 @@ namespace Foundation\Iam\Shadows;
 use Microservices\Models\ShadowModel;
 
 /** The shape of a copy of iam's users, declared once by iam for every module that keeps one. */
-abstract class UserShadow extends ShadowModel
+class UserShadow extends ShadowModel
 {
     public static function owner(): string
     {

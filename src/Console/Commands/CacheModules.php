@@ -16,7 +16,7 @@ final class CacheModules extends Command
 {
     protected $signature = 'distributable:cache';
 
-    protected $description = 'Cache what the module folders tell: namespaces, databases, copies and shadow sources.';
+    protected $description = 'Cache what the module folders tell: namespaces, databases and shadow sources.';
 
     public function handle(ModuleRegistry $registry, DiscoveryCache $cache, ShadowRegistry $shadows): int
     {
@@ -27,7 +27,6 @@ final class CacheModules extends Command
 
         $cache->write([
             'modules' => array_map(static fn (Module $module): array => $module->toArray(), $registry->all()),
-            'shadows' => array_combine($names, array_map($shadows->scanShadows(...), $names)),
             'sources' => array_combine($names, array_map($shadows->scanSources(...), $names)),
         ]);
 

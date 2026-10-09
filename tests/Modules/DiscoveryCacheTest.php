@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Apps\Analytics\Models\UserShadow;
 use Apps\Iam\Models\User;
 use Distributable\Services\Modules\DiscoveryCache;
 use Distributable\Services\Modules\ModuleRegistry;
@@ -23,7 +22,6 @@ it('caches what the module folders tell, and reads it back as the same modules',
 
     expect(is_file($this->app->make(DiscoveryCache::class)->path()))->toBeTrue()
         ->and($this->app->make(ModuleRegistry::class)->all())->toEqual($built)
-        ->and($cached['shadows']['analytics'])->toBe([UserShadow::class])
         ->and($cached['sources']['iam'])->toBe([User::class]);
 });
 
