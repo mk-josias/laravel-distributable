@@ -8,6 +8,8 @@ use Distributable\Tests\Support\ModuleAppTestCase;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Microservices\Data\Envelope;
+use Microservices\Services\Stream\Dispatcher;
 
 uses(ModuleAppTestCase::class);
 
@@ -58,6 +60,14 @@ it('leaves the copies of analytics to the analytics consumer, when one process r
     $this->artisan('microservices:events:consume --module=analytics')->assertSuccessful();
 
     expect(copies()->where('id', $user->id)->value('name'))->toBe('ada');
+});
+
+it('writes each keeper copy in its own database when no module consumes the announcement', function () {
+    $envelope = new Envelope((string) str()->uuid7(), 'iam', 'microservices.shadow.changed', ['source' => 'iam_users', 'key' => 9, 'attributes' => ['name' => 'barbara']], [], now()->toImmutable());
+
+    app(Dispatcher::class)->dispatch($envelope);
+
+    expect(copies()->where('id', 9)->value('name'))->toBe('barbara');
 });
 
 it('fills a copy from the announcement alone, so a service in another language can be its source', function () {
