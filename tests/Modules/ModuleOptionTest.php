@@ -29,6 +29,30 @@ it('runs any command in the module --module names, and in no module without it',
     $this->artisan('probe:connection')->expectsOutput(ModuleContext::NO_MODULE)->assertSuccessful();
 });
 
+it('runs a command a module declares in that module, without --module', function () {
+    $this->artisan('analytics:connection')->expectsOutput('analytics')->assertSuccessful();
+});
+
+it('prunes the consumption marks of the module --module names only, of every local module without it', function () {
+    foreach (['iam', 'analytics'] as $module) {
+        config()->set("database.connections.{$module}.database", tempnam(sys_get_temp_dir(), "distributable-{$module}-"));
+        DB::purge($module);
+    }
+
+    $this->artisan('migrate')->assertSuccessful();
+
+    foreach (['iam', 'analytics'] as $module) {
+        DB::connection($module)->table('event_consumptions')->insert(['event_id' => (string) str()->uuid7(), 'handler' => 'Old', 'consumed_at' => now()->subDays(10)]);
+    }
+
+    $this->artisan('stream:prune-consumptions --module=analytics')->expectsOutput('→ analytics: 1 deleted')->assertSuccessful();
+
+    expect(DB::connection('iam')->table('event_consumptions')->count())->toBe(1)
+        ->and(DB::connection('analytics')->table('event_consumptions')->count())->toBe(0);
+
+    $this->artisan('stream:prune-consumptions')->expectsOutput('→ iam: 1 deleted')->assertSuccessful();
+});
+
 it('seeds a module with its own DatabaseSeeder, or the seeder of its own it is asked for', function () {
     iamUsersTable('iam');
 

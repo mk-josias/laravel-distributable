@@ -245,6 +245,22 @@ Move Sanctum's published migration to `apps/Iam/database/migrations`, so `person
 exists in iam's database only. The same holds for a package that loads its data once per process
 under one cache key, such as spatie/laravel-permission: keep it in one module.
 
+#### Packages that serve their own routes (admin panels, Livewire)
+
+A request runs in the module of its route's controller. Filament, Nova or Livewire serve routes
+whose controllers belong to no module, so their requests run outside every module and any query
+they make fails. Give their routes a module by adding the module's middleware to them, for a
+Filament panel:
+
+```php
+->middleware([/* the panel's own middleware */, \Distributable\Http\Middleware\SetModuleContext::class.':iam'])
+```
+
+An admin panel that manages every module's data would cross every boundary. Give each module its
+own panel instead (`/admin/iam` in iam, `/admin/analytics` in analytics), each one reading its own
+database only. A screen that needs another module's data reads it from a local copy or through that
+module's contract, as any module code does.
+
 ### Compared to other packages
 
 | | nwidart/laravel-modules | Spring Modulith | laravel-distributable-modules |

@@ -216,6 +216,14 @@ module directory:
 | `$handlers` on the provider | The stream events the module handles, written as `microservices.events.listen`: event name => `Handler` classes. Merged into that config only where the module runs. |
 | `schedule(Schedule $schedule)` on the provider | The module's scheduled tasks. Only a process that runs the module schedules them, and `schedule:run` runs each one in the module, closures included. A task scheduled elsewhere runs in no module. |
 
+A module's config files follow the same idea as the module itself: the application's `config/`
+holds the defaults every module shares, and a module's `config/` holds what is its own. A value the
+application already sets and the module changes is the module's own setting: it applies while the
+module's code runs, and the application's value comes back outside it, so two modules in one
+process never see each other's settings. A key or an entry the application doesn't have is simply
+added for everyone, which is why two modules adding the same key differently is reported by
+`modules:doctor`.
+
 How the config merge works, and what it can't do:
 
 | Case | Result |
