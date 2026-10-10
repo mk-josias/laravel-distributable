@@ -16,6 +16,8 @@ COPY --from=microservices packages/core/config /laravel-microservices/packages/c
 COPY --from=microservices packages/core/database /laravel-microservices/packages/core/database
 COPY --from=microservices packages/redis-event-stream/composer.json /laravel-microservices/packages/redis-event-stream/composer.json
 COPY --from=microservices packages/redis-event-stream/src /laravel-microservices/packages/redis-event-stream/src
+COPY --from=microservices packages/http-rpc/composer.json /laravel-microservices/packages/http-rpc/composer.json
+COPY --from=microservices packages/http-rpc/src /laravel-microservices/packages/http-rpc/src
 
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-reqs
