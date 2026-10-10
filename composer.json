@@ -34,6 +34,16 @@
                 }
             }
         },
+        "http-rpc": {
+            "type": "path",
+            "url": "../laravel-microservices/packages/http-rpc",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "mk-josias/http-rpc": "0.1.0"
+                }
+            }
+        },
         "redis-event-stream": {
             "type": "path",
             "url": "../laravel-microservices/packages/redis-event-stream",
@@ -59,13 +69,15 @@
         "larastan/larastan": "^3.10",
         "laravel/octane": "^2.20",
         "laravel/pint": "^1.0",
+        "mk-josias/http-rpc": "^0.1",
         "mk-josias/queue-event-stream": "^0.1",
         "mk-josias/redis-event-stream": "^0.1",
         "orchestra/testbench": "^10.0 || ^11.0",
         "pestphp/pest": "^3.0 || ^4.0"
     },
     "suggest": {
-        "laravel/octane": "High-throughput application server; the kernel also runs under plain FPM"
+        "laravel/octane": "High-throughput application server; the kernel also runs under plain FPM",
+        "mk-josias/http-rpc": "Calls to a module running in another process, over signed HTTP"
     },
     "autoload": {
         "psr-4": {

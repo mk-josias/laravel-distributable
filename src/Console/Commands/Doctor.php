@@ -8,8 +8,8 @@ use Distributable\Config\Modules;
 use Distributable\Services\Modules\ComposerAutoload;
 use Distributable\Services\Modules\ModuleRegistry;
 use Distributable\Testing\Boundaries;
+use HttpRpc\HttpRpc;
 use Illuminate\Console\Command;
-use Microservices\Config\Rpc;
 use Microservices\Services\Rpc\RpcServices;
 use Microservices\Services\Shadows\ShadowRegistry;
 
@@ -19,7 +19,7 @@ final class Doctor extends Command
 
     protected $description = 'Check that every module can run: declaration, provider, connections, remote hosts, boundaries.';
 
-    public function handle(ModuleRegistry $registry, Modules $config, Rpc $rpc, RpcServices $services, Boundaries $boundaries, ComposerAutoload $autoload, ShadowRegistry $shadows): int
+    public function handle(ModuleRegistry $registry, Modules $config, RpcServices $services, Boundaries $boundaries, ComposerAutoload $autoload, ShadowRegistry $shadows): int
     {
         $problems = [];
         $modulesPath = $config->getModulesPath();
@@ -77,7 +77,7 @@ final class Doctor extends Command
             }
         }
 
-        if ($services->all() !== [] && $rpc->getSecret() === '') {
+        if ($services->all() !== [] && class_exists(HttpRpc::class) && app(HttpRpc::class)->getSecret() === '') {
             $problems[] = 'Modules serve RPC contracts but microservices.rpc.secret is empty: set MICROSERVICES_RPC_SECRET or APP_KEY.';
         }
 

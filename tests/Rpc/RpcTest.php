@@ -7,6 +7,8 @@ use Distributable\Tests\Support\ModuleAppTestCase;
 use Foundation\Iam\Contracts\IamService;
 use Foundation\Iam\Services\IamRpcService;
 use Foundation\Iam\Services\TokenRpcService;
+use HttpRpc\HttpTransport;
+use HttpRpc\RpcSignature;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Cache;
@@ -17,9 +19,7 @@ use Illuminate\Support\Facades\Schema;
 use Microservices\Contracts\Rpc\Transport as RpcTransport;
 use Microservices\Exceptions\ConfigurationException;
 use Microservices\Exceptions\ServiceException;
-use Microservices\Services\Rpc\RpcSignature;
 use Microservices\Services\Rpc\TransportManager as RpcTransportManager;
-use Microservices\Transports\Rpc\HttpTransport;
 
 uses(ModuleAppTestCase::class);
 
