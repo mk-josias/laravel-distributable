@@ -7,12 +7,17 @@ namespace Distributable\Tests;
 use Distributable\Providers\DistributableServiceProvider;
 use Microservices\Providers\MicroservicesServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use QueueEventStream\QueueEventStreamServiceProvider;
+use RedisEventStream\RedisEventStreamServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
     /** @return list<class-string> */
     protected function getPackageProviders($app): array
     {
-        return [MicroservicesServiceProvider::class, DistributableServiceProvider::class];
+        return [
+            MicroservicesServiceProvider::class, DistributableServiceProvider::class,
+            RedisEventStreamServiceProvider::class, QueueEventStreamServiceProvider::class,
+        ];
     }
 }

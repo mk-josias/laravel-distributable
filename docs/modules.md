@@ -107,7 +107,7 @@ package reads everything from the folder and the namespace, so there is nothing 
 | | Configurable | Fixed by convention |
 |---|---|---|
 | Where the modules live | `paths.modules` (`apps`), `namespaces.modules` (`Apps`) | a module is `{paths.modules}/{Name}`, its name is `{Name}` in snake_case |
-| Where the foundation lives | `paths.foundation` (`foundation`), `namespaces.foundation` (`Foundation`) | what module `iam` shares is `{paths.foundation}/Iam`, under `Foundation\Iam\` |
+| Where the foundation lives | `paths.foundation` (`foundation`), `namespaces.foundation` (`Foundation`); a module's own folder there with `declared.{name}.foundation` | what module `iam` shares is `{paths.foundation}/Iam`, under `Foundation\Iam\` |
 | A module's code | | `app/`, under `{namespaces.modules}\{Name}\` |
 | A module's provider | | `app/Providers/{Name}ServiceProvider.php` |
 | A module's database | | it has one exactly when a connection named `{name}` exists, declared in the module's `config/database.php` or the root one |
@@ -116,7 +116,7 @@ package reads everything from the folder and the namespace, so there is nothing 
 | A module's factories and seeders | | `database/factories/` under `{namespaces.modules}\{Name}\Database\Factories\`, `database/seeders/` under `…\Database\Seeders\` |
 | A module's views | | `resources/views/`, under the view namespace `{name}::` |
 | A module's tests | | `tests/`, under `{namespaces.modules}\{Name}\Tests\` |
-| An RPC service | | under `Foundation\{Name}\`: the segment after the root names the module it calls |
+| An RPC service | | under the module's foundation folder: `Foundation\Iam\` for `iam`, or `Foundation\Identity\` with `'iam' => ['foundation' => 'Identity']` |
 | The migration of a copy | | `{paths.foundation}/{Owner}/database/shadows/` |
 | The foundation's provider | | `{namespaces.foundation}\FoundationServiceProvider` |
 

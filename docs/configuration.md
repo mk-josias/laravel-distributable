@@ -6,7 +6,7 @@ configuration: see [Conventions](modules.md#conventions).
 
 | Key | Default | |
 |---|---|---|
-| `declared` | `[]` | `'iam' => ['host' => …]`: every module, and the URL of the ones running elsewhere |
+| `declared` | `[]` | `'iam' => ['host' => …, 'foundation' => …]`: every module, the URL of the ones running elsewhere, and its folder under the foundation when not its name (`Iam`) |
 | `runs` | `env('RUN_MODULES', '*')` | modules this process runs |
 | `paths.modules` | `apps` | directory of the modules |
 | `paths.foundation` | `foundation` | directory of what modules share with each other |

@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Distributable\Services\Modules;
 
 use Illuminate\Container\Container;
-use Microservices\Contracts\Rpc\RpcTransport;
+use Microservices\Contracts\Rpc\Transport;
 use Microservices\Services\Rpc\LocalServices;
-use Microservices\Services\Rpc\RpcTransportManager;
+use Microservices\Services\Rpc\TransportManager;
 
 /** A call to a module this process runs is a direct method call; any other goes out on the module's transport. */
-final readonly class ModuleRpcTransport implements RpcTransport
+final readonly class ModuleRpcTransport implements Transport
 {
     public function __construct(
         private LocalServices $services,
-        private RpcTransportManager $remote,
+        private TransportManager $remote,
     ) {}
 
     public function invoke(string $service, string $contract, string $method, array $arguments = []): mixed

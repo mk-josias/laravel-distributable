@@ -6,7 +6,6 @@ namespace Distributable\Services\Modules;
 
 use Distributable\Data\Module;
 use Distributable\Exceptions\ModuleException;
-use Illuminate\Support\Str;
 
 /**
  * The process-level view of the modules: every module modules.declared lists, and the ones
@@ -77,14 +76,21 @@ final class ModuleRegistry
         return $best;
     }
 
-    /** The module a foundation class belongs to: Foundation\Iam\… is iam's; null outside the foundation. */
+    /** The module a foundation class belongs to, by its foundation folder: Foundation\Iam\… is iam's; null outside the foundation. */
     public function forFoundationClass(string $class, string $foundationNamespace): ?Module
     {
-        if (! str_starts_with($class, $foundationNamespace.'\\')) {
-            return null;
+        $best = null;
+
+        foreach ($this->modules() as $module) {
+            $namespace = $foundationNamespace.'\\'.$module->foundation;
+
+            if (str_starts_with($class, $namespace.'\\')
+                && ($best === null || strlen($module->foundation) > strlen($best->foundation))) {
+                $best = $module;
+            }
         }
 
-        return $this->find(Str::snake(Str::before(Str::after($class, $foundationNamespace.'\\'), '\\')));
+        return $best;
     }
 
     public function isLocal(string $name): bool

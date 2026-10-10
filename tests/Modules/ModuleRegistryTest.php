@@ -40,6 +40,17 @@ it('fails loudly on an unknown module name', function () {
     registryLoading(['analytics', 'transactions'])->local();
 })->throws(ModuleException::class, 'Unknown module [transactions]');
 
+it('resolves the module of a foundation class from its foundation folder, its studly name unless declared', function () {
+    $registry = new ModuleRegistry([
+        Module::fromName('iam', 'Apps', 'apps', 'Identity'),
+        Module::fromName('point_of_sale', 'Apps', 'apps'),
+    ]);
+
+    expect($registry->forFoundationClass('Foundation\Identity\Contracts\IamService', 'Foundation')->name)->toBe('iam')
+        ->and($registry->forFoundationClass('Foundation\PointOfSale\Contracts\Till', 'Foundation')->name)->toBe('point_of_sale')
+        ->and($registry->forFoundationClass('Foundation\Iam\Contracts\IamService', 'Foundation'))->toBeNull();
+});
+
 it('resolves the module owning a class from its namespace', function () {
     $registry = registryLoading();
 

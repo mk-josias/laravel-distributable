@@ -64,7 +64,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Laravel\Octane\Contracts\DispatchesTasks;
 use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Rpc\RpcTransport;
+use Microservices\Contracts\Rpc\Transport as RpcTransport;
 use Microservices\Services\Shadows\ShadowRegistry;
 
 final class DistributableServiceProvider extends BaseServiceProvider
@@ -98,9 +98,10 @@ final class DistributableServiceProvider extends BaseServiceProvider
             $cached = array_column($app->make(DiscoveryCache::class)->load()['modules'] ?? [], null, 'name');
 
             return new ModuleRegistry(array_map(
-                static fn (string $name): Module => isset($cached[$name])
+                // A cache written before modules had a foundation folder is ignored, not misread.
+                static fn (string $name): Module => isset($cached[$name]['foundation'])
                     ? Module::fromArray($cached[$name])
-                    : Module::fromName($name, $config->getModulesNamespace(), $config->getModulesPath()),
+                    : Module::fromName($name, $config->getModulesNamespace(), $config->getModulesPath(), $config->getFoundationOf($name)),
                 $config->getDeclaredModules(),
             ), $config->getLoadedModules());
         });

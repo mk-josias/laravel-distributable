@@ -20,10 +20,15 @@ final readonly class Module
         public string $provider,
         private string $path,
         public bool $hasDatabase,
+        public string $foundation,
     ) {}
 
-    /** Every convention derives from the name; a module has a database once a connection named after it exists, in its config/database.php or the root one. */
-    public static function fromName(string $name, string $modulesNamespace, string $modulesPath = 'apps'): self
+    /**
+     * Every convention derives from the name; a module has a database once a connection named after it exists, in its config/database.php or the root one.
+     *
+     * @param  string|null  $foundation  its folder and namespace segment under the foundation root, when not its studly name
+     */
+    public static function fromName(string $name, string $modulesNamespace, string $modulesPath = 'apps', ?string $foundation = null): self
     {
         if (preg_match('/^[a-z][a-z0-9_]*$/', $name) !== 1) {
             throw ModuleException::invalidName($name);
@@ -40,10 +45,11 @@ final readonly class Module
             provider: $namespace.'\\Providers\\'.$studly.'ServiceProvider',
             path: $path,
             hasDatabase: is_file($absolute.'/config/database.php') || config("database.connections.{$name}") !== null,
+            foundation: $foundation ?? $studly,
         );
     }
 
-    /** @return array{name: string, namespace: string, provider: string, path: string, hasDatabase: bool} */
+    /** @return array{name: string, namespace: string, provider: string, path: string, hasDatabase: bool, foundation: string} */
     public function toArray(): array
     {
         return [
@@ -52,10 +58,11 @@ final readonly class Module
             'provider' => $this->provider,
             'path' => $this->path,
             'hasDatabase' => $this->hasDatabase,
+            'foundation' => $this->foundation,
         ];
     }
 
-    /** @param array{name: string, namespace: string, provider: string, path: string, hasDatabase: bool} $data */
+    /** @param array{name: string, namespace: string, provider: string, path: string, hasDatabase: bool, foundation: string} $data */
     public static function fromArray(array $data): self
     {
         return new self(...$data);

@@ -9,7 +9,6 @@ use Distributable\Services\Modules\ComposerAutoload;
 use Distributable\Services\Modules\ModuleRegistry;
 use Distributable\Testing\Boundaries;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Microservices\Config\Rpc;
 use Microservices\Services\Rpc\RpcServices;
 use Microservices\Services\Shadows\ShadowRegistry;
@@ -26,8 +25,10 @@ final class Doctor extends Command
         $modulesPath = $config->getModulesPath();
         $root = str_starts_with($modulesPath, DIRECTORY_SEPARATOR) ? $modulesPath : base_path($modulesPath);
 
+        $declared = array_map(static fn ($module): string => realpath($module->path()) ?: $module->path(), $registry->all());
+
         foreach (glob($root.'/*', GLOB_ONLYDIR) ?: [] as $directory) {
-            if ($registry->find(Str::snake(basename($directory))) === null) {
+            if (! in_array(realpath($directory) ?: $directory, $declared, true)) {
                 $problems[] = "[{$modulesPath}/".basename($directory).'] is not declared in modules.declared.';
             }
         }

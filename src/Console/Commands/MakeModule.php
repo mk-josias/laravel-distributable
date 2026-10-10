@@ -19,7 +19,8 @@ final class MakeModule extends Command
 
     public function handle(Modules $config, ComposerAutoload $autoload): int
     {
-        $module = Module::fromName((string) $this->argument('name'), $config->getModulesNamespace(), $config->getModulesPath());
+        $name = (string) $this->argument('name');
+        $module = Module::fromName($name, $config->getModulesNamespace(), $config->getModulesPath(), $config->getFoundationOf($name));
 
         if (is_dir($module->path())) {
             $this->components->error("Module [{$module->name}] already exists at {$module->path()}.");

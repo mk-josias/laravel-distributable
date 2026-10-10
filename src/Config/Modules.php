@@ -18,6 +18,14 @@ final readonly class Modules
         return array_map(strval(...), array_keys((array) $this->config->get('modules.declared', [])));
     }
 
+    /** A module's folder and namespace segment under the foundation root, when modules.declared.{module}.foundation sets one. */
+    public function getFoundationOf(string $module): ?string
+    {
+        $foundation = $this->config->get("modules.declared.{$module}.foundation");
+
+        return is_string($foundation) && $foundation !== '' ? $foundation : null;
+    }
+
     /** The URL a module answers on when it runs in another process; null when none is set. */
     public function getHost(string $module): ?string
     {
@@ -50,7 +58,7 @@ final readonly class Modules
         $path = (string) $this->config->get('modules.paths.foundation', 'foundation');
         $root = str_starts_with($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
 
-        return $module === null ? $root : $root.'/'.basename($module->path());
+        return $module === null ? $root : $root.'/'.$module->foundation;
     }
 
     public function getFoundationNamespace(): string

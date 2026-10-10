@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
-use Microservices\Contracts\Rpc\RpcTransport;
+use Microservices\Contracts\Rpc\Transport as RpcTransport;
 use Microservices\Exceptions\ConfigurationException;
 use Microservices\Exceptions\ServiceException;
 use Microservices\Services\Rpc\RpcSignature;
-use Microservices\Services\Rpc\RpcTransportManager;
-use Microservices\Transports\Rpc\HttpRpcTransport;
+use Microservices\Services\Rpc\TransportManager as RpcTransportManager;
+use Microservices\Transports\Rpc\HttpTransport;
 
 uses(ModuleAppTestCase::class);
 
@@ -153,7 +153,7 @@ it('sends a signed POST naming the contract and the method, and decodes the answ
     Context::add('trace_id', 'abc');
     Http::fake(['iam.test/*' => Http::response(['id' => 1, 'name' => 'ada'])]);
 
-    $answer = app(HttpRpcTransport::class)->invoke('iam', IamService::class, 'findUser', ['id' => 1]);
+    $answer = app(HttpTransport::class)->invoke('iam', IamService::class, 'findUser', ['id' => 1]);
 
     expect($answer)->toBe(['id' => 1, 'name' => 'ada']);
 

@@ -21,6 +21,7 @@ another. The package sets up what is missing:
 
 ```bash
 composer require mk-josias/laravel-distributable-modules
+composer require mk-josias/redis-event-stream    # the events driver: Redis Streams (or queue-event-stream, or yours)
 php artisan modules:install                      # config/modules.php, apps/, foundation/FoundationServiceProvider.php
 php artisan modules:make iam --database   # apps/Iam and foundation/Iam, declared in config/modules.php
 ```
@@ -193,8 +194,8 @@ These come from laravel-microservices (`Microservices\` namespace):
 
 | Contract | Default | Replace it with |
 |---|---|---|
-| `Contracts\Stream\Transport`, the event stream | `redis`, `queue`, `array`, `null` | `TransportManager::extend()` |
-| `Contracts\Rpc\RpcTransport`, calls between modules | `HttpRpcTransport` | `RpcTransportManager::extend()` |
+| `Contracts\Stream\Transport`, the event stream | `array`, `null`; `redis` and `queue` from their packages | `Services\Stream\TransportManager::extend()` |
+| `Contracts\Rpc\Transport`, calls between modules | `Transports\Rpc\HttpTransport` | `Services\Rpc\TransportManager::extend()` |
 | `Contracts\Stream\Handler`, a module's reaction to an event | none | a class listed under `events.listen` |
 | `Contracts\Stream\Versioned`, the versions of an event's payload | none: every event is version 1 | a payload class in the owner's foundation, mapped in `FoundationServiceProvider::$payloads` |
 | `Services\Rpc\RpcService`, a module's client in the other processes | none | a subclass in `foundation/{Module}/Services`, mapped in `FoundationServiceProvider::$rpc` |
