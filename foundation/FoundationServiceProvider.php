@@ -15,6 +15,8 @@ use Foundation\Iam\Contracts\IamService;
 use Foundation\Iam\Events\IamEvent;
 use Foundation\Iam\Events\UserRegisteredPayload;
 use Foundation\Iam\Services\IamRpcService;
+use Foundation\Notifications\Events\MailSentPayload;
+use Foundation\Notifications\Events\NotificationsEvent;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
 
@@ -26,6 +28,7 @@ final class FoundationServiceProvider extends BaseServiceProvider
 
     protected array $payloads = [
         IamEvent::UserRegistered->value => UserRegisteredPayload::class,
+        NotificationsEvent::MailSent->value => MailSentPayload::class,
     ];
 
     /** Each of the three is a class named in config/auth.php, so another one is a line of configuration. */

@@ -10,10 +10,12 @@ WORKDIR /app
 COPY --from=distributable composer.json /modular-monolith/composer.json
 COPY --from=distributable src /modular-monolith/src
 COPY --from=distributable config /modular-monolith/config
-COPY --from=microservices composer.json /laravel-microservices/composer.json
-COPY --from=microservices src /laravel-microservices/src
-COPY --from=microservices config /laravel-microservices/config
-COPY --from=microservices database /laravel-microservices/database
+COPY --from=microservices packages/core/composer.json /laravel-microservices/packages/core/composer.json
+COPY --from=microservices packages/core/src /laravel-microservices/packages/core/src
+COPY --from=microservices packages/core/config /laravel-microservices/packages/core/config
+COPY --from=microservices packages/core/database /laravel-microservices/packages/core/database
+COPY --from=microservices packages/redis-event-stream/composer.json /laravel-microservices/packages/redis-event-stream/composer.json
+COPY --from=microservices packages/redis-event-stream/src /laravel-microservices/packages/redis-event-stream/src
 
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-reqs

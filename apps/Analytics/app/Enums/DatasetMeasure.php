@@ -10,12 +10,13 @@ use Illuminate\Support\Collection;
 enum DatasetMeasure: string
 {
     case SignupsCount = 'signups_count';
+    case MailsSentCount = 'mails_sent_count';
     case UsersTotal = 'users_total';
 
     public function nature(): MeasureNature
     {
         return match ($this) {
-            self::SignupsCount => MeasureNature::Flow,
+            self::SignupsCount, self::MailsSentCount => MeasureNature::Flow,
             self::UsersTotal => MeasureNature::State,
         };
     }

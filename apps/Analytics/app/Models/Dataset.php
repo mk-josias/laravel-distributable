@@ -8,19 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * The figures of one hour, computed from the signups by analytics:compute: every reading folds these rows.
+ * The figures of one hour, computed from the journals by analytics:compute: every reading folds these rows.
  *
  * @property Carbon $bucket
  * @property int $signups_count
+ * @property int $mails_sent_count
  * @property int $users_total
  */
 final class Dataset extends Model
 {
     protected $table = 'analytics_datasets';
 
+    protected $primaryKey = 'bucket';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     public $timestamps = false;
 
-    protected $fillable = ['bucket', 'signups_count', 'users_total'];
+    protected $fillable = ['bucket', 'signups_count', 'mails_sent_count', 'users_total'];
 
     /** @return array<string, string> */
     protected function casts(): array
@@ -28,6 +35,7 @@ final class Dataset extends Model
         return [
             'bucket' => 'datetime',
             'signups_count' => 'integer',
+            'mails_sent_count' => 'integer',
             'users_total' => 'integer',
         ];
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e14f17216a18c4e2f43ae2c2721cc177",
+    "content-hash": "2aef61ea96455f2973bd4f3db19a09e8",
     "packages": [
         {
             "name": "brick/math",
@@ -2601,7 +2601,7 @@
             "dist": {
                 "type": "path",
                 "url": "../modular-monolith",
-                "reference": "cce411b80d3633a9c5033358b61d972173166fdb"
+                "reference": "4543d1de89d3c22e3afa3362027f5b3ca8a4fe39"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
@@ -2612,6 +2612,8 @@
                 "larastan/larastan": "^3.10",
                 "laravel/octane": "^2.20",
                 "laravel/pint": "^1.0",
+                "mk-josias/queue-event-stream": "^0.1",
+                "mk-josias/redis-event-stream": "^0.1",
                 "orchestra/testbench": "^10.0 || ^11.0",
                 "pestphp/pest": "^3.0 || ^4.0"
             },
@@ -2681,21 +2683,16 @@
             "version": "0.1.0",
             "dist": {
                 "type": "path",
-                "url": "../laravel-microservices",
-                "reference": "fcaff186e8d271c89551ab7fd09ff16a44edc808"
+                "url": "../laravel-microservices/packages/core",
+                "reference": "655beea73764683fba9ec3002f5b8a1e3ae32f5b"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.4"
             },
-            "require-dev": {
-                "larastan/larastan": "^3.10",
-                "laravel/pint": "^1.0",
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.0 || ^4.0"
-            },
             "suggest": {
-                "ext-redis": "Required by the redis events transport (predis/predis works too)"
+                "mk-josias/queue-event-stream": "The queue events driver, for a stack without Redis",
+                "mk-josias/redis-event-stream": "The redis events driver, the default one"
             },
             "type": "library",
             "extra": {
@@ -2713,27 +2710,6 @@
                     "src/helpers.php"
                 ]
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Microservices\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "pest"
-                ],
-                "lint": [
-                    "pint"
-                ],
-                "analyse": [
-                    "phpstan analyse --memory-limit=1G"
-                ],
-                "check": [
-                    "pint --test",
-                    "@analyse",
-                    "@test"
-                ]
-            },
             "license": [
                 "MIT"
             ],
@@ -2749,8 +2725,56 @@
                 "laravel",
                 "microservices",
                 "outbox",
-                "redis-streams",
                 "rpc"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "mk-josias/redis-event-stream",
+            "version": "0.1.0",
+            "dist": {
+                "type": "path",
+                "url": "../laravel-microservices/packages/redis-event-stream",
+                "reference": "4307844f47297c930a833f603992ba402eeca348"
+            },
+            "require": {
+                "mk-josias/laravel-microservices": "self.version",
+                "php": "^8.4"
+            },
+            "suggest": {
+                "ext-redis": "PhpRedis client (predis/predis works too)"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "RedisEventStream\\RedisEventStreamServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RedisEventStream\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josias Mekontso",
+                    "email": "josiasmekontso.it@gmail.com"
+                }
+            ],
+            "description": "Redis Streams driver for the events of mk-josias/laravel-microservices: one ordered stream, a consumer group per service, failed entries retried before later ones.",
+            "keywords": [
+                "events",
+                "laravel",
+                "microservices",
+                "redis-streams"
             ],
             "transport-options": {
                 "symlink": true,
