@@ -16,7 +16,7 @@ use Microservices\Services\Shadows\ShadowRegistry;
 
 final class Doctor extends Command
 {
-    protected $signature = 'distributable:doctor';
+    protected $signature = 'modules:doctor';
 
     protected $description = 'Check that every module can run: declaration, provider, connections, remote hosts, boundaries.';
 

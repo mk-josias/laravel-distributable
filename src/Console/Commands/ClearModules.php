@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 final class ClearModules extends Command
 {
-    protected $signature = 'distributable:clear';
+    protected $signature = 'modules:clear';
 
     protected $description = 'Remove the modules cache file.';
 

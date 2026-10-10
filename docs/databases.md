@@ -23,7 +23,7 @@ Declare the connection where you prefer; the module has a database as soon as it
 |---|---|
 | the module's `config/database.php` | merged into `database.connections`; the module carries its own setup |
 | the root `config/database.php`, next to `sqlite` and `pgsql` | the same, with every connection in one file |
-| nowhere | the module has no database: its queries fail with `no_module`, and `distributable:doctor` reports any migration it has |
+| nowhere | the module has no database: its queries fail with `no_module`, and `modules:doctor` reports any migration it has |
 
 The connections can point to separate databases on one server, separate schemas of one database,
 separate servers, or sqlite files in tests. The code is the same in every case. Several modules can
@@ -92,7 +92,7 @@ and `within($module, $callback)` runs a callback in a module's context. Only the
 the module's own code may enter a module: when the code calling `within()` (directly, or through
 `Colocation::within()`) is another module's or the foundation's, it throws `ModuleException`,
 whatever names the module, a string, a variable or an enum. The check reads the caller's file
-from the call stack, so code that never runs is not checked, and `distributable:doctor` cannot see it.
+from the call stack, so code that never runs is not checked, and `modules:doctor` cannot see it.
 
 In tests, use `Distributable\Testing\ModuleAware`:
 
@@ -123,7 +123,7 @@ php artisan migrate | migrate:status | migrate:rollback | migrate:reset | migrat
 |---|---|
 | each local module's database, on its owner connection | the package's tables (`event_publications`, `event_consumptions`), `database/migrations`, the migrations other packages load, the module's `database/migrations` and the shadow migrations of the copies it keeps |
 
-A module without a database has no migrations: `distributable:doctor` reports one that does. The
+A module without a database has no migrations: `modules:doctor` reports one that does. The
 `database` drivers of the cache, the queue and the session have no database to use either, and
 the doctor reports them too: use `redis`, `file` or `array`.
 

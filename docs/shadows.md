@@ -29,7 +29,7 @@ protected array $shadows = [\Foundation\Iam\Shadows\UserShadow::class];
 
 A module lists the foundation's class as it is, or a subclass of its own that adds relations,
 casts or a `beforeSync()`. Each listed class is one table: two forms of one source need two
-`$table`s, and `distributable:doctor` reports two copies in one table.
+`$table`s, and `modules:doctor` reports two copies in one table.
 
 A copy is a model like the module's others: it reads and writes the database of the module
 running. The same `UserShadow` is analytics' copy inside analytics and notifications' inside
@@ -41,9 +41,9 @@ iam publishes the migration of the copy's table in `foundation/Iam/database/shad
 keeps a copy.
 
 ```bash
-php artisan microservices:shadows:want [--keepers=reports] [--sources=iam_users]   # on the keeping module
-php artisan microservices:shadows:announce iam_users [--keepers=reports]          # on the owner
+php artisan shadows:want [--keepers=reports] [--sources=iam_users]   # on the keeping module
+php artisan shadows:announce iam_users [--keepers=reports]          # on the owner
 ```
 
-`distributable:cache` records each module's shadow sources, so a process doesn't scan the module
+`modules:cache` records each module's shadow sources, so a process doesn't scan the module
 folders for them at boot.

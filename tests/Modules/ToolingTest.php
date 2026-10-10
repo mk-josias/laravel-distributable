@@ -20,7 +20,7 @@ it('installs the config, the modules directory and the foundation provider, then
     config()->set('modules.paths.foundation', $root.'/foundation');
 
     try {
-        $this->artisan('distributable:install')->assertSuccessful();
+        $this->artisan('modules:install')->assertSuccessful();
 
         expect(is_file($root.'/config/modules.php'))->toBeTrue()
             ->and(is_dir($root.'/apps'))->toBeTrue()
@@ -28,7 +28,7 @@ it('installs the config, the modules directory and the foundation provider, then
             ->toContain('namespace Foundation;')
             ->toContain('final class FoundationServiceProvider extends BaseServiceProvider');
 
-        $this->artisan('distributable:make-module billing')->assertSuccessful();
+        $this->artisan('modules:make billing')->assertSuccessful();
 
         expect((require $root.'/config/modules.php')['declared'])->toHaveKey('billing');
     } finally {
@@ -45,7 +45,7 @@ it('creates a module, its provider and its foundation directory, and declares it
     config()->set('modules.paths.foundation', $root.'/foundation');
 
     try {
-        $this->artisan('distributable:make-module point_of_sale --database')->assertSuccessful();
+        $this->artisan('modules:make point_of_sale --database')->assertSuccessful();
 
         expect(file_get_contents($root.'/apps/PointOfSale/app/Providers/PointOfSaleServiceProvider.php'))
             ->toContain('namespace Apps\PointOfSale\Providers;')
@@ -55,7 +55,7 @@ it('creates a module, its provider and its foundation directory, and declares it
             ->and(is_dir($root.'/foundation/PointOfSale/Contracts'))->toBeTrue()
             ->and((require $root.'/config/modules.php')['declared'])->toBe(['point_of_sale' => []]);
 
-        $this->artisan('distributable:make-module point_of_sale')->assertFailed();
+        $this->artisan('modules:make point_of_sale')->assertFailed();
     } finally {
         File::deleteDirectory($root);
     }
@@ -72,7 +72,7 @@ it('adds the module and the foundation to composer.json for the tools that read 
     config()->set('modules.paths.foundation', 'foundation');
 
     try {
-        $this->artisan('distributable:make-module billing')->expectsOutputToContain('Added to composer.json')->assertSuccessful();
+        $this->artisan('modules:make billing')->expectsOutputToContain('Added to composer.json')->assertSuccessful();
 
         $composer = json_decode((string) file_get_contents($root.'/composer.json'), true);
 
@@ -106,12 +106,12 @@ it('deletes a module: its folder, its foundation folder, its declaration and its
     config()->set('modules.paths.foundation', 'foundation');
 
     try {
-        $this->artisan('distributable:make-module billing')->assertSuccessful();
-        $this->artisan('distributable:make-module shipping')->assertSuccessful();
+        $this->artisan('modules:make billing')->assertSuccessful();
+        $this->artisan('modules:make shipping')->assertSuccessful();
         config()->set('modules.declared', ['billing' => [], 'shipping' => []]);
         $this->app->forgetInstance(ModuleRegistry::class);
 
-        $this->artisan('distributable:delete-module billing --force')->assertSuccessful();
+        $this->artisan('modules:delete billing --force')->assertSuccessful();
 
         $composer = json_decode((string) file_get_contents($root.'/composer.json'), true);
 
@@ -131,7 +131,7 @@ it('deletes a module: its folder, its foundation folder, its declaration and its
 it('lists every module and where it runs', function () {
     config()->set('modules.declared.iam', []);
 
-    $this->artisan('distributable:list')
+    $this->artisan('modules:list')
         ->expectsTable(['Module', 'Namespace', 'Runs here', 'Database', 'Remote host'], [
             ['analytics', 'Apps\Analytics', 'yes', 'analytics', '—'],
             ['gateway', 'Apps\Gateway', 'yes', '—', '—'],
@@ -144,7 +144,7 @@ it('fails on a module whose provider does not exist, and names it', function () 
     config()->set('modules.declared.ghost', []);
     $this->app->forgetInstance(ModuleRegistry::class);
 
-    $this->artisan('distributable:doctor')
+    $this->artisan('modules:doctor')
         ->expectsOutputToContain('[ghost] provider Apps\Ghost\Providers\GhostServiceProvider does not exist.')
         ->assertFailed();
 });
@@ -153,7 +153,7 @@ it('fails on a module folder that modules.declared does not declare', function (
     config()->set('modules.declared', ['analytics' => [], 'iam' => []]);
     $this->app->forgetInstance(ModuleRegistry::class);
 
-    $this->artisan('distributable:doctor')
+    $this->artisan('modules:doctor')
         ->expectsOutputToContain('/Gateway] is not declared in modules.declared.')
         ->assertFailed();
 });
@@ -161,7 +161,7 @@ it('fails on a module folder that modules.declared does not declare', function (
 it('fails when modules serve RPC contracts and no secret signs the calls', function () {
     config()->set('microservices.rpc.secret', '');
 
-    $this->artisan('distributable:doctor')
+    $this->artisan('modules:doctor')
         ->expectsOutputToContain('microservices.rpc.secret is empty')
         ->assertFailed();
 });
@@ -171,7 +171,7 @@ it('fails on two modules setting one new config key to different values, and lea
     file_put_contents($file, "<?php\n\nreturn ['flag' => false, 'items' => ['from-analytics'], 'nested' => ['override' => 'analytics']];\n");
 
     try {
-        $this->artisan('distributable:doctor')
+        $this->artisan('modules:doctor')
             ->expectsOutputToContain('Modules [analytics, iam] set config [iam.flag] to different values')
             ->doesntExpectOutputToContain('[iam.items')
             ->doesntExpectOutputToContain('[iam.nested.override]')
@@ -184,7 +184,7 @@ it('fails on two modules setting one new config key to different values, and lea
 it('fails on a cache, queue or session kept in a database no module owns', function () {
     config()->set('queue.default', 'database');
 
-    $this->artisan('distributable:doctor')
+    $this->artisan('modules:doctor')
         ->expectsOutputToContain('[queue.default] is the database driver')
         ->assertFailed();
 });
@@ -194,7 +194,7 @@ it('fails on a module with migrations and no database to run them in', function 
     mkdir($migrations, 0755, true);
 
     try {
-        $this->artisan('distributable:doctor')
+        $this->artisan('modules:doctor')
             ->expectsOutputToContain('[gateway] has migrations but no database')
             ->assertFailed();
     } finally {
@@ -206,11 +206,11 @@ it('fails on a module with migrations and no database to run them in', function 
 it('fails on a module keeping two copies in one table', function () {
     config()->set('microservices.shadows.analytics', [UserShadow::class, IamUserShadow::class]);
 
-    $this->artisan('distributable:doctor')
+    $this->artisan('modules:doctor')
         ->expectsOutputToContain('[analytics] keeps two copies in table [iam_users]')
         ->assertFailed();
 });
 
 it('passes once every module can run', function () {
-    $this->artisan('distributable:doctor')->expectsOutputToContain('Every module can run.')->assertSuccessful();
+    $this->artisan('modules:doctor')->expectsOutputToContain('Every module can run.')->assertSuccessful();
 });

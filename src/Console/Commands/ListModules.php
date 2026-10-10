@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 
 final class ListModules extends Command
 {
-    protected $signature = 'distributable:list';
+    protected $signature = 'modules:list';
 
     protected $description = 'List the modules, and where each one runs.';
 

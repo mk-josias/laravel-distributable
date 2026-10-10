@@ -13,16 +13,16 @@ another. The package sets up what is missing:
   because the package switches Laravel's default connection as the code moves from one module to
   another.
 - **Boundaries that hold.** A module that imports another module's class, or names its tables,
-  is reported by `distributable:doctor` and fails your test suite, before it is deployed.
+  is reported by `modules:doctor` and fails your test suite, before it is deployed.
 - **The same behaviour together or apart.** Events go through a stream and calls through a
   contract in both setups, so moving a module to its own process is a change of `RUN_MODULES`.
-- **An image per module.** `distributable:purge` removes from an image the code of the modules it
-  doesn't run, and `distributable:unused-packages` the Composer packages only they required.
+- **An image per module.** `modules:purge` removes from an image the code of the modules it
+  doesn't run, and `modules:unused-packages` the Composer packages only they required.
 
 ```bash
 composer require mk-josias/laravel-distributable-modules
-php artisan distributable:install                      # config/modules.php, apps/, foundation/FoundationServiceProvider.php
-php artisan distributable:make-module iam --database   # apps/Iam and foundation/Iam, declared in config/modules.php
+php artisan modules:install                      # config/modules.php, apps/, foundation/FoundationServiceProvider.php
+php artisan modules:make iam --database   # apps/Iam and foundation/Iam, declared in config/modules.php
 ```
 
 [laravel-skeleton](https://github.com/mk-josias/laravel-skeleton) is the example
@@ -47,7 +47,7 @@ The rest of the documentation is in `docs/`:
 
 | | |
 |---|---|
-| [Modules](docs/modules.md) | declaring a module, generating code in it, conventions, `distributable:doctor` |
+| [Modules](docs/modules.md) | declaring a module, generating code in it, conventions, `modules:doctor` |
 | [Each module's data](docs/databases.md) | connections, the module context, migrations, queued jobs |
 | [Events](docs/events.md) | what a module adds to laravel-microservices' events: its handlers, its outbox, its consumer |
 | [Calls between modules (RPC)](docs/rpc.md) | contracts and `RpcService` in the foundation, the direct call in one process |
@@ -172,9 +172,9 @@ while it shares a process with the others.
 | owns its data | its own connection; naming another module's tables or connection is reported |
 | exposes only a contract | another module's classes can't be loaded where that module doesn't run, and importing them is reported |
 | talks through messages | events on a stream, or signed RPC calls on a contract, whether the modules share a process or not |
-| is deployed on its own | `RUN_MODULES` picks the modules a process runs; `distributable:purge` removes the others' code from its image |
+| is deployed on its own | `RUN_MODULES` picks the modules a process runs; `modules:purge` removes the others' code from its image |
 
-`distributable:doctor` and `Boundaries` check all of this in CI, so a module that would not survive
+`modules:doctor` and `Boundaries` check all of this in CI, so a module that would not survive
 being moved to its own service fails before it is deployed.
 
 ### What the package includes
@@ -214,7 +214,7 @@ does, so you know where a package's data ends up:
 | While a module's code runs, `database.default` is that module's connection | `ModuleContext` | A package that uses the default connection (a media library, an activity log, permissions) stores its rows in the database of the module that calls it, so each module has its own. Its tables are there because its migrations run in every module database. A package that should keep one store for the whole application (Telescope, Pulse) belongs to one module, whose connection it is given in its own config file. |
 | `migrate`, `migrate:status`, `migrate:rollback`, `migrate:reset`, `migrate:refresh` and `migrate:fresh` run once per database | `DistributableServiceProvider::registerModuleMigrations()` | A package's migrations, loaded with `loadMigrationsFrom()` or published to `database/migrations`, run in each database with nothing to configure. With an explicit `--database` or `--path`, the commands behave exactly as Laravel's. A package that replaces these same commands would overlap with this, which is rare; the one registered last is used. |
 | Failed jobs and job batches are stored per module, with the `database` drivers | `registerQueueDatabases()` | They go to the database of the module owning the job. Other drivers (Horizon, `file`, DynamoDB) are untouched. |
-| Outside a module, the default connection is `no_module`, which throws on every query | `register()`, `ModuleContext` | Every database belongs to a module. A package that queries the default connection outside a module fails loudly; the `database` cache, queue and session drivers have nowhere to go, and `distributable:doctor` reports them. |
+| Outside a module, the default connection is `no_module`, which throws on every query | `register()`, `ModuleContext` | Every database belongs to a module. A package that queries the default connection outside a module fails loudly; the `database` cache, queue and session drivers have nowhere to go, and `modules:doctor` reports them. |
 | `DeferredCallbackCollection`, the Concurrency `process` driver, Octane's `DispatchesTasks` | `carryTheModuleIntoDeferredWork()` | Work started in a module keeps its module. A package rebinding one of them removes that, for its own work. |
 | Module providers register on `booting`, after every package provider | `registerLocalModuleProviders()` | A module can override what a package binds. |
 | `Factory::guessFactoryNamesUsing()` and `guessModelNamesUsing()` | `Support\ModuleFactories::register()` | A module model finds its factory in the module; any other class keeps Laravel's rule. A package or an application that sets its own resolver replaces this one, and can delegate to `ModuleFactories`. |
@@ -253,7 +253,7 @@ under one cache key, such as spatie/laravel-permission: keep it in one module.
 | Data | one shared database | one datasource | each module owns its data, on its own connection |
 | Between modules | direct calls | events and outbox | event stream with an ordered outbox, and RPC |
 | Moving a module to its own service | rewrite | new application | `RUN_MODULES` |
-| The image of one module | the whole codebase | the whole application | only that module's code (`distributable:purge`) |
+| The image of one module | the whole codebase | the whole application | only that module's code (`modules:purge`) |
 
 ### Out of scope
 
@@ -348,7 +348,7 @@ protected array $handlers = ['iam.user.registered' => [RecordSignup::class]];
 ```
 
 ```bash
-php artisan microservices:events:consume --module=analytics
+php artisan stream:consume --module=analytics
 ```
 
 This event is version 1. When the shape of a payload changes, the event declares a new version and
@@ -358,7 +358,7 @@ how to read the old ones, so events already in the stream stay readable: see
 Then check that every module could run apart:
 
 ```bash
-php artisan distributable:doctor
+php artisan modules:doctor
 ```
 
 ```

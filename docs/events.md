@@ -30,8 +30,8 @@ protected array $payloads = ['iam.user.registered' => UserRegisteredPayload::cla
 `--module` on any command runs it in that module, so it names the consuming or publishing module:
 
 ```bash
-php artisan microservices:events:consume --module=analytics   # one consumer per module and stream
-php artisan microservices:events:publish                      # every local module's outbox; --module=iam for one
+php artisan stream:consume --module=analytics   # one consumer per module and stream
+php artisan stream:publish                      # every local module's outbox; --module=iam for one
 ```
 
 Run one consumer per module: two would break the order it reads in. Run one publisher per module

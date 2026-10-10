@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 final class Install extends Command
 {
-    protected $signature = 'distributable:install';
+    protected $signature = 'modules:install';
 
     protected $description = 'Publish config/modules.php and create the modules and foundation directories.';
 
@@ -47,7 +47,7 @@ final class Install extends Command
 
         $autoload->add($autoload->foundationEntries());
 
-        $this->components->info('Laravel Distributable is installed. Next: php artisan distributable:make-module <name> [--database]');
+        $this->components->info('Laravel Distributable is installed. Next: php artisan modules:make <name> [--database]');
 
         return self::SUCCESS;
     }

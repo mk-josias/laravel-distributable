@@ -13,7 +13,7 @@ use Illuminate\Filesystem\Filesystem;
 
 final class DeleteModule extends Command
 {
-    protected $signature = 'distributable:delete-module
+    protected $signature = 'modules:delete
         {name : The module to delete}
         {--force : Do not ask for confirmation}';
 
@@ -35,7 +35,7 @@ final class DeleteModule extends Command
         $autoload->remove($entries);
         $this->undeclare($module);
 
-        $this->components->info("Module [{$module->name}] deleted. Run distributable:doctor: other modules may still use what it shared.");
+        $this->components->info("Module [{$module->name}] deleted. Run modules:doctor: other modules may still use what it shared.");
 
         return self::SUCCESS;
     }

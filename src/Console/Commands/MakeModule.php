@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 
 final class MakeModule extends Command
 {
-    protected $signature = 'distributable:make-module
+    protected $signature = 'modules:make
         {name : The module name, snake_case (e.g. point_of_sale)}
         {--database : Give the module its own database connections}';
 

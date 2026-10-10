@@ -9,7 +9,7 @@ uses(WithoutIamTestCase::class);
 it('fails on a module running elsewhere that serves a contract but has no host', function () {
     config()->set('modules.declared.iam', []);
 
-    $this->artisan('distributable:doctor')
+    $this->artisan('modules:doctor')
         ->expectsOutputToContain('[iam] runs elsewhere and serves Foundation\Iam\Contracts\IamService')
         ->assertFailed();
 });

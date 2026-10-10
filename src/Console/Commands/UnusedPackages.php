@@ -7,10 +7,10 @@ namespace Distributable\Console\Commands;
 use Distributable\Services\Modules\ModuleRegistry;
 use Illuminate\Console\Command;
 
-/** Run before distributable:purge, which deletes the files this reads: the output goes to `composer update`, which removes those packages only. */
+/** Run before modules:purge, which deletes the files this reads: the output goes to `composer update`, which removes those packages only. */
 final class UnusedPackages extends Command
 {
-    protected $signature = 'distributable:unused-packages';
+    protected $signature = 'modules:unused-packages';
 
     protected $description = 'List the Composer packages only the modules this process does not run (RUN_MODULES) require.';
 

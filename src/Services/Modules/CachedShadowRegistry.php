@@ -7,7 +7,7 @@ namespace Distributable\Services\Modules;
 use Microservices\Contracts\Colocation;
 use Microservices\Services\Shadows\ShadowRegistry;
 
-/** The shadow sources of each module, read from distributable:cache when it ran, scanned otherwise; copies come from each module's $shadows. */
+/** The shadow sources of each module, read from modules:cache when it ran, scanned otherwise; copies come from each module's $shadows. */
 final class CachedShadowRegistry extends ShadowRegistry
 {
     public function __construct(Colocation $colocation, private readonly DiscoveryCache $cache)

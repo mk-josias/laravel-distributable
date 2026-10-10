@@ -310,7 +310,7 @@ final class DistributableServiceProvider extends BaseServiceProvider
             Route::get($statusRoute, StatusController::class)->name('distributable.status');
         }
 
-        $this->optimizes(optimize: 'distributable:cache', clear: 'distributable:clear', key: 'distributable');
+        $this->optimizes(optimize: 'modules:cache', clear: 'modules:clear', key: 'distributable');
 
         if ($this->app->runningInConsole()) {
             Event::listen(CommandStarting::class, fn (CommandStarting $event) => $this->app->make(ModuleGenerators::class)->starting($event));

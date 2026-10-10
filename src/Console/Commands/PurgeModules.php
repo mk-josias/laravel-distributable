@@ -11,7 +11,7 @@ use Illuminate\Filesystem\Filesystem;
 /** For an image that runs only some modules: config/modules.php still declares the others. */
 final class PurgeModules extends Command
 {
-    protected $signature = 'distributable:purge {--force : Skip the confirmation}';
+    protected $signature = 'modules:purge {--force : Skip the confirmation}';
 
     protected $description = 'Delete the folder of every module this process does not run (RUN_MODULES).';
 

@@ -24,18 +24,18 @@ folder can't tell, such as the URL of a module that runs elsewhere:
 | database | yes, because `apps/Iam/config/database.php` exists |
 
 ```bash
-php artisan distributable:make-module point_of_sale [--database]   # creates apps/PointOfSale and foundation/PointOfSale, and declares it
-php artisan distributable:delete-module point_of_sale [--force]    # deletes its folders, its declaration and its composer.json entries; its database is left as it is
-php artisan distributable:list                                     # lists the modules, where they run, their database and host
-php artisan distributable:purge                                    # deletes the folder of the modules this process doesn't run
-php artisan distributable:doctor                                   # checks that the modules can run, see "Checking the application"
+php artisan modules:make point_of_sale [--database]   # creates apps/PointOfSale and foundation/PointOfSale, and declares it
+php artisan modules:delete point_of_sale [--force]    # deletes its folders, its declaration and its composer.json entries; its database is left as it is
+php artisan modules:list                                     # lists the modules, where they run, their database and host
+php artisan modules:purge                                    # deletes the folder of the modules this process doesn't run
+php artisan modules:doctor                                   # checks that the modules can run, see "Checking the application"
 ```
 
-`distributable:make-module` also adds the module and the foundation to the `autoload.psr-4` of your
+`modules:make` also adds the module and the foundation to the `autoload.psr-4` of your
 `composer.json`, and the module's tests to `autoload-dev`. The application doesn't read those entries: they are for the tools that read
 `composer.json` without booting Laravel, such as your IDE. They follow `paths.modules` and
-`namespaces.modules`; if you change these later, `distributable:doctor` reports the entries gone stale.
-A module outside the project gets none. `distributable:purge` can delete a module the entries name:
+`namespaces.modules`; if you change these later, `modules:doctor` reports the entries gone stale.
+A module outside the project gets none. `modules:purge` can delete a module the entries name:
 Composer accepts an entry whose folder is gone.
 
 ## Generating code in a module
@@ -121,7 +121,7 @@ package reads everything from the folder and the namespace, so there is nothing 
 | The foundation's provider | | `{namespaces.foundation}\FoundationServiceProvider` |
 
 These conventions are what the features are built on. Because the folder says everything, a module
-is found without being registered, `distributable:purge` can delete a whole folder, `Boundaries` knows
+is found without being registered, `modules:purge` can delete a whole folder, `Boundaries` knows
 which module owns a file, and an RPC service knows which module it calls. With a setting for each,
 those guarantees would depend on configuration that every process must get right.
 
@@ -136,9 +136,9 @@ RUN_MODULES=transactions,analytics  # only these
 module and `local()` the ones this process runs. `get($name)` throws on an unknown name, and
 `forClass($class)` returns the module a class belongs to, based on its namespace.
 
-In production, `php artisan optimize` runs `distributable:cache`, which writes what the module folders
+In production, `php artisan optimize` runs `modules:cache`, which writes what the module folders
 tell (namespaces, databases and shadow sources) to `bootstrap/cache/distributable.php`, and the
-application reads that file instead of the folders. `optimize:clear` (or `distributable:clear`) deletes
+application reads that file instead of the folders. `optimize:clear` (or `modules:clear`) deletes
 it. The cache never decides which modules exist: `modules.declared` does.
 
 ## Modules this process doesn't run
@@ -158,7 +158,7 @@ their events, and calls them through the RPC services of the foundation.
 When you build an image for some modules only, you can delete the folders of the others:
 
 ```bash
-RUN_MODULES=analytics php artisan distributable:purge --force
+RUN_MODULES=analytics php artisan modules:purge --force
 ```
 
 Run it in your Dockerfile, after copying the code and before `composer dump-autoload`. Starting an
@@ -181,13 +181,13 @@ There is still one `composer.lock` and one `vendor/`.
 ```
 
 An image built for some modules can then leave out what only the others require.
-`distributable:unused-packages` prints those packages. Run it before `distributable:purge`, which deletes the
+`modules:unused-packages` prints those packages. Run it before `modules:purge`, which deletes the
 files it reads, and name the packages to Composer so that it removes them and changes no other
 version:
 
 ```bash
-UNUSED="$(RUN_MODULES=analytics php artisan distributable:unused-packages)"   # spatie/laravel-permission
-RUN_MODULES=analytics php artisan distributable:purge --force
+UNUSED="$(RUN_MODULES=analytics php artisan modules:unused-packages)"   # spatie/laravel-permission
+RUN_MODULES=analytics php artisan modules:purge --force
 [ -z "$UNUSED" ] || { composer update $UNUSED --no-dev --no-scripts; rm -f bootstrap/cache/packages.php bootstrap/cache/services.php; }
 composer dump-autoload --optimize --no-dev
 ```
@@ -223,7 +223,7 @@ How the config merge works, and what it can't do:
 | a list (`['a', 'b']`) | gains the items it lacks; a module can't remove or replace an item, so set the whole list in the root config |
 | any other array, integer keys included (`[404 => …]`) | merged key by key |
 | a scalar the root config already sets (`cache.prefix`, a mailer, a disk root) | the module's own value: applied while its code runs, the root one back outside it. Two modules in one process each keep theirs. A service built once and kept (a resolved cache store, a mailer) holds the value it was built with, unless it is listed in `modules.per_module` (`['cache', 'cache.store', 'mail.manager', 'mailer', 'filesystem']`, or a package's service): each module then gets its own instance, built once with its config and swapped in as it runs. An object that received the service in its constructor keeps the instance it was given. |
-| a scalar the root config doesn't set, that two local modules set differently | the module registered last wins in one process, while each keeps its own once they run apart: `distributable:doctor` reports it |
+| a scalar the root config doesn't set, that two local modules set differently | the module registered last wins in one process, while each keeps its own once they run apart: `modules:doctor` reports it |
 | when it runs | as the module's provider registers, after every package provider: a package reading its config in its own `register()` doesn't see the module's values |
 | its scope | the whole process: a module overriding a package's config changes it for every module running there |
 
@@ -263,11 +263,11 @@ The package checks this rule for you, see [Checking the application](#checking-t
 The package has two checks. Both report the same boundary violations, but they are meant for
 different moments.
 
-`distributable:doctor` checks that the modules can run with the current configuration. Run it when
+`modules:doctor` checks that the modules can run with the current configuration. Run it when
 you deploy, or in CI with the production environment:
 
 ```bash
-php artisan distributable:doctor
+php artisan modules:doctor
 ```
 
 | It reports | Example |

@@ -14,7 +14,7 @@ use Microservices\Services\Shadows\ShadowRegistry;
 /** Run on deploy (php artisan optimize runs it): what the module folders tell is read from a file. */
 final class CacheModules extends Command
 {
-    protected $signature = 'distributable:cache';
+    protected $signature = 'modules:cache';
 
     protected $description = 'Cache what the module folders tell: namespaces, databases and shadow sources.';
 

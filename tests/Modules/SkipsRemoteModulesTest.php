@@ -44,7 +44,7 @@ it('deletes the folder of the modules this process does not run, which config st
     expect($this->app->make(ModuleRegistry::class)->get('iam')->path())->toBe($root.'/Iam');
 
     try {
-        $this->artisan('distributable:purge --force')->expectsOutput('→ analytics purged')->expectsOutput('→ iam purged')->assertSuccessful();
+        $this->artisan('modules:purge --force')->expectsOutput('→ analytics purged')->expectsOutput('→ iam purged')->assertSuccessful();
 
         $this->app->forgetInstance(ModuleRegistry::class);
 
@@ -67,7 +67,7 @@ it('lists the packages only the modules running elsewhere require', function () 
     File::put($root.'/Gateway/composer.json', json_encode(['require' => ['acme/shared' => '^1.0', 'acme/only-gateway' => '^1.0']]));
 
     try {
-        $this->artisan('distributable:unused-packages')->expectsOutput('acme/only-iam')->assertSuccessful();
+        $this->artisan('modules:unused-packages')->expectsOutput('acme/only-iam')->assertSuccessful();
     } finally {
         File::deleteDirectory($root);
     }

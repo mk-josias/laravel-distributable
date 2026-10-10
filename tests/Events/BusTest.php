@@ -37,7 +37,7 @@ it('delivers an emitted event to the listening handlers once the stream is consu
 
     expect($this->app->make(Recorder::class)->records)->toBe([]);
 
-    $this->artisan('microservices:events:consume --module=iam')->assertSuccessful();
+    $this->artisan('stream:consume --module=iam')->assertSuccessful();
 
     expect($this->app->make(Recorder::class)->records)
         ->toBe([['iam.user.registered', ['id' => 5, 'name' => 'lamp']]]);
@@ -54,7 +54,7 @@ it('hands a module an event in a test, without the emitter or the stream', funct
 
 it('ignores an event nobody listens to', function () {
     $this->app->make(Bus::class)->emit(new UserIgnored(5));
-    $this->artisan('microservices:events:consume --module=iam')->assertSuccessful();
+    $this->artisan('stream:consume --module=iam')->assertSuccessful();
 
     expect($this->app->make(Recorder::class)->records)->toBe([]);
 });
@@ -63,7 +63,7 @@ it('drops every event on the null transport', function () {
     Config::set('microservices.events.streams.default.driver', 'null');
 
     $this->app->make(Bus::class)->emit(new UserRegistered(5, 'lamp'));
-    $this->artisan('microservices:events:consume --module=iam')->assertSuccessful();
+    $this->artisan('stream:consume --module=iam')->assertSuccessful();
 
     expect($this->app->make(Recorder::class)->records)->toBe([]);
 });
