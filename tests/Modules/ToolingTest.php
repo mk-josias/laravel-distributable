@@ -50,6 +50,7 @@ it('creates a module, its provider and its foundation directory, and declares it
         expect(file_get_contents($root.'/apps/PointOfSale/app/Providers/PointOfSaleServiceProvider.php'))
             ->toContain('namespace Apps\PointOfSale\Providers;')
             ->toContain('final class PointOfSaleServiceProvider extends ServiceProvider {}')
+            ->and(file_get_contents($root.'/apps/PointOfSale/bootstrap/providers.php'))->toContain('Apps\PointOfSale\Providers\PointOfSaleServiceProvider::class')
             ->and(is_file($root.'/apps/PointOfSale/routes/api.php'))->toBeTrue()
             ->and(file_get_contents($root.'/apps/PointOfSale/config/database.php'))->toContain("'point_of_sale_owner'")
             ->and(is_dir($root.'/foundation/PointOfSale/Contracts'))->toBeTrue()
@@ -140,13 +141,29 @@ it('lists every module and where it runs', function () {
         ->assertSuccessful();
 });
 
-it('fails on a module whose provider does not exist, and names it', function () {
+it('fails on a module with no bootstrap/providers.php, and names it', function () {
     config()->set('modules.declared.ghost', []);
     $this->app->forgetInstance(ModuleRegistry::class);
 
     $this->artisan('modules:doctor')
-        ->expectsOutputToContain('[ghost] provider Apps\Ghost\Providers\GhostServiceProvider does not exist.')
+        ->expectsOutputToContain('[ghost] '.config('modules.paths.modules').'/Ghost/bootstrap/providers.php does not exist.')
         ->assertFailed();
+});
+
+it('fails on a provider that bootstrap/providers.php lists and that does not exist, and names it', function () {
+    $file = config('modules.paths.modules').'/Ghost/bootstrap/providers.php';
+    File::ensureDirectoryExists(dirname($file));
+    File::put($file, "<?php\n\nreturn ['Apps\\Ghost\\Providers\\GhostServiceProvider'];\n");
+    config()->set('modules.declared.ghost', []);
+    $this->app->forgetInstance(ModuleRegistry::class);
+
+    try {
+        $this->artisan('modules:doctor')
+            ->expectsOutputToContain('[ghost] provider Apps\Ghost\Providers\GhostServiceProvider does not exist.')
+            ->assertFailed();
+    } finally {
+        File::deleteDirectory(dirname($file, 2));
+    }
 });
 
 it('fails on a module folder that modules.declared does not declare', function () {

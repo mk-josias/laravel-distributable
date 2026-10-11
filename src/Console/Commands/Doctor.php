@@ -34,8 +34,14 @@ final class Doctor extends Command
         }
 
         foreach ($registry->local() as $module) {
-            if (! class_exists($module->provider)) {
-                $problems[] = "[{$module->name}] provider {$module->provider} does not exist.";
+            if (! is_file($module->providersFile())) {
+                $problems[] = "[{$module->name}] {$module->providersFile()} does not exist.";
+            }
+
+            foreach ($module->providers() as $provider) {
+                if (! class_exists($provider)) {
+                    $problems[] = "[{$module->name}] provider {$provider} does not exist.";
+                }
             }
 
             if ($module->hasDatabase && config("database.connections.{$module->connection()}") === null) {

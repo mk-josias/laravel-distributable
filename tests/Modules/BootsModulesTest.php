@@ -19,6 +19,10 @@ it('builds the registry from the configured source', function () {
         ->and($registry->get('gateway')->hasDatabase)->toBeFalse();
 });
 
+it('registers every provider a module lists in its bootstrap/providers.php', function () {
+    expect($this->app->make('gateway.tokens'))->toBe('registered');
+});
+
 it('answers which modules this process runs on the status route', function () {
     $this->get('/')->assertOk()->assertExactJson([
         'message' => 'Hello from laravel-distributable-modules',

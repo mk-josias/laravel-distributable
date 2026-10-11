@@ -244,8 +244,10 @@ final class DistributableServiceProvider extends BaseServiceProvider
             }
 
             // class_exists keeps the app bootable while a module's provider does not exist yet.
-            if (class_exists($module->provider)) {
-                $this->app->register($module->provider);
+            foreach ($module->providers() as $provider) {
+                if (class_exists($provider)) {
+                    $this->app->register($provider);
+                }
             }
         }
 

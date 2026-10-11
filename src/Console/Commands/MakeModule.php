@@ -43,6 +43,7 @@ final class MakeModule extends Command
                 final class {$providerClass} extends ServiceProvider {}
 
                 PHP,
+            'bootstrap/providers.php' => "<?php\n\nreturn [\n    {$module->provider}::class,\n];\n",
             'routes/api.php' => "<?php\n\ndeclare(strict_types=1);\n\nuse Illuminate\\Support\\Facades\\Route;\n",
         ];
 

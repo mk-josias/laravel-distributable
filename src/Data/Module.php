@@ -75,6 +75,21 @@ final readonly class Module
         return str_starts_with($this->path, DIRECTORY_SEPARATOR) ? $this->path : base_path($this->path);
     }
 
+    /**
+     * The providers its bootstrap/providers.php lists, as a Laravel application's.
+     *
+     * @return list<class-string>
+     */
+    public function providers(): array
+    {
+        return is_file($this->providersFile()) ? array_values(require $this->providersFile()) : [];
+    }
+
+    public function providersFile(): string
+    {
+        return $this->path().'/bootstrap/providers.php';
+    }
+
     /** The PSR-4 root of the module's classes: {module}/app maps to its namespace. */
     public function classPath(): string
     {

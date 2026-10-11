@@ -57,7 +57,7 @@ php artisan make:migration add_paid_at_to_invoices --module=billing
 | `make:config` | `{module}/config` |
 | `make:view`, `make:component`, and `--markdown` on `make:mail` and `make:notification` | `{module}/resources/views`; the class that renders the view names it with the module: `view('billing::components.alert')` |
 | `make:test`, and `--test` on the other generators | `{module}/tests/Feature` or `tests/Unit`, under `{Namespace}\Tests` |
-| `make:provider` | no `--module`: a module has one provider, and the package registers it |
+| `make:provider` | no `--module`: write it in `{module}/app/Providers` and list it in `{module}/bootstrap/providers.php` |
 
 A module's tests extend your `Tests\TestCase`. PHPUnit runs them once `phpunit.xml` lists them:
 
@@ -109,7 +109,7 @@ package reads everything from the folder and the namespace, so there is nothing 
 | Where the modules live | `paths.modules` (`apps`), `namespaces.modules` (`Apps`); a module's own folder there with `declared.{name}.module` | a module is `{paths.modules}/{Name}`, its name is `{Name}` in snake_case |
 | Where the foundation lives | `paths.foundation` (`foundation`), `namespaces.foundation` (`Foundation`); a module's own folder there with `declared.{name}.foundation` | what module `iam` shares is `{paths.foundation}/Iam`, under `Foundation\Iam\` |
 | A module's code | | `app/`, under `{namespaces.modules}\{Name}\` |
-| A module's provider | | `app/Providers/{Name}ServiceProvider.php` |
+| A module's providers | | in `app/Providers/`, listed in the module's own `bootstrap/providers.php`: Laravel's layout, read by the package and only where the module runs |
 | A module's database | | it has one exactly when a connection named `{name}` exists, declared in the module's `config/database.php` or the root one |
 | A module's config, routes, translations, migrations | | `config/*.php`, `routes/{surface}.php` (served under `{name}/{surface}`), `lang/`, `database/migrations/` |
 | A module's commands | | every `Illuminate\Console\Command` under `app/` |
