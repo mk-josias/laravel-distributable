@@ -6,6 +6,11 @@ compose_file="${1:?usage: tests/e2e/together-or-apart.sh docker-compose.mono.yml
 cd "$(dirname "$0")/../.."
 compose=(docker compose -f "$compose_file")
 
+# In the monorepo, the image takes the packages from their folders rather than from Packagist.
+if [[ -d ../packages/core ]]; then
+    export DISTRIBUTABLE_PACKAGES=../packages/core MICROSERVICES_PACKAGES=../../laravel-microservices/packages
+fi
+
 if [[ "$compose_file" == *mono* ]]; then
     iam="http://localhost:${APP_PORT:-8000}/iam/api/v1"
     analytics="http://localhost:${APP_PORT:-8000}/analytics/api/v1"

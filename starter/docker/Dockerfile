@@ -6,18 +6,9 @@ ARG RUN_MODULES=*
 
 WORKDIR /app
 
-# The packages, while they are required from a local path (see "repositories" in composer.json).
-COPY --from=distributable composer.json /packages/core/composer.json
-COPY --from=distributable src /packages/core/src
-COPY --from=distributable config /packages/core/config
-COPY --from=microservices packages/core/composer.json /laravel-microservices/packages/core/composer.json
-COPY --from=microservices packages/core/src /laravel-microservices/packages/core/src
-COPY --from=microservices packages/core/config /laravel-microservices/packages/core/config
-COPY --from=microservices packages/core/database /laravel-microservices/packages/core/database
-COPY --from=microservices packages/redis-stream/composer.json /laravel-microservices/packages/redis-stream/composer.json
-COPY --from=microservices packages/redis-stream/src /laravel-microservices/packages/redis-stream/src
-COPY --from=microservices packages/http-rpc/composer.json /laravel-microservices/packages/http-rpc/composer.json
-COPY --from=microservices packages/http-rpc/src /laravel-microservices/packages/http-rpc/src
+# The packages from a local path (see "repositories" in composer.json); empty outside the monorepo.
+COPY --from=distributable . /packages/core
+COPY --from=microservices . /laravel-microservices/packages
 
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-reqs

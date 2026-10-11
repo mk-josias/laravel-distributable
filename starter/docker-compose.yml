@@ -33,8 +33,8 @@ x-build: &build
   context: .
   dockerfile: docker/Dockerfile
   additional_contexts:
-    distributable: ../packages/core
-    microservices: ../../laravel-microservices
+    distributable: ${DISTRIBUTABLE_PACKAGES:-docker/no-packages}
+    microservices: ${MICROSERVICES_PACKAGES:-docker/no-packages}
 
 x-module: &module
   depends_on:
