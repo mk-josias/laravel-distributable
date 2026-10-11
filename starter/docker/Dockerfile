@@ -7,9 +7,9 @@ ARG RUN_MODULES=*
 WORKDIR /app
 
 # The packages, while they are required from a local path (see "repositories" in composer.json).
-COPY --from=distributable composer.json /modular-monolith/composer.json
-COPY --from=distributable src /modular-monolith/src
-COPY --from=distributable config /modular-monolith/config
+COPY --from=distributable composer.json /packages/core/composer.json
+COPY --from=distributable src /packages/core/src
+COPY --from=distributable config /packages/core/config
 COPY --from=microservices packages/core/composer.json /laravel-microservices/packages/core/composer.json
 COPY --from=microservices packages/core/src /laravel-microservices/packages/core/src
 COPY --from=microservices packages/core/config /laravel-microservices/packages/core/config
@@ -59,7 +59,7 @@ ENV RUN_MODULES=${RUN_MODULES} \
 
 WORKDIR /app
 
-COPY --from=vendor /modular-monolith /modular-monolith
+COPY --from=vendor /packages /packages
 COPY --from=vendor /laravel-microservices /laravel-microservices
 COPY --from=vendor /app /app
 

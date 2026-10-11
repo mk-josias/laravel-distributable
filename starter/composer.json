@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "mk-josias/laravel-skeleton",
+    "name": "mk-josias/laravel-distributable-modules-starter",
     "type": "project",
-    "description": "Application skeleton for laravel-distributable-modules: a modular monolith deployable as one process or as per-module services.",
-    "keywords": ["laravel", "modular-monolith", "distributable", "skeleton"],
+    "description": "Starter kit for laravel-distributable-modules: a modular monolith deployable as one process or as per-module services.",
+    "keywords": ["laravel", "modular-monolith", "distributable", "starter-kit"],
     "license": "MIT",
     "require": {
         "php": "^8.4",
@@ -119,9 +119,9 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": {
-        "framework": {
+        "distributable": {
             "type": "path",
-            "url": "../modular-monolith",
+            "url": "../packages/*",
             "options": {
                 "symlink": true,
                 "versions": {
@@ -131,31 +131,14 @@
         },
         "microservices": {
             "type": "path",
-            "url": "../laravel-microservices/packages/core",
+            "url": "../../laravel-microservices/packages/*",
             "options": {
                 "symlink": true,
                 "versions": {
-                    "mk-josias/laravel-microservices": "0.1.0"
-                }
-            }
-        },
-        "redis-stream": {
-            "type": "path",
-            "url": "../laravel-microservices/packages/redis-stream",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "mk-josias/laravel-microservices-redis-stream": "0.1.0"
-                }
-            }
-        },
-        "http-rpc": {
-            "type": "path",
-            "url": "../laravel-microservices/packages/http-rpc",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "mk-josias/laravel-microservices-http-rpc": "0.1.0"
+                    "mk-josias/laravel-microservices": "0.1.0",
+                    "mk-josias/laravel-microservices-http-rpc": "0.1.0",
+                    "mk-josias/laravel-microservices-redis-stream": "0.1.0",
+                    "mk-josias/laravel-microservices-queue-stream": "0.1.0"
                 }
             }
         }

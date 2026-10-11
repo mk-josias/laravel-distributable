@@ -34,8 +34,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       additional_contexts:
-        distributable: ../modular-monolith
-        microservices: ../laravel-microservices
+        distributable: ../packages/core
+        microservices: ../../laravel-microservices
     image: distributable-skeleton:mono
     environment:
       <<: *env
