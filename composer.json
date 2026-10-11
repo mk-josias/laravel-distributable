@@ -12,9 +12,9 @@
         "larastan/larastan": "^3.10",
         "laravel/octane": "^2.20",
         "laravel/pint": "^1.0",
-        "mk-josias/laravel-microservices-http-rpc": "^0.1",
-        "mk-josias/laravel-microservices-queue-stream": "^0.1",
-        "mk-josias/laravel-microservices-redis-stream": "^0.1",
+        "mk-josias/laravel-microservices-rpc-http": "^0.1",
+        "mk-josias/laravel-microservices-stream-queue": "^0.1",
+        "mk-josias/laravel-microservices-stream-redis": "^0.1",
         "orchestra/testbench": "^10.0 || ^11.0",
         "pestphp/pest": "^3.0 || ^4.0"
     },
@@ -29,33 +29,33 @@
                 }
             }
         },
-        "http-rpc": {
+        "rpc-http": {
             "type": "path",
-            "url": "../laravel-microservices/packages/http-rpc",
+            "url": "../laravel-microservices/packages/rpc-http",
             "options": {
                 "symlink": true,
                 "versions": {
-                    "mk-josias/laravel-microservices-http-rpc": "0.1.0"
+                    "mk-josias/laravel-microservices-rpc-http": "0.1.0"
                 }
             }
         },
-        "redis-stream": {
+        "stream-redis": {
             "type": "path",
-            "url": "../laravel-microservices/packages/redis-stream",
+            "url": "../laravel-microservices/packages/stream-redis",
             "options": {
                 "symlink": true,
                 "versions": {
-                    "mk-josias/laravel-microservices-redis-stream": "0.1.0"
+                    "mk-josias/laravel-microservices-stream-redis": "0.1.0"
                 }
             }
         },
-        "queue-stream": {
+        "stream-queue": {
             "type": "path",
-            "url": "../laravel-microservices/packages/queue-stream",
+            "url": "../laravel-microservices/packages/stream-queue",
             "options": {
                 "symlink": true,
                 "versions": {
-                    "mk-josias/laravel-microservices-queue-stream": "0.1.0"
+                    "mk-josias/laravel-microservices-stream-queue": "0.1.0"
                 }
             }
         }

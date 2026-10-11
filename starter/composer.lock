@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04672a5a0ce66029b6e981dc79f3d264",
+    "content-hash": "c8e300fbf9f64f4c351f5ae21368a5ff",
     "packages": [
         {
             "name": "brick/math",
@@ -2601,7 +2601,7 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/core",
-                "reference": "e2019886e9f967c9949746896ac30b2731b48c3d"
+                "reference": "5c1eb48e77dbaa64b43c1ac371c07b2285435f5e"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
@@ -2610,7 +2610,7 @@
             },
             "suggest": {
                 "laravel/octane": "High-throughput application server; the kernel also runs under plain FPM",
-                "mk-josias/laravel-microservices-http-rpc": "Calls to a module running in another process, over signed HTTP"
+                "mk-josias/laravel-microservices-rpc-http": "Calls to a module running in another process, over signed HTTP"
             },
             "type": "library",
             "extra": {
@@ -2655,16 +2655,16 @@
             "dist": {
                 "type": "path",
                 "url": "../../laravel-microservices/packages/core",
-                "reference": "98379c264168906fb2e8e1a7d07bf93c9c2257a4"
+                "reference": "67092bb7f354dbedd4f663525fb8d0691fd6eca0"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.4"
             },
             "suggest": {
-                "mk-josias/laravel-microservices-http-rpc": "The http RPC driver, signed calls between services",
-                "mk-josias/laravel-microservices-queue-stream": "The queue events driver, for a stack without Redis",
-                "mk-josias/laravel-microservices-redis-stream": "The redis events driver, on Redis Streams"
+                "mk-josias/laravel-microservices-rpc-http": "The http RPC driver, signed calls between services",
+                "mk-josias/laravel-microservices-stream-queue": "The queue events driver, for a stack without Redis",
+                "mk-josias/laravel-microservices-stream-redis": "The redis events driver, on Redis Streams"
             },
             "type": "library",
             "extra": {
@@ -2705,12 +2705,12 @@
             }
         },
         {
-            "name": "mk-josias/laravel-microservices-http-rpc",
+            "name": "mk-josias/laravel-microservices-rpc-http",
             "version": "0.1.0",
             "dist": {
                 "type": "path",
-                "url": "../../laravel-microservices/packages/http-rpc",
-                "reference": "8d074cd26d95edd3d1765391bdbb690957de05eb"
+                "url": "../../laravel-microservices/packages/rpc-http",
+                "reference": "2ce4e6e56718c2238e78b33ca75a93e3ae1b0f31"
             },
             "require": {
                 "mk-josias/laravel-microservices": "self.version",
@@ -2720,13 +2720,13 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "HttpRpc\\HttpRpcServiceProvider"
+                        "RpcHttp\\RpcHttpServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "HttpRpc\\": "src/"
+                    "RpcHttp\\": "src/"
                 }
             },
             "license": [
@@ -2751,12 +2751,12 @@
             }
         },
         {
-            "name": "mk-josias/laravel-microservices-redis-stream",
+            "name": "mk-josias/laravel-microservices-stream-redis",
             "version": "0.1.0",
             "dist": {
                 "type": "path",
-                "url": "../../laravel-microservices/packages/redis-stream",
-                "reference": "dd1e775a99d994e48dba2e673cae46148eb12658"
+                "url": "../../laravel-microservices/packages/stream-redis",
+                "reference": "c57b18c43c1a2daece6aca9a8c80426f48148919"
             },
             "require": {
                 "mk-josias/laravel-microservices": "self.version",
@@ -2769,13 +2769,13 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "RedisEventStream\\RedisEventStreamServiceProvider"
+                        "StreamRedis\\StreamRedisServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "RedisEventStream\\": "src/"
+                    "StreamRedis\\": "src/"
                 }
             },
             "license": [
@@ -2792,7 +2792,7 @@
                 "events",
                 "laravel",
                 "microservices",
-                "redis-streams"
+                "stream-rediss"
             ],
             "transport-options": {
                 "symlink": true,

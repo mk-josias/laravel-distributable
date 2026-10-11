@@ -5,9 +5,9 @@ namespace Apps\Analytics\Tests\Feature;
 use Foundation\Iam\Auth\GatewayTokens;
 use Foundation\Iam\Contracts\IamService;
 use Foundation\Iam\Services\IamRpcService;
-use HttpRpc\RpcSignature;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use RpcHttp\RpcSignature;
 use Tests\ModuleTestCase;
 
 /** Every read of iam is a signed HTTP call, under each token strategy. */
