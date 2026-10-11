@@ -8,22 +8,22 @@
         <testsuite name="Core">
             <directory>packages/core/tests</directory>
         </testsuite>
-        <testsuite name="HttpRpc">
-            <directory>packages/http-rpc/tests</directory>
+        <testsuite name="RpcHttp">
+            <directory>packages/rpc-http/tests</directory>
         </testsuite>
-        <testsuite name="RedisEventStream">
-            <directory>packages/redis-stream/tests</directory>
+        <testsuite name="StreamRedis">
+            <directory>packages/stream-redis/tests</directory>
         </testsuite>
-        <testsuite name="QueueEventStream">
-            <directory>packages/queue-stream/tests</directory>
+        <testsuite name="StreamQueue">
+            <directory>packages/stream-queue/tests</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>packages/core/src</directory>
-            <directory>packages/http-rpc/src</directory>
-            <directory>packages/redis-stream/src</directory>
-            <directory>packages/queue-stream/src</directory>
+            <directory>packages/rpc-http/src</directory>
+            <directory>packages/stream-redis/src</directory>
+            <directory>packages/stream-queue/src</directory>
         </include>
     </source>
 </phpunit>

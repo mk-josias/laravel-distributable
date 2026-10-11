@@ -13,9 +13,9 @@ parameters:
         - packages/core/database
         - packages/core/tests/Fixtures
         - packages/core/tests/TestCase.php
-        - packages/http-rpc/src
-        - packages/http-rpc/tests/TestCase.php
-        - packages/redis-stream/src
-        - packages/redis-stream/tests/TestCase.php
-        - packages/queue-stream/src
-        - packages/queue-stream/tests/TestCase.php
+        - packages/rpc-http/src
+        - packages/rpc-http/tests/TestCase.php
+        - packages/stream-redis/src
+        - packages/stream-redis/tests/TestCase.php
+        - packages/stream-queue/src
+        - packages/stream-queue/tests/TestCase.php

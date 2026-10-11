@@ -5,20 +5,20 @@
         "php": "^8.4",
         "example/foundation": "*",
         "laravel/framework": "^12.0 || ^13.0",
-        "mk-josias/laravel-microservices-http-rpc": "*",
+        "mk-josias/laravel-microservices-rpc-http": "*",
         "mk-josias/laravel-microservices": "*",
-        "mk-josias/laravel-microservices-redis-stream": "*"
+        "mk-josias/laravel-microservices-stream-redis": "*"
     },
     "repositories": {
-        "http-rpc": {
+        "rpc-http": {
             "type": "path",
-            "url": "../../packages/http-rpc",
-            "options": {"versions": {"mk-josias/laravel-microservices-http-rpc": "0.1.0"}}
+            "url": "../../packages/rpc-http",
+            "options": {"versions": {"mk-josias/laravel-microservices-rpc-http": "0.1.0"}}
         },
-        "redis-stream": {
+        "stream-redis": {
             "type": "path",
-            "url": "../../packages/redis-stream",
-            "options": {"versions": {"mk-josias/laravel-microservices-redis-stream": "0.1.0"}}
+            "url": "../../packages/stream-redis",
+            "options": {"versions": {"mk-josias/laravel-microservices-stream-redis": "0.1.0"}}
         },
         "foundation": {
             "type": "path",

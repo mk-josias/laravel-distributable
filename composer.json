@@ -16,9 +16,9 @@
     "autoload": {
         "psr-4": {
             "Microservices\\": "packages/core/src/",
-            "HttpRpc\\": "packages/http-rpc/src/",
-            "RedisEventStream\\": "packages/redis-stream/src/",
-            "QueueEventStream\\": "packages/queue-stream/src/"
+            "RpcHttp\\": "packages/rpc-http/src/",
+            "StreamRedis\\": "packages/stream-redis/src/",
+            "StreamQueue\\": "packages/stream-queue/src/"
         },
         "files": [
             "packages/core/src/helpers.php"
@@ -27,9 +27,9 @@
     "autoload-dev": {
         "psr-4": {
             "Microservices\\Tests\\": "packages/core/tests/",
-            "HttpRpc\\Tests\\": "packages/http-rpc/tests/",
-            "RedisEventStream\\Tests\\": "packages/redis-stream/tests/",
-            "QueueEventStream\\Tests\\": "packages/queue-stream/tests/"
+            "RpcHttp\\Tests\\": "packages/rpc-http/tests/",
+            "StreamRedis\\Tests\\": "packages/stream-redis/tests/",
+            "StreamQueue\\Tests\\": "packages/stream-queue/tests/"
         }
     },
     "scripts": {

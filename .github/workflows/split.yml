@@ -15,9 +15,9 @@ jobs:
       matrix:
         include:
           - { package: core, repository: laravel-microservices-core, key: SPLIT_KEY_CORE }
-          - { package: http-rpc, repository: laravel-microservices-http-rpc, key: SPLIT_KEY_HTTP_RPC }
-          - { package: redis-stream, repository: laravel-microservices-redis-stream, key: SPLIT_KEY_REDIS_EVENT_STREAM }
-          - { package: queue-stream, repository: laravel-microservices-queue-stream, key: SPLIT_KEY_QUEUE_EVENT_STREAM }
+          - { package: rpc-http, repository: laravel-microservices-rpc-http, key: SPLIT_KEY_HTTP_RPC }
+          - { package: stream-redis, repository: laravel-microservices-stream-redis, key: SPLIT_KEY_REDIS_EVENT_STREAM }
+          - { package: stream-queue, repository: laravel-microservices-stream-queue, key: SPLIT_KEY_QUEUE_EVENT_STREAM }
 
     steps:
       - uses: actions/checkout@v4
