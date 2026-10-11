@@ -121,7 +121,7 @@
     "repositories": {
         "distributable": {
             "type": "path",
-            "url": "../packages/*",
+            "url": "../{packages}/core",
             "options": {
                 "symlink": true,
                 "versions": {
@@ -131,7 +131,7 @@
         },
         "microservices": {
             "type": "path",
-            "url": "../../laravel-microservices/packages/*",
+            "url": "../../{laravel-microservices}/packages/*",
             "options": {
                 "symlink": true,
                 "versions": {
