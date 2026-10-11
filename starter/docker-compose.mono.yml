@@ -1,0 +1,89 @@
+# Every module in one container. Postgres holds one database per module; Redis carries the events.
+# Development values only: in production, set real secrets.
+
+x-env: &env
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: "base64:QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE="
+  APP_URL: "http://localhost:8000"
+  LOG_CHANNEL: stderr
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_USERNAME: distributable
+  DB_PASSWORD: distributable
+  DB_APP_USERNAME: distributable_app
+  DB_APP_PASSWORD: distributable_app
+  REDIS_HOST: redis
+  CACHE_STORE: redis
+  SESSION_DRIVER: array
+  QUEUE_CONNECTION: redis
+  MICROSERVICES_STREAM_DRIVER: redis
+  AUTH_TOKEN_VALIDATION_STRATEGY: rpc   # jwt needs AUTH_JWT_PUBLIC_KEY / AUTH_JWT_PRIVATE_KEY
+  BROADCAST_CONNECTION: reverb
+  REVERB_APP_ID: distributable
+  REVERB_APP_KEY: distributable-key
+  REVERB_APP_SECRET: distributable-secret
+  REVERB_HOST: localhost
+  REVERB_PORT: "8080"
+  REVERB_SCHEME: http
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      additional_contexts:
+        distributable: ../modular-monolith
+        microservices: ../laravel-microservices
+    image: distributable-skeleton:mono
+    environment:
+      <<: *env
+      RUN_MODULES: "*"
+      WITH_CONSUMERS: "iam,analytics,notifications"
+      WITH_SCHEDULER: "true"
+      WITH_WORKER: "true"
+      WITH_REVERB: "true"
+      SYNC_PERMISSIONS: "true"
+    ports:
+      - "${APP_PORT:-8000}:8000"
+      - "${REVERB_PUBLIC_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  postgres:
+    build: ./docker/postgres
+    image: distributable-postgres:local
+    environment:
+      POSTGRES_DB: distributable
+      POSTGRES_USER: distributable
+      POSTGRES_PASSWORD: distributable
+      DB_APP_PASSWORD: distributable_app
+      MODULE_DATABASES: "iam analytics notifications"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "distributable"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: valkey/valkey:8-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
