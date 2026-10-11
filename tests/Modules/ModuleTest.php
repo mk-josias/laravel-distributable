@@ -21,6 +21,17 @@ it('derives every convention from the module name', function () {
         ->and($module->ownerConnection())->toBe('point_of_sale');
 });
 
+it('takes its folders under the modules and foundation roots from the declaration, when set', function () {
+    $module = Module::fromName('iam', 'Apps', 'apps', 'Accounts', 'Identity');
+
+    expect($module->name)->toBe('iam')
+        ->and($module->namespace)->toBe('Apps\Identity')
+        ->and($module->provider)->toBe('Apps\Identity\Providers\IdentityServiceProvider')
+        ->and($module->path())->toBe(base_path('apps/Identity'))
+        ->and($module->foundation)->toBe('Accounts')
+        ->and($module->connection())->toBe('iam');
+});
+
 it('migrates on a connection built from the owner key of its connection, when it has one', function () {
     config()->set('database.connections.point_of_sale', [
         'driver' => 'pgsql', 'database' => 'pos', 'username' => 'pos_app', 'owner' => ['username' => 'pos_owner'],

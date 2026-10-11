@@ -106,7 +106,7 @@ package reads everything from the folder and the namespace, so there is nothing 
 
 | | Configurable | Fixed by convention |
 |---|---|---|
-| Where the modules live | `paths.modules` (`apps`), `namespaces.modules` (`Apps`) | a module is `{paths.modules}/{Name}`, its name is `{Name}` in snake_case |
+| Where the modules live | `paths.modules` (`apps`), `namespaces.modules` (`Apps`); a module's own folder there with `declared.{name}.module` | a module is `{paths.modules}/{Name}`, its name is `{Name}` in snake_case |
 | Where the foundation lives | `paths.foundation` (`foundation`), `namespaces.foundation` (`Foundation`); a module's own folder there with `declared.{name}.foundation` | what module `iam` shares is `{paths.foundation}/Iam`, under `Foundation\Iam\` |
 | A module's code | | `app/`, under `{namespaces.modules}\{Name}\` |
 | A module's provider | | `app/Providers/{Name}ServiceProvider.php` |

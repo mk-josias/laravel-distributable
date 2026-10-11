@@ -101,7 +101,7 @@ final class DistributableServiceProvider extends BaseServiceProvider
                 // A cache written before modules had a foundation folder is ignored, not misread.
                 static fn (string $name): Module => isset($cached[$name]['foundation'])
                     ? Module::fromArray($cached[$name])
-                    : Module::fromName($name, $config->getModulesNamespace(), $config->getModulesPath(), $config->getFoundationOf($name)),
+                    : $config->module($name),
                 $config->getDeclaredModules(),
             ), $config->getLoadedModules());
         });

@@ -18,12 +18,17 @@ final readonly class Modules
         return array_map(strval(...), array_keys((array) $this->config->get('modules.declared', [])));
     }
 
-    /** A module's folder and namespace segment under the foundation root, when modules.declared.{module}.foundation sets one. */
-    public function getFoundationOf(string $module): ?string
+    /** The module declared under $name, its folders read from modules.declared.{name}.module and .foundation. */
+    public function module(string $name): Module
     {
-        $foundation = $this->config->get("modules.declared.{$module}.foundation");
+        return Module::fromName($name, $this->getModulesNamespace(), $this->getModulesPath(), $this->declared($name, 'foundation'), $this->declared($name, 'module'));
+    }
 
-        return is_string($foundation) && $foundation !== '' ? $foundation : null;
+    private function declared(string $name, string $key): ?string
+    {
+        $value = $this->config->get("modules.declared.{$name}.{$key}");
+
+        return is_string($value) && $value !== '' ? $value : null;
     }
 
     /** The URL a module answers on when it runs in another process; null when none is set. */

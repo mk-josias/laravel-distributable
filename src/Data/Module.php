@@ -26,15 +26,16 @@ final readonly class Module
     /**
      * Every convention derives from the name; a module has a database once a connection named after it exists, in its config/database.php or the root one.
      *
-     * @param  string|null  $foundation  its folder and namespace segment under the foundation root, when not its studly name
+     * @param  string|null  $foundationFolder  its folder and namespace segment under the foundation root, when not its studly name
+     * @param  string|null  $moduleFolder  its folder and namespace segment under the modules root, when not its studly name
      */
-    public static function fromName(string $name, string $modulesNamespace, string $modulesPath = 'apps', ?string $foundation = null): self
+    public static function fromName(string $name, string $modulesNamespace, string $modulesPath = 'apps', ?string $foundationFolder = null, ?string $moduleFolder = null): self
     {
         if (preg_match('/^[a-z][a-z0-9_]*$/', $name) !== 1) {
             throw ModuleException::invalidName($name);
         }
 
-        $studly = Str::studly($name);
+        $studly = $moduleFolder ?? Str::studly($name);
         $namespace = $modulesNamespace.'\\'.$studly;
         $path = $modulesPath.'/'.$studly;
         $absolute = str_starts_with($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
@@ -45,7 +46,7 @@ final readonly class Module
             provider: $namespace.'\\Providers\\'.$studly.'ServiceProvider',
             path: $path,
             hasDatabase: is_file($absolute.'/config/database.php') || config("database.connections.{$name}") !== null,
-            foundation: $foundation ?? $studly,
+            foundation: $foundationFolder ?? Str::studly($name),
         );
     }
 

@@ -18,6 +18,7 @@ return [
 
     'declared' => [
         // 'iam' => ['host' => env('IAM_HOST')],
+        // 'iam' => ['module' => 'Identity', 'foundation' => 'Identity'],   // apps/Identity, foundation/Identity
     ],
 
     // Modules booted by THIS process: '*' = all, or a comma-separated list.
