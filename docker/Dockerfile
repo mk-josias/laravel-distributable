@@ -14,8 +14,8 @@ COPY --from=microservices packages/core/composer.json /laravel-microservices/pac
 COPY --from=microservices packages/core/src /laravel-microservices/packages/core/src
 COPY --from=microservices packages/core/config /laravel-microservices/packages/core/config
 COPY --from=microservices packages/core/database /laravel-microservices/packages/core/database
-COPY --from=microservices packages/redis-event-stream/composer.json /laravel-microservices/packages/redis-event-stream/composer.json
-COPY --from=microservices packages/redis-event-stream/src /laravel-microservices/packages/redis-event-stream/src
+COPY --from=microservices packages/redis-stream/composer.json /laravel-microservices/packages/redis-stream/composer.json
+COPY --from=microservices packages/redis-stream/src /laravel-microservices/packages/redis-stream/src
 COPY --from=microservices packages/http-rpc/composer.json /laravel-microservices/packages/http-rpc/composer.json
 COPY --from=microservices packages/http-rpc/src /laravel-microservices/packages/http-rpc/src
 
