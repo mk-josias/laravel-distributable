@@ -80,10 +80,45 @@ final class SetupSkeleton extends Command
         ]);
         $this->strip('phpstan.neon.dist', ["        - app\n"]);
         $this->strip('phpunit.xml', ["            <directory>app</directory>\n"]);
+        $this->removeMonorepoPaths();
         @unlink(__FILE__);
         @rmdir(dirname(__FILE__));
         @rmdir(dirname(__FILE__, 2));
         @rmdir(dirname(__FILE__, 3));
+    }
+
+    /** The packages come from Packagist here: what reads them from the monorepo's folders goes. */
+    private function removeMonorepoPaths(): void
+    {
+        $composer = json_decode((string) file_get_contents(base_path('composer.json')), true);
+        unset($composer['repositories']);
+        file_put_contents(base_path('composer.json'), json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
+
+        $this->strip('docker/Dockerfile', [
+            "# The packages from a local path (see \"repositories\" in composer.json); empty outside the monorepo.\n",
+            "COPY --from=distributable . /packages/core\n",
+            "COPY --from=microservices . /laravel-microservices/packages\n\n",
+            "COPY --from=vendor /packages /packages\n",
+            "COPY --from=vendor /laravel-microservices /laravel-microservices\n",
+        ]);
+
+        foreach (['docker-compose.yml', 'docker-compose.mono.yml'] as $file) {
+            file_put_contents(base_path($file), (string) preg_replace(
+                '/^(\s+)additional_contexts:\n\1  distributable: .*\n\1  microservices: .*\n/m',
+                '',
+                (string) file_get_contents(base_path($file)),
+            ));
+        }
+
+        $this->strip('tests/e2e/together-or-apart.sh', [
+            "# In the monorepo, the image takes the packages from their folders rather than from Packagist.\n",
+            "if [[ -d ../packages/core ]]; then\n",
+            "    export DISTRIBUTABLE_PACKAGES=../packages/core MICROSERVICES_PACKAGES=../../laravel-microservices/packages\n",
+            "fi\n\n",
+        ]);
+
+        @unlink(base_path('docker/no-packages/.gitkeep'));
+        @rmdir(base_path('docker/no-packages'));
     }
 
     private function remove(string $module): void
