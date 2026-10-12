@@ -90,6 +90,7 @@
             "@php artisan key:generate --ansi",
             "@php artisan auth:jwt-keys --ansi",
             "@php artisan skeleton:setup --ansi",
+            "@composer update --lock --no-scripts --no-interaction --quiet",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi",
             "@php artisan iam:sync-permissions --prune --ansi"
