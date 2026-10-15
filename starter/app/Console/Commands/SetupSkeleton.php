@@ -111,10 +111,10 @@ final class SetupSkeleton extends Command
         }
 
         $this->strip('tests/e2e/together-or-apart.sh', [
-            "# In the monorepo, the image takes the packages from their folders rather than from Packagist.\n",
-            "if [[ -d ../packages/core ]]; then\n",
-            "    export DISTRIBUTABLE_PACKAGES=../packages/core MICROSERVICES_PACKAGES=../../laravel-microservices/packages\n",
-            "fi\n\n",
+            "# In the monorepo, the image takes the packages from their folders rather than from Packagist.\n"
+            ."if [[ -d ../packages/core ]]; then\n"
+            ."    export DISTRIBUTABLE_PACKAGES=../packages/core MICROSERVICES_PACKAGES=../../laravel-microservices/packages\n"
+            ."fi\n\n",
         ]);
 
         @unlink(base_path('docker/no-packages/.gitkeep'));
