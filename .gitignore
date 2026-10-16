@@ -5,3 +5,9 @@ composer.lock
 .DS_Store
 .idea/
 .vscode/
+/docs-site/node_modules/
+/docs-site/.vitepress/cache/
+/docs-site/.vitepress/dist/
+/docs-site/README.md
+/docs-site/starter.md
+/docs-site/docs/
