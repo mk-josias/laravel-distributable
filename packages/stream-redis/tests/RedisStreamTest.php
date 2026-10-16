@@ -36,7 +36,7 @@ it('hands this service the entries of the declared emitters, in order, and ackno
     $transport->publish(new Envelope((string) Str::uuid7(), 'stranger', 'billing.invoice.paid', ['order_id' => 3], [], now()->toImmutable()));
 
     $seen = 0;
-    $transport->consume('orders', ['orders', 'billing'], function (Envelope $envelope) use ($transport, &$seen): void {
+    $transport->consume(['orders'], ['orders', 'billing'], function (Envelope $envelope) use ($transport, &$seen): void {
         DB::table('paid_orders')->insert(['order_id' => $envelope->payload['order_id']]);
 
         if (++$seen === 2) {
@@ -48,4 +48,28 @@ it('hands this service the entries of the declared emitters, in order, and ackno
 
     expect(DB::table('paid_orders')->pluck('order_id')->all())->toBe([1, 2])
         ->and(Redis::connection()->command('xpending', [$key, 'orders'])[0])->toBe(0);
+});
+
+it('serves several consumers from one loop, each with its own cursor', function () {
+    $transport = app(Transport::class);
+
+    foreach ([1, 2] as $order) {
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+    }
+
+    $seen = [];
+    $handled = 0;
+    $transport->consume(['orders', 'shipping'], ['billing'], function (Envelope $envelope, string $consumer) use ($transport, &$seen, &$handled): void {
+        $seen[$consumer][] = $envelope->payload['order_id'];
+
+        if (++$handled === 4) {
+            $transport->stop();
+        }
+    });
+
+    $key = (string) config('microservices.events.streams.default.key');
+
+    expect($seen)->toBe(['orders' => [1, 2], 'shipping' => [1, 2]])
+        ->and(Redis::connection()->command('xpending', [$key, 'orders'])[0])->toBe(0)
+        ->and(Redis::connection()->command('xpending', [$key, 'shipping'])[0])->toBe(0);
 });

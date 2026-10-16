@@ -117,35 +117,56 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
         return [$aMs, $aSeq] <=> [$bMs, $bSeq];
     }
 
-    public function consume(string $consumer, array $channels, callable $handle): void
+    /** One group is read per call: each pass visits every consumer's group, sharing the block window between them. */
+    public function consume(array $consumers, array $channels, callable $handle): void
     {
         $key = $this->config->getKey();
-        $this->ensureGroup($key, $consumer);
-
-        $name = $consumer.':'.(gethostname() ?: 'unknown-host');
-        $failures = 0;
+        $host = gethostname() ?: 'unknown-host';
+        $window = max(1, intdiv($this->config->getBlockMs(), max(1, count($consumers))));
+        $failures = array_fill_keys($consumers, 0);
+        $retryAt = array_fill_keys($consumers, 0);
         $this->listening = true;
 
+        foreach ($consumers as $consumer) {
+            $this->ensureGroup($key, $consumer);
+        }
+
         while ($this->listening) {
-            $this->reclaim($key, $consumer, $name, $channels, $handle);
+            $visited = false;
 
-            // Blocking: own pending entries first, so a failed one is retried before anything later is read.
-            $entries = ($this->config->blocksOnFailure() ? $this->read($key, $consumer, $name, self::OWN_PENDING) : [])
-                ?: $this->read($key, $consumer, $name, self::NEW_ENTRIES);
+            foreach ($consumers as $consumer) {
+                if (! $this->listening || $retryAt[$consumer] > time()) {
+                    continue;
+                }
 
-            if (! $this->handleEntries($key, $entries, $consumer, $channels, $handle)) {
-                $failures++;
-                sleep(min(self::MAX_BACKOFF_SECONDS, 2 ** min($failures, 6)));
+                $visited = true;
+                $name = $consumer.':'.$host;
+                $deliver = static fn (Envelope $envelope) => $handle($envelope, $consumer);
 
-                continue;
+                $this->reclaim($key, $consumer, $name, $channels, $deliver);
+
+                // Blocking: own pending entries first, so a failed one is retried before anything later is read.
+                $entries = ($this->config->blocksOnFailure() ? $this->read($key, $consumer, $name, self::OWN_PENDING, $window) : [])
+                    ?: $this->read($key, $consumer, $name, self::NEW_ENTRIES, $window);
+
+                if ($this->handleEntries($key, $entries, $consumer, $channels, $deliver)) {
+                    $failures[$consumer] = 0;
+
+                    continue;
+                }
+
+                $failures[$consumer]++;
+                $retryAt[$consumer] = time() + min(self::MAX_BACKOFF_SECONDS, 2 ** min($failures[$consumer], 6));
             }
 
-            $failures = 0;
+            if (! $visited) {
+                sleep(1);
+            }
         }
     }
 
     /** @return array<string, array<string, string>> */
-    private function read(string $key, string $group, string $name, string $from): array
+    private function read(string $key, string $group, string $name, string $from, int $blockMs): array
     {
         /** @var array<string, array<string, array<string, string>>>|null|false $read */
         $read = $this->connection()->command('xreadgroup', [
@@ -153,7 +174,7 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
             $name,
             [$key => $from],
             $this->config->getCount(),
-            $this->config->getBlockMs(),
+            $blockMs,
         ]);
 
         // A single key is read: its entries are the reply's only value, whatever client prefix names it.
