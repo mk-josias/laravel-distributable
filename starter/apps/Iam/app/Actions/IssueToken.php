@@ -6,10 +6,11 @@ namespace Apps\Iam\Actions;
 
 use Apps\Iam\Models\User;
 use Firebase\JWT\JWT;
+use Foundation\Common\Contracts\Action;
 use Illuminate\Support\Str;
 
 /** rpc: an opaque token only iam can read. jwt and gateway: a JWT anyone with iam's public key can verify. */
-final readonly class IssueToken
+final readonly class IssueToken implements Action
 {
     public function execute(User $user): string
     {
