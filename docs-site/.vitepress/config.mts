@@ -76,6 +76,7 @@ export default defineConfig({
           { text: 'Rules of RPC between modules', link: '/docs/rpc#rules-of-rpc-between-modules' },
           { text: 'Events', link: '/docs/events' },
           { text: 'Consuming events per module', link: '/docs/events#consuming-and-publishing-per-module' },
+          { text: 'Operating the event stream', link: '/docs/operating-streams' },
           { text: 'Read-only copies', link: '/docs/shadows' },
           { text: 'Services in other languages', link: '/docs/other-languages' },
         ],
