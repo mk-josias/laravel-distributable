@@ -144,7 +144,7 @@ final class SetupSkeleton extends Command
             $contents = (string) file_get_contents(base_path($file));
             $contents = (string) preg_replace("/^  {$module}:\n(?:(?:    .*)?\n)*/m", '', $contents);
             $contents = (string) preg_replace_callback(
-                '/^(\s+(?:WITH_CONSUMERS|MODULE_DATABASES): ")([^"]*)"/m',
+                '/^(\s+MODULE_DATABASES: ")([^"]*)"/m',
                 fn (array $match): string => $match[1].implode(str_contains($match[2], ',') ? ',' : ' ', array_values(array_diff(
                     (array) preg_split('/[ ,]/', $match[2]),
                     [$module, "app_{$module}"],

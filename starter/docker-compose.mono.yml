@@ -39,8 +39,8 @@ services:
     image: distributable-skeleton:mono
     environment:
       <<: *env
-      RUN_MODULES: "*"
-      WITH_CONSUMERS: "iam,analytics,notifications"
+      SERVICE_MODULES: "*"
+      WITH_CONSUMERS: "true"
       WITH_SCHEDULER: "true"
       WITH_WORKER: "true"
       WITH_REVERB: "true"

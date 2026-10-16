@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1786f32d6f5df6281c4f3a2ca3b9e19f",
+    "content-hash": "261c3cb27f181ed3bf038ce9a5fdbab9",
     "packages": [
         {
             "name": "brick/math",
@@ -2597,15 +2597,15 @@
         },
         {
             "name": "mk-josias/laravel-distributable-modules",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "dist": {
                 "type": "path",
                 "url": "../packages/core",
-                "reference": "5c1eb48e77dbaa64b43c1ac371c07b2285435f5e"
+                "reference": "d6aab8fbe25d1ac4d6ff221e08da285f461f67ce"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
-                "mk-josias/laravel-microservices": "^0.1",
+                "mk-josias/laravel-microservices": "^0.2",
                 "php": "^8.4"
             },
             "suggest": {
@@ -2634,7 +2634,7 @@
                     "email": "josiasmekontso.it@gmail.com"
                 }
             ],
-            "description": "Laravel modules built as independently deployable microservices: each owns its data, and they talk through events and RPC. Run them as one app, or split them apart whenever you want.",
+            "description": "The foundations for designing each Laravel module as a microservice: its code runs in a context bounded to its module, blind to the others, whether they run in the same process or in separate, distributed processes, and it talks to them only through contracts and events. Whether modules run as microservices or several to a process, depending on load, release pace or cost, becomes an infrastructure choice rather than a code one, allowing greater flexibility.",
             "keywords": [
                 "distributable",
                 "events",
@@ -2651,11 +2651,11 @@
         },
         {
             "name": "mk-josias/laravel-microservices",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "dist": {
                 "type": "path",
                 "url": "../../laravel-microservices/packages/core",
-                "reference": "67092bb7f354dbedd4f663525fb8d0691fd6eca0"
+                "reference": "9176e6413057ce5e2ddddf64d783536c17d23f47"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
@@ -2706,11 +2706,11 @@
         },
         {
             "name": "mk-josias/laravel-microservices-rpc-http",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "dist": {
                 "type": "path",
                 "url": "../../laravel-microservices/packages/rpc-http",
-                "reference": "2ce4e6e56718c2238e78b33ca75a93e3ae1b0f31"
+                "reference": "6f5f15902c790ba6753371273ece070ca1934d94"
             },
             "require": {
                 "mk-josias/laravel-microservices": "self.version",
@@ -2752,11 +2752,11 @@
         },
         {
             "name": "mk-josias/laravel-microservices-stream-redis",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "dist": {
                 "type": "path",
                 "url": "../../laravel-microservices/packages/stream-redis",
-                "reference": "c57b18c43c1a2daece6aca9a8c80426f48148919"
+                "reference": "847ca7a5db29309805a9f86833ebdc0f41cd6228"
             },
             "require": {
                 "mk-josias/laravel-microservices": "self.version",

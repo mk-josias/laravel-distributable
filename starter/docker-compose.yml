@@ -56,12 +56,12 @@ services:
     build:
       <<: *build
       args:
-        RUN_MODULES: iam
+        SERVICE_MODULES: iam
     image: distributable-skeleton:iam
     environment:
       <<: *env
-      RUN_MODULES: iam
-      WITH_CONSUMERS: iam
+      SERVICE_MODULES: iam
+      WITH_CONSUMERS: "true"
       SYNC_PERMISSIONS: "true"
     ports:
       - "${IAM_PORT:-8001}:8000"
@@ -74,12 +74,12 @@ services:
     build:
       <<: *build
       args:
-        RUN_MODULES: analytics
+        SERVICE_MODULES: analytics
     image: distributable-skeleton:analytics
     environment:
       <<: *env
-      RUN_MODULES: analytics
-      WITH_CONSUMERS: analytics
+      SERVICE_MODULES: analytics
+      WITH_CONSUMERS: "true"
       WITH_SCHEDULER: "true"   # analytics:compute, hourly
     ports:
       - "${ANALYTICS_PORT:-8002}:8000"
@@ -89,12 +89,12 @@ services:
     build:
       <<: *build
       args:
-        RUN_MODULES: notifications
+        SERVICE_MODULES: notifications
     image: distributable-skeleton:notifications
     environment:
       <<: *env
-      RUN_MODULES: notifications
-      WITH_CONSUMERS: notifications
+      SERVICE_MODULES: notifications
+      WITH_CONSUMERS: "true"
       WITH_WORKER: "true"    # the mails, queued
       WITH_REVERB: "true"    # the live push, ws://localhost:8080
     ports:

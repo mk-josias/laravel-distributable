@@ -205,6 +205,18 @@ format above.
 
 ## Authentication
 
+Authentication is a choice, not a given: five setups, each one setting. `composer create-project`
+asks which of the first three to use (`jwt` is the default), and writes it as
+`AUTH_TOKEN_VALIDATION_STRATEGY` in `.env`.
+
+| You want | Set | Also needed |
+|---|---|---|
+| tokens iam signs, checked by every module without calling iam (default) | `AUTH_TOKEN_VALIDATION_STRATEGY=jwt` | `AUTH_JWT_PUBLIC_KEY` everywhere, `AUTH_JWT_PRIVATE_KEY` on iam |
+| opaque tokens, each module asking iam on every request | `AUTH_TOKEN_VALIDATION_STRATEGY=rpc` | nothing else: both compose files use it |
+| a gateway that authenticates the client and forwards its identity | `AUTH_TOKEN_VALIDATION_STRATEGY=gateway` | `AUTH_GATEWAY_SECRET` everywhere, the JWT keys on iam and the gateway |
+| users managed outside the application (Keycloak, Auth0, a Node service) | `jwt`, with `AUTH_PRINCIPAL_RESOLVER` and `AUTH_PERMISSION_SOURCE` set to the `Claims…` classes | the provider's public key; see [An identity provider outside the application](#an-identity-provider-outside-the-application) |
+| no authentication | nothing | see [Without authentication](#without-authentication) |
+
 A route is protected with the `Foundation\Common\Auth\Authenticate` middleware:
 
 ```php
@@ -354,10 +366,10 @@ of the same code with different settings:
 
 ```dotenv
 # the iam process
-RUN_MODULES=iam
+SERVICE_MODULES=iam
 
 # the analytics process
-RUN_MODULES=analytics
+SERVICE_MODULES=analytics
 IAM_HOST=http://iam.internal:8000
 ```
 
@@ -369,10 +381,10 @@ When you build an image for one module, delete the folders of the others before
 `composer dump-autoload`:
 
 ```bash
-RUN_MODULES=analytics php artisan modules:purge --force
+SERVICE_MODULES=analytics php artisan modules:purge --force
 ```
 
-Starting that image with `RUN_MODULES=iam` then fails at boot, because iam's folder is gone.
+Starting that image with `SERVICE_MODULES=iam` then fails at boot, because iam's folder is gone.
 
 ## Docker
 
@@ -385,7 +397,7 @@ docker compose up -d                              # one container per module: ia
 ```
 
 `APP_PORT`, `IAM_PORT`, `ANALYTICS_PORT` and `NOTIFICATIONS_PORT` change the published ports. In the second setup, each
-image is built with `--build-arg RUN_MODULES=<module>`, so it holds only its module: the
+image is built with `--build-arg SERVICE_MODULES=<module>`, so it holds only its module: the
 Dockerfile runs `modules:purge` before `composer dump-autoload`. A container migrates only
 the database of the module it runs, so two containers never migrate the same one. Both compose files validate tokens with the `rpc` strategy: they ship no JWT
 keys. With `jwt`, give every container `AUTH_JWT_PUBLIC_KEY`, and iam `AUTH_JWT_PRIVATE_KEY`.
@@ -393,7 +405,7 @@ keys. With `jwt`, give every container `AUTH_JWT_PUBLIC_KEY`, and iam `AUTH_JWT_
 | File | What it does |
 |---|---|
 | `docker/Dockerfile` | Installs the dependencies, purges the modules the image doesn't run and the packages only they required, then builds the PHP and Swoole runtime. |
-| `docker/entrypoint.sh` | Runs `optimize`, migrates (on the `http` role only), writes one consumer per module of `WITH_CONSUMERS`, then starts supervisord. |
+| `docker/entrypoint.sh` | Runs `optimize`, migrates (on the `http` role only), then starts supervisord. |
 | `docker/supervisord.conf` | The roles a container can take, each switched on by a variable. |
 | `docker/postgres/` | A Postgres image that creates the databases of `MODULE_DATABASES`, owned by `distributable`, written by `distributable_app`. |
 
@@ -404,7 +416,7 @@ keys. With `jwt`, give every container `AUTH_JWT_PUBLIC_KEY`, and iam `AUTH_JWT_
 | `reverb` (WebSocket, port 8080) | `WITH_REVERB` | `false` | one per container that pushes: it pushes to its own, on localhost |
 | `publisher` (`stream:publish`) | `WITH_PUBLISHER` | `false` | one per module set: two would publish the outbox out of order |
 | `scheduler` (supercronic) | `WITH_SCHEDULER` | `false` | one per module set: two would run each task twice |
-| `consumer-<module>` | `WITH_CONSUMERS=iam,analytics,notifications` | none | one per module: two would break the order it reads in |
+| `consumers` (`stream:consume`) | `WITH_CONSUMERS` | `false` | one per module set: it serves every module of `SERVICE_MODULES`, each with its own cursor, and two would break the order a module reads in |
 
 The values in the compose files are for development. In production, set real secrets.
 
@@ -419,7 +431,7 @@ test.
 
 A module is tested alone, the way it runs once it has its own process. Its tests live in
 `apps/{Module}/tests/` and extend `Tests\ModuleTestCase`, which runs that module only
-(`RUN_MODULES`) and stands in for iam:
+(`SERVICE_MODULES`) and stands in for iam:
 
 ```php
 class InboxTest extends ModuleTestCase

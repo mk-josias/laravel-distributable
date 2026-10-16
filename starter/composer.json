@@ -12,9 +12,9 @@
         "laravel/octane": "^2.20",
         "laravel/reverb": "^1.12",
         "laravel/tinker": "^3.0",
-        "mk-josias/laravel-microservices-rpc-http": "^0.1",
-        "mk-josias/laravel-distributable-modules": "^0.1",
-        "mk-josias/laravel-microservices-stream-redis": "^0.1",
+        "mk-josias/laravel-microservices-rpc-http": "^0.2",
+        "mk-josias/laravel-distributable-modules": "^0.2",
+        "mk-josias/laravel-microservices-stream-redis": "^0.2",
         "spatie/laravel-data": "^4.0",
         "spatie/laravel-query-builder": "^6.0 || ^7.0",
         "wikimedia/composer-merge-plugin": "^2.1"
@@ -126,7 +126,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "mk-josias/laravel-distributable-modules": "0.1.0"
+                    "mk-josias/laravel-distributable-modules": "0.2.0"
                 }
             }
         },
@@ -136,10 +136,10 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "mk-josias/laravel-microservices": "0.1.0",
-                    "mk-josias/laravel-microservices-rpc-http": "0.1.0",
-                    "mk-josias/laravel-microservices-stream-redis": "0.1.0",
-                    "mk-josias/laravel-microservices-stream-queue": "0.1.0"
+                    "mk-josias/laravel-microservices": "0.2.0",
+                    "mk-josias/laravel-microservices-rpc-http": "0.2.0",
+                    "mk-josias/laravel-microservices-stream-redis": "0.2.0",
+                    "mk-josias/laravel-microservices-stream-queue": "0.2.0"
                 }
             }
         }
