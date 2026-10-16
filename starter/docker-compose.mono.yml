@@ -39,7 +39,7 @@ services:
     image: distributable-skeleton:mono
     environment:
       <<: *env
-      SERVICE_MODULES: "*"
+      RUN_MODULES: "*"
       WITH_CONSUMERS: "true"
       WITH_SCHEDULER: "true"
       WITH_WORKER: "true"

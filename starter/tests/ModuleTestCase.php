@@ -17,7 +17,7 @@ abstract class ModuleTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->setEnvironment(['SERVICE_MODULES' => $this->module, 'IAM_HOST' => 'http://iam.test']);
+        $this->setEnvironment(['RUN_MODULES' => $this->module, 'IAM_HOST' => 'http://iam.test']);
 
         parent::setUp();
 
@@ -28,7 +28,7 @@ abstract class ModuleTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        $this->setEnvironment(['SERVICE_MODULES' => null, 'IAM_HOST' => null]);
+        $this->setEnvironment(['RUN_MODULES' => null, 'IAM_HOST' => null]);
 
         parent::tearDown();
     }

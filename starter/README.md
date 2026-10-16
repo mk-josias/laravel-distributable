@@ -372,10 +372,10 @@ of the same code with different settings:
 
 ```dotenv
 # the iam process
-SERVICE_MODULES=iam
+RUN_MODULES=iam
 
 # the analytics process
-SERVICE_MODULES=analytics
+RUN_MODULES=analytics
 IAM_HOST=http://iam.internal:8000
 ```
 
@@ -387,10 +387,10 @@ When you build an image for one module, delete the folders of the others before
 `composer dump-autoload`:
 
 ```bash
-SERVICE_MODULES=analytics php artisan modules:purge --force
+RUN_MODULES=analytics php artisan modules:purge --force
 ```
 
-Starting that image with `SERVICE_MODULES=iam` then fails at boot, because iam's folder is gone.
+Starting that image with `RUN_MODULES=iam` then fails at boot, because iam's folder is gone.
 
 ## Docker
 
@@ -405,7 +405,7 @@ docker compose up -d
 ```
 
 `APP_PORT`, `IAM_PORT`, `ANALYTICS_PORT` and `NOTIFICATIONS_PORT` change the published ports. In the second setup, each
-image is built with `--build-arg SERVICE_MODULES=<module>`, so it holds only its module: the
+image is built with `--build-arg RUN_MODULES=<module>`, so it holds only its module: the
 Dockerfile runs `modules:purge` before `composer dump-autoload`. A container migrates only
 the database of the module it runs, so two containers never migrate the same one. Both compose files validate tokens with the `rpc` strategy: they ship no JWT
 keys. With `jwt`, give every container `AUTH_JWT_PUBLIC_KEY`, and iam `AUTH_JWT_PRIVATE_KEY`.
@@ -424,7 +424,7 @@ keys. With `jwt`, give every container `AUTH_JWT_PUBLIC_KEY`, and iam `AUTH_JWT_
 | `reverb` (WebSocket, port 8080) | `WITH_REVERB` | `false` | one per container that pushes: it pushes to its own, on localhost |
 | `publisher` (`stream:publish`) | `WITH_PUBLISHER` | `false` | one per module set: two would publish the outbox out of order |
 | `scheduler` (supercronic) | `WITH_SCHEDULER` | `false` | one per module set: two would run each task twice |
-| `consumers` (`stream:consume`) | `WITH_CONSUMERS` | `false` | one per module set: it serves every module of `SERVICE_MODULES`, each with its own cursor, and two would break the order a module reads in |
+| `consumers` (`stream:consume`) | `WITH_CONSUMERS` | `false` | one per module set: it serves every module of `RUN_MODULES`, each with its own cursor, and two would break the order a module reads in |
 
 The values in the compose files are for development. In production, set real secrets.
 
@@ -439,7 +439,7 @@ test.
 
 A module is tested alone, the way it runs once it has its own process. Its tests live in
 `apps/{Module}/tests/` and extend `Tests\ModuleTestCase`, which runs that module only
-(`SERVICE_MODULES`) and stands in for iam:
+(`RUN_MODULES`) and stands in for iam:
 
 ```php
 class InboxTest extends ModuleTestCase
