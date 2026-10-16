@@ -63,7 +63,7 @@ export default defineConfig({
           { text: 'Placing a module', link: '/docs/deploying#placing-a-module' },
           { text: 'One image per module', link: '/docs/deploying#one-image-per-module' },
           { text: 'What a container does', link: '/docs/deploying#what-a-container-does' },
-          { text: 'One compose file per module', link: '/docs/deploying#one-compose-file-per-module' },
+          { text: 'Deploying a module on its own', link: '/docs/deploying#deploying-a-module-on-its-own' },
           { text: 'Checking a deployment', link: '/docs/deploying#checking-a-deployment' },
         ],
       },

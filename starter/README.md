@@ -27,9 +27,12 @@ yours.
 ```bash
 cp .env.example .env
 php artisan key:generate
-php artisan auth:jwt-keys     # the RSA pair iam signs tokens with, in storage/jwt-*.key
-php artisan migrate           # migrates each module's database
-php artisan iam:sync-permissions --prune   # the permissions listed in auth.permissions, see Permissions
+# the RSA pair iam signs tokens with, in storage/jwt-*.key
+php artisan auth:jwt-keys
+# migrates each module's database
+php artisan migrate
+# the permissions listed in auth.permissions, see Permissions
+php artisan iam:sync-permissions --prune
 php artisan serve
 ```
 
@@ -59,12 +62,11 @@ curl -X POST http://127.0.0.1:8000/iam/api/v1/tokens \
 
 Both routes accept 6 requests a minute. A wrong password and an unknown email get the same 401.
 
-`iam` announces the registration with an event. Start a consumer per module to handle it, each
-in its own terminal:
+`iam` announces the registration with an event. Start the consumer; it serves `analytics` and
+`notifications`, each with its own cursor:
 
 ```bash
-php artisan stream:consume --module=analytics
-php artisan stream:consume --module=notifications
+php artisan stream:consume
 ```
 
 `analytics` now has a signup and `notifications` a welcome message, and each keeps its own copy of
@@ -288,8 +290,10 @@ asks iam, and `GET /iam/api/v1/identity` answers 204 with the `X-Identity` heade
 ```yaml
 # the labels of the module containers, behind Traefik
 traefik.http.middlewares.identity.forwardauth.address: "http://iam.svc:8000/iam/api/v1/identity"
-traefik.http.middlewares.identity.forwardauth.authResponseHeaders: "X-Identity"   # replaces the client's
-traefik.http.routers.analytics.rule: "PathPrefix(`/analytics/api`)"                # /analytics/rpc stays out
+# replaces the client's
+traefik.http.middlewares.identity.forwardauth.authResponseHeaders: "X-Identity"
+# /analytics/rpc stays out
+traefik.http.routers.analytics.rule: "PathPrefix(`/analytics/api`)"
 traefik.http.routers.analytics.middlewares: "identity"
 ```
 
@@ -306,8 +310,10 @@ Keycloak, Auth0). Nothing of iam is needed then: the token says who the user is 
 
 ```dotenv
 AUTH_TOKEN_VALIDATION_STRATEGY=jwt
-AUTH_JWT_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----…"            # the provider's RS256 public key
-AUTH_PRINCIPAL_RESOLVER=Foundation\Common\Auth\ClaimsPrincipals     # no quotes: a quoted backslash doesn't parse
+# the provider's RS256 public key
+AUTH_JWT_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----…"
+# no quotes: a quoted backslash doesn't parse
+AUTH_PRINCIPAL_RESOLVER=Foundation\Common\Auth\ClaimsPrincipals
 AUTH_PERMISSION_SOURCE=Foundation\Common\Auth\ClaimsPermissions
 ```
 
@@ -392,8 +398,10 @@ The skeleton ships both setups, on Postgres (one database per module) and Redis 
 stream), served by Octane with Swoole:
 
 ```bash
-docker compose -f docker-compose.mono.yml up -d   # every module in one container, on :8000
-docker compose up -d                              # one container per module: iam on :8001, analytics on :8002, notifications on :8003
+# every module in one container, on :8000
+docker compose -f docker-compose.mono.yml up -d
+# one container per module: iam on :8001, analytics on :8002, notifications on :8003
+docker compose up -d
 ```
 
 `APP_PORT`, `IAM_PORT`, `ANALYTICS_PORT` and `NOTIFICATIONS_PORT` change the published ports. In the second setup, each
@@ -440,8 +448,10 @@ class InboxTest extends ModuleTestCase
 
     public function test_a_registered_user_finds_a_welcome(): void
     {
-        $headers = $this->user(1, 'ada');                                        // its copy, and a token
-        $this->receive('notifications', IamEvent::UserRegistered->value, ['id' => 1]);   // as iam would announce it
+        // its copy, and a token
+        $headers = $this->user(1, 'ada');
+        // as iam would announce it
+        $this->receive('notifications', IamEvent::UserRegistered->value, ['id' => 1]);
 
         $this->getJson('/notifications/api/v1/notifications', $headers)->assertJsonCount(1, 'data');
     }
@@ -461,7 +471,7 @@ Because a module's tests name no other module's class, `Boundaries` holds for th
 | `tests/Feature/ModulesTest.php` | the one flow that crosses modules, every module in one process: registration, then what analytics makes of it |
 | `tests/Feature/ArchitectureTest.php` | no module uses another module's classes (`Distributable\Testing\Boundaries`), and `modules:doctor` passes |
 
-`php artisan make:test InvoiceTest --module=billing` writes a test in the module.
+`php artisan make:test PreferenceTest --module=notifications` writes a test in the module.
 
 To write to a module's database in a test, use `inModuleOf`. The module is read from the class, so
 the test names no module:
@@ -477,9 +487,11 @@ $user = $this->inModuleOf(User::class, fn () => User::query()->create([...]));
 Laravel's `make:*` commands take `--module`:
 
 ```bash
-php artisan modules:make billing --database          # a new module, declared in config/modules.php and composer.json
-php artisan make:model Invoice -mf --module=billing          # apps/Billing/app/Models, its migration and its factory
-php artisan make:controller InvoiceController --module=billing
+# a new module, declared in config/modules.php and composer.json
+php artisan modules:make <module> --database
+# apps/Notifications/app/Models, its migration and its factory
+php artisan make:model Preference -mf --module=notifications
+php artisan make:controller PreferenceController --module=notifications
 ```
 
 `composer.json` lists each module and the foundation under `autoload.psr-4`. The application doesn't
@@ -490,8 +502,10 @@ does in `apps/Iam/composer.json`. The root `composer.json` merges `apps/*/compos
 (`wikimedia/composer-merge-plugin`), so there is still one `composer.lock` and one `vendor/`:
 
 ```bash
-composer require barryvdh/laravel-dompdf --working-dir=apps/Billing --no-update   # declares it in the module
-composer update barryvdh/laravel-dompdf                                           # locks and installs it
+# declares it in the module
+composer require league/csv --working-dir=apps/Analytics --no-update
+# locks and installs it
+composer update league/csv
 ```
 
 What every module uses (`foundation/`) stays in the root file. An image built for one module leaves
