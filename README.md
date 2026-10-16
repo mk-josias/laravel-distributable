@@ -24,7 +24,8 @@ app(Bus::class)->emit(new OrderPlaced($order->id));
 ```
 
 ```bash
-php artisan stream:consume   # in billing: runs the handlers listening to orders' events
+# in billing: runs the handlers listening to orders' events
+php artisan stream:consume
 ```
 
 ## Packages
@@ -57,7 +58,8 @@ gateway; CI runs it on every push.
 
 ```bash
 composer install
-composer check   # pint, phpstan and the tests of every package
+# pint, phpstan and the tests of every package
+composer check
 ```
 
 The Redis tests skip themselves when no Redis server is reachable.

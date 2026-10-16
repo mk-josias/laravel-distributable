@@ -13,12 +13,18 @@ Its provider is discovered and registers the driver. The shipped `default` strea
 // config/microservices.php
 'default' => [
     'driver' => env('MICROSERVICES_STREAM_DRIVER', 'array'),
-    'connection' => env('MICROSERVICES_STREAM_CONNECTION'), // a database.redis connection, null for `default`
-    'key' => 'microservices:events', // the one Redis stream every service writes to
-    'block' => 5_000,                // how long a read waits, in ms
-    'count' => 50,                   // entries per read
-    'claim_after' => 60_000,         // after how long a dead consumer's pending entries are taken back, in ms
-    'on_failure' => 'block',         // block: a failed entry is retried before later ones; skip: later ones go on
+    // a database.redis connection, null for `default`
+    'connection' => env('MICROSERVICES_STREAM_CONNECTION'),
+    // the one Redis stream every service writes to
+    'key' => 'microservices:events',
+    // how long a read waits, in ms
+    'block' => 5_000,
+    // entries per read
+    'count' => 50,
+    // after how long a dead consumer's pending entries are taken back, in ms
+    'claim_after' => 60_000,
+    // block: a failed entry is retried before later ones; skip: later ones go on
+    'on_failure' => 'block',
 ],
 ```
 

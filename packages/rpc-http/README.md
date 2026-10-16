@@ -12,10 +12,14 @@ Its provider is discovered. It registers the driver of the shipped `http` transp
 
 ```php
 'rpc' => [
-    'path' => env('MICROSERVICES_RPC_PATH', '{service}/rpc/{method}'), // the same in every service
-    'middleware_group' => 'rpc',                                      // the group of those routes, which checks the signature
-    'secret' => env('MICROSERVICES_RPC_SECRET', env('APP_KEY', '')),  // shared by caller and called
-    'signature_ttl' => 30,                                            // seconds a signature stays valid
+    // the same in every service
+    'path' => env('MICROSERVICES_RPC_PATH', '{service}/rpc/{method}'),
+    // the group of those routes, which checks the signature
+    'middleware_group' => 'rpc',
+    // shared by caller and called
+    'secret' => env('MICROSERVICES_RPC_SECRET', env('APP_KEY', '')),
+    // seconds a signature stays valid
+    'signature_ttl' => 30,
 ],
 ```
 
