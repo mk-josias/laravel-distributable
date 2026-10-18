@@ -20,8 +20,7 @@
             "RpcHttp\\": "packages/rpc-http/src/",
             "StreamRedis\\": "packages/stream-redis/src/",
             "StreamQueue\\": "packages/stream-queue/src/"
-        },
-        "files": ["packages/core/src/helpers.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {
