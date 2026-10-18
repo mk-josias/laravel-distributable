@@ -74,7 +74,7 @@ jobs:
         working-directory: distributable/starter
         run: composer check
 
-  # The same journey with every module in one container, then with one container per module.
+  # The same journey with every module in one container, then with one container per module, through Traefik.
   together-or-apart:
     runs-on: ubuntu-latest
     strategy:
@@ -94,3 +94,18 @@ jobs:
       - name: Journey
         working-directory: distributable/starter
         run: tests/e2e/together-or-apart.sh ${{ matrix.compose }}
+
+  # The gateway's Traefik plugin (starter/gateway/plugins/auth); the journeys above run it in Traefik.
+  gateway-plugin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Plugin tests
+        working-directory: starter/gateway/plugins/auth
+        run: test -z "$(gofmt -l .)" && go vet ./... && go test ./...
