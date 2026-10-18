@@ -5,14 +5,14 @@
         "php": "^8.4",
         "example/foundation": "*",
         "laravel/framework": "^12.0 || ^13.0",
-        "mk-josias/laravel-distributable-modules": "*",
-        "mk-josias/laravel-microservices-stream-redis": "*"
+        "mk-josias/laravel-distributable": "*",
+        "mk-josias/laravel-distributable-stream-redis": "*"
     },
     "repositories": {
         "stream-redis": {
             "type": "path",
             "url": "../../packages/stream-redis",
-            "options": {"versions": {"mk-josias/laravel-microservices-stream-redis": "0.1.0"}}
+            "options": {"versions": {"mk-josias/laravel-distributable-stream-redis": "0.1.0"}}
         },
         "foundation": {
             "type": "path",
@@ -22,7 +22,7 @@
         "microservices": {
             "type": "path",
             "url": "../../packages/core",
-            "options": {"versions": {"mk-josias/laravel-distributable-modules": "0.1.0"}}
+            "options": {"versions": {"mk-josias/laravel-distributable": "0.1.0"}}
         }
     },
     "autoload": {

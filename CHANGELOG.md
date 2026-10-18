@@ -1,6 +1,6 @@
 # Changelog
 
-Notable changes to `mk-josias/laravel-distributable-modules` and its starter. The format follows
+Notable changes to `mk-josias/laravel-distributable` and its starter. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/): before 1.0, a minor version may break.
 
@@ -18,6 +18,9 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 
 ### Changed
 
+- **Breaking:** the packages are `mk-josias/laravel-distributable`, `-rpc-http`, `-stream-redis`,
+  `-stream-queue` and `-starter`; the drivers' namespaces become `Distributable\RpcHttp\`,
+  `Distributable\Stream\Redis\` and `Distributable\Stream\Queue\`.
 - **Breaking:** one provider and one config: `MicroservicesServiceProvider` merges into
   `DistributableServiceProvider`, and the `rpc` and `events` sections of `config/microservices.php`
   move into `config/distributable.php`. `MICROSERVICES_*` variables become `DISTRIBUTABLE_*`, the

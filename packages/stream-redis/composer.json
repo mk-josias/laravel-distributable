@@ -1,6 +1,6 @@
 {
-    "name": "mk-josias/laravel-microservices-stream-redis",
-    "description": "Redis Streams driver for the events of mk-josias/laravel-microservices: one ordered stream, a consumer group per service, failed entries retried before later ones, or dropped.",
+    "name": "mk-josias/laravel-distributable-stream-redis",
+    "description": "Redis Streams driver for the events of mk-josias/laravel-distributable: one ordered stream, a consumer group per service, failed entries retried before later ones, or dropped.",
     "homepage": "https://mk-josias.github.io/laravel-microservices/",
     "license": "MIT",
     "type": "library",
@@ -18,20 +18,20 @@
     ],
     "require": {
         "php": "^8.4",
-        "mk-josias/laravel-distributable-modules": "self.version"
+        "mk-josias/laravel-distributable": "self.version"
     },
     "suggest": {
         "ext-redis": "PhpRedis client (predis/predis works too)"
     },
     "autoload": {
         "psr-4": {
-            "StreamRedis\\": "src/"
+            "Distributable\\Stream\\Redis\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "StreamRedis\\StreamRedisServiceProvider"
+                "Distributable\\Stream\\Redis\\StreamRedisServiceProvider"
             ]
         }
     },

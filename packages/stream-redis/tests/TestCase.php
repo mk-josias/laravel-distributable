@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace StreamRedis\Tests;
+namespace Distributable\Stream\Redis\Tests;
 
+use Distributable\Stream\Redis\StreamRedisServiceProvider;
 use Distributable\Tests\OrdersAppTestCase as CoreTestCase;
-use StreamRedis\StreamRedisServiceProvider;
 
 /** The core's `orders` application, with the redis driver installed. */
 abstract class TestCase extends CoreTestCase

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StreamRedis;
+namespace Distributable\Stream\Redis;
 
 use Distributable\Services\Stream\TransportManager;
 use Illuminate\Contracts\Config\Repository;

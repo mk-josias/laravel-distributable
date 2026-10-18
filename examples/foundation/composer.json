@@ -3,7 +3,7 @@
     "description": "What each service shares with the others: contracts, RPC clients, event payloads, copies.",
     "type": "library",
     "require": {
-        "mk-josias/laravel-distributable-modules": "*"
+        "mk-josias/laravel-distributable": "*"
     },
     "autoload": {
         "psr-4": {

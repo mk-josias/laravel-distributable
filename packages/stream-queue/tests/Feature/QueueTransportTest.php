@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use Distributable\Contracts\Stream\Transport;
 use Distributable\Data\Envelope;
+use Distributable\Stream\Queue\QueueTransport;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use StreamQueue\QueueTransport;
 
 beforeEach(function () {
     config()->set('queue.connections.events', ['driver' => 'database', 'connection' => 'testing', 'table' => 'jobs', 'queue' => 'default', 'retry_after' => 90]);

@@ -7,7 +7,7 @@ separate, distributed processes.
 ## Install
 
 ```bash
-composer require mk-josias/laravel-distributable-modules
+composer require mk-josias/laravel-distributable
 php artisan modules:install
 php artisan modules:make iam --database
 ```
@@ -15,15 +15,15 @@ php artisan modules:make iam --database
 Or start from the example application, three modules each with its own database:
 
 ```bash
-composer create-project mk-josias/laravel-distributable-modules-starter my-app
+composer create-project mk-josias/laravel-distributable-starter my-app
 ```
 
 ## What is in this repository
 
 | Folder | Published as | |
 |---|---|---|
-| `packages/core` | `mk-josias/laravel-distributable-modules` | the package: [README and documentation](packages/core/README.md) |
-| `starter` | `mk-josias/laravel-distributable-modules-starter` | the example application |
+| `packages/core` | `mk-josias/laravel-distributable` | the package: [README and documentation](packages/core/README.md) |
+| `starter` | `mk-josias/laravel-distributable-starter` | the example application |
 
 It builds on [laravel-microservices](https://github.com/mk-josias/laravel-microservices), which
 provides the events, calls and copies between services.

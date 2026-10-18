@@ -3,7 +3,7 @@
 The `redis` events driver of [laravel-microservices](https://github.com/mk-josias/laravel-microservices/tree/main/packages/core), on Redis Streams.
 
 ```bash
-composer require mk-josias/laravel-microservices-stream-redis
+composer require mk-josias/laravel-distributable-stream-redis
 ```
 
 Its provider is discovered and registers the driver. The shipped `default` stream uses it once

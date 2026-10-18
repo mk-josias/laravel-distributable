@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StreamQueue;
+namespace Distributable\Stream\Queue;
 
 use Distributable\Contracts\Stream\RedeliversEnvelopes;
 use Distributable\Contracts\Stream\Transport;

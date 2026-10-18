@@ -1,6 +1,6 @@
 {
-    "name": "mk-josias/laravel-microservices-stream-queue",
-    "description": "Laravel queue driver for the events of mk-josias/laravel-microservices, for a stack without Redis: one queue per service; order is not kept after a failure.",
+    "name": "mk-josias/laravel-distributable-stream-queue",
+    "description": "Laravel queue driver for the events of mk-josias/laravel-distributable, for a stack without Redis: one queue per service; order is not kept after a failure.",
     "homepage": "https://mk-josias.github.io/laravel-microservices/",
     "license": "MIT",
     "type": "library",
@@ -18,17 +18,17 @@
     ],
     "require": {
         "php": "^8.4",
-        "mk-josias/laravel-distributable-modules": "self.version"
+        "mk-josias/laravel-distributable": "self.version"
     },
     "autoload": {
         "psr-4": {
-            "StreamQueue\\": "src/"
+            "Distributable\\Stream\\Queue\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "StreamQueue\\StreamQueueServiceProvider"
+                "Distributable\\Stream\\Queue\\StreamQueueServiceProvider"
             ]
         }
     },

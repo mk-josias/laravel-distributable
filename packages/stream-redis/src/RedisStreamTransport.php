@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StreamRedis;
+namespace Distributable\Stream\Redis;
 
 use Carbon\CarbonImmutable;
 use Closure;

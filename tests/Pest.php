@@ -6,9 +6,9 @@ declare(strict_types=1);
 // need a booted application use ModuleAppTestCase. No folder-wide rule — a file-level uses()
 // would silently conflict with it.
 
-use RpcHttp\Tests\TestCase as RpcHttpTestCase;
-use StreamQueue\Tests\TestCase as QueueTestCase;
-use StreamRedis\Tests\TestCase as RedisTestCase;
+use Distributable\RpcHttp\Tests\TestCase as RpcHttpTestCase;
+use Distributable\Stream\Queue\Tests\TestCase as QueueTestCase;
+use Distributable\Stream\Redis\Tests\TestCase as RedisTestCase;
 
 // The imported packages keep one base class per folder, as they had; packages/core/tests is not among them.
 uses(RpcHttpTestCase::class)->in(__DIR__.'/../packages/rpc-http/tests');

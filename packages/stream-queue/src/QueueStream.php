@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StreamQueue;
+namespace Distributable\Stream\Queue;
 
 use Illuminate\Contracts\Config\Repository;
 

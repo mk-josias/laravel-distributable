@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace StreamQueue\Tests;
+namespace Distributable\Stream\Queue\Tests;
 
+use Distributable\Stream\Queue\StreamQueueServiceProvider;
 use Distributable\Tests\OrdersAppTestCase as CoreTestCase;
-use StreamQueue\StreamQueueServiceProvider;
 
 /** The core's `orders` application, with the queue driver installed. */
 abstract class TestCase extends CoreTestCase
