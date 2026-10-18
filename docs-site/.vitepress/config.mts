@@ -6,17 +6,17 @@ export default defineConfig({
   rewrites: { 'README.md': 'index.md' },
   ignoreDeadLinks: [/LICENSE$/],
   cleanUrls: true,
-  base: '/laravel-distributable-modules/',
+  base: '/laravel-distributable/',
   themeConfig: {
     search: { provider: 'local' },
     outline: [2, 3],
-    socialLinks: [{ icon: 'github', link: 'https://github.com/mk-josias/laravel-distributable-modules' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/mk-josias/laravel-distributable' }],
     nav: [
       { text: 'Overview', link: '/' },
       { text: 'Starter', link: '/starter' },
       { text: 'Modules', link: '/docs/modules' },
       { text: 'Engine', link: 'https://mk-josias.github.io/laravel-microservices/' },
-      { text: 'Packagist', link: 'https://packagist.org/packages/mk-josias/laravel-distributable-modules' },
+      { text: 'Packagist', link: 'https://packagist.org/packages/mk-josias/laravel-distributable' },
     ],
     sidebar: [
       {
