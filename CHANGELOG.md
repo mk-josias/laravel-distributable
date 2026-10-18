@@ -6,6 +6,8 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-18
+
 ### Added
 
 - `modules.routes.prefix` (`{module}/{name}`) and a module's own `prefix` in `modules.declared`.
@@ -54,4 +56,5 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 - `modules:doctor` no longer reports a `database` cache, queue or session driver: the application
   chooses its stores.
 
-[Unreleased]: https://github.com/mk-josias/laravel-distributable-modules/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/mk-josias/laravel-distributable/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/mk-josias/laravel-distributable/compare/v0.2.0...v0.3.0
