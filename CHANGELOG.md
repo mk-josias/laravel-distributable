@@ -26,6 +26,9 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 - Starter: `POST /iam/api/v1/register` replaces `/users` and returns no token; `AUTH_TOKEN_TTL`
   replaces `AUTH_JWT_TTL`.
 - Starter: `Authenticate` moves to `Foundation\Common\Http\Middleware`.
+- `modules:install`, `modules:make` and `modules:delete` no longer edit `composer.json`, and
+  `modules:doctor` no longer checks it: the package autoloads the modules itself; the entries an
+  IDE needs are documented in Modules.
 
 ### Removed
 
