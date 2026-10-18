@@ -14,6 +14,7 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 - `model:prune` and `model:show` find the models of the module `--module` names.
 - Starter: Sanctum tokens, one per device; `POST /iam/api/v1/login`, `refresh`, `logout`, `logout-all`.
 - Starter: the analytics datasets are partitioned by month on MySQL and MariaDB too.
+- Starter: `stream:republish` runs every minute when events are published reliably.
 
 ### Changed
 
