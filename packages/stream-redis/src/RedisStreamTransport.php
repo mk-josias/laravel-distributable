@@ -15,6 +15,7 @@ use Distributable\Contracts\Stream\TrimsStreams;
 use Distributable\Data\Envelope;
 use Illuminate\Contracts\Redis\Factory as Redis;
 use Illuminate\Redis\Connections\Connection;
+use Illuminate\Redis\Connections\PhpRedisConnection;
 use Throwable;
 
 /**
@@ -299,12 +300,12 @@ final class RedisStreamTransport implements ArchivesStreams, RedeliversEnvelopes
      */
     private function autoclaim(string $key, string $group, string $name): array
     {
-        $client = $this->connection()->client();
+        $connection = $this->connection();
         $arguments = [$key, $group, $name, (string) $this->config->getClaimAfterMs(), '0-0', 'COUNT', (string) $this->config->getCount()];
 
-        $reply = $client instanceof \Redis
-            ? $client->rawCommand('XAUTOCLAIM', $client->_prefix($key), ...array_slice($arguments, 1))
-            : $this->connection()->command('xautoclaim', $arguments);
+        $reply = $connection instanceof PhpRedisConnection
+            ? $connection->command('rawCommand', ['XAUTOCLAIM', $connection->command('_prefix', [$key]), ...array_slice($arguments, 1)])
+            : $connection->command('xautoclaim', $arguments);
 
         $entries = [];
 

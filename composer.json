@@ -16,17 +16,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Distributable\\": ["packages/core/src/", "packages/microservices/src/"],
+            "Distributable\\": "packages/core/src/",
             "RpcHttp\\": "packages/rpc-http/src/",
             "StreamRedis\\": "packages/stream-redis/src/",
             "StreamQueue\\": "packages/stream-queue/src/"
         },
-        "files": ["packages/microservices/src/helpers.php"]
+        "files": ["packages/core/src/helpers.php"]
     },
     "autoload-dev": {
         "psr-4": {
             "Distributable\\Tests\\": "packages/core/tests/",
-            "Distributable\\Tests\\Microservices\\": "packages/microservices/tests/",
             "RpcHttp\\Tests\\": "packages/rpc-http/tests/",
             "StreamRedis\\Tests\\": "packages/stream-redis/tests/",
             "StreamQueue\\Tests\\": "packages/stream-queue/tests/"

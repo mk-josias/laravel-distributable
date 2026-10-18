@@ -7,7 +7,7 @@
         "laravel/framework": "^12.0 || ^13.0",
         "laravel/sanctum": "^4.0",
         "mk-josias/laravel-microservices-rpc-http": "*",
-        "mk-josias/laravel-microservices": "*",
+        "mk-josias/laravel-distributable-modules": "*",
         "mk-josias/laravel-microservices-stream-redis": "*"
     },
     "repositories": {
@@ -28,8 +28,8 @@
         },
         "microservices": {
             "type": "path",
-            "url": "../../packages/microservices",
-            "options": {"versions": {"mk-josias/laravel-microservices": "0.1.0"}}
+            "url": "../../packages/core",
+            "options": {"versions": {"mk-josias/laravel-distributable-modules": "0.1.0"}}
         }
     },
     "autoload": {

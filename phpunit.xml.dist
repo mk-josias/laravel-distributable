@@ -5,26 +5,20 @@
          cacheDirectory=".phpunit.cache"
          colors="true">
     <testsuites>
-        <testsuite name="Distributable">
-            <directory>packages/core/tests</directory>
+        <testsuite name="Feature">
+            <directory>packages/core/tests/Feature</directory>
+            <directory>packages/rpc-http/tests/Feature</directory>
+            <directory>packages/stream-redis/tests/Feature</directory>
+            <directory>packages/stream-queue/tests/Feature</directory>
         </testsuite>
-        <testsuite name="Microservices">
-            <directory>packages/microservices/tests</directory>
-        </testsuite>
-        <testsuite name="RpcHttp">
-            <directory>packages/rpc-http/tests</directory>
-        </testsuite>
-        <testsuite name="StreamRedis">
-            <directory>packages/stream-redis/tests</directory>
-        </testsuite>
-        <testsuite name="StreamQueue">
-            <directory>packages/stream-queue/tests</directory>
+        <testsuite name="Integration">
+            <directory>packages/core/tests/Integration</directory>
+            <directory>packages/core/tests/Fixtures/apps/Analytics/tests</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>packages/core/src</directory>
-            <directory>packages/microservices/src</directory>
             <directory>packages/rpc-http/src</directory>
             <directory>packages/stream-redis/src</directory>
             <directory>packages/stream-queue/src</directory>

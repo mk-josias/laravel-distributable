@@ -7,7 +7,7 @@ namespace App\Console\Commands;
 use App\Models\Dataset;
 use App\Models\Mail;
 use App\Models\Signup;
-use App\Support\MonthlyPartitions;
+use App\Services\MonthlyPartitions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;

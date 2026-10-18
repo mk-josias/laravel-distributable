@@ -1,6 +1,6 @@
 <?php
 
-use App\Support\MonthlyPartitions;
+use App\Services\MonthlyPartitions;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
