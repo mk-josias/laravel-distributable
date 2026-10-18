@@ -20,18 +20,18 @@ beforeEach(function () {
         $this->markTestSkipped('No Redis server reachable.');
     }
 
-    config()->set('microservices.events.streams.default.driver', 'redis');
-    config()->set('microservices.events.streams.default.key', 'microservices-test:'.Str::random(8));
-    config()->set('microservices.events.streams.default.block', 100);
-    config()->set('microservices.events.guard', false);
+    config()->set('distributable.events.streams.default.driver', 'redis');
+    config()->set('distributable.events.streams.default.key', 'distributable-test:'.Str::random(8));
+    config()->set('distributable.events.streams.default.block', 100);
+    config()->set('distributable.events.guard', false);
 });
 
 afterEach(function () {
-    Redis::connection()->command('del', [(string) config('microservices.events.streams.default.key')]);
+    Redis::connection()->command('del', [(string) config('distributable.events.streams.default.key')]);
 });
 
 it('hands this service the entries of the declared emitters, in order, and acknowledges each', function () {
-    config()->set('microservices.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
+    config()->set('distributable.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
     $transport = app(Transport::class);
 
     foreach ([1, 2] as $order) {
@@ -48,7 +48,7 @@ it('hands this service the entries of the declared emitters, in order, and ackno
         }
     });
 
-    $key = (string) config('microservices.events.streams.default.key');
+    $key = (string) config('distributable.events.streams.default.key');
 
     expect(DB::table('paid_orders')->pluck('order_id')->all())->toBe([1, 2])
         ->and(Redis::connection()->command('xpending', [$key, 'orders'])[0])->toBe(0);
@@ -71,7 +71,7 @@ it('serves several consumers from one loop, each with its own cursor', function 
         }
     });
 
-    $key = (string) config('microservices.events.streams.default.key');
+    $key = (string) config('distributable.events.streams.default.key');
 
     expect($seen)->toBe(['orders' => [1, 2], 'shipping' => [1, 2]])
         ->and(Redis::connection()->command('xpending', [$key, 'orders'])[0])->toBe(0)
@@ -79,7 +79,7 @@ it('serves several consumers from one loop, each with its own cursor', function 
 });
 
 it('drops a failed entry and goes on with the next one when on_failure is skip', function () {
-    config()->set('microservices.events.streams.default.on_failure', 'skip');
+    config()->set('distributable.events.streams.default.on_failure', 'skip');
     $transport = app(Transport::class);
 
     foreach ([1, 2] as $order) {
@@ -99,7 +99,7 @@ it('drops a failed entry and goes on with the next one when on_failure is skip',
         }
     });
 
-    $key = (string) config('microservices.events.streams.default.key');
+    $key = (string) config('distributable.events.streams.default.key');
 
     expect($seen)->toBe([1, 2])
         ->and(Redis::connection()->command('xpending', [$key, 'orders'])[0])->toBe(0);
@@ -115,7 +115,7 @@ it('keeps a failed entry pending when on_failure is block', function () {
         throw new RuntimeException('handler down');
     });
 
-    $key = (string) config('microservices.events.streams.default.key');
+    $key = (string) config('distributable.events.streams.default.key');
 
     expect(Redis::connection()->command('xpending', [$key, 'orders'])[0])->toBe(1);
 });
@@ -134,7 +134,7 @@ it('skips the failed entry so the next one is read', function () {
     });
 
     $skipped = $transport->skipOldest('orders');
-    $key = (string) config('microservices.events.streams.default.key');
+    $key = (string) config('distributable.events.streams.default.key');
 
     $seen = [];
     $transport->consume(['orders'], ['billing'], function (Envelope $envelope) use ($transport, &$seen): void {
@@ -200,9 +200,9 @@ it('gives its entries back for an archive, and below the acknowledged floor on r
 });
 
 it('deletes the consumption marks of an entry once it is acknowledged when guard_cleanup is acknowledge', function () {
-    config()->set('microservices.events.guard', true);
-    config()->set('microservices.events.guard_cleanup', 'acknowledge');
-    config()->set('microservices.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
+    config()->set('distributable.events.guard', true);
+    config()->set('distributable.events.guard_cleanup', 'acknowledge');
+    config()->set('distributable.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
     $transport = app(Transport::class);
     $transport->onAcknowledged(app(Dispatcher::class)->forget(...));
     $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable()));
@@ -218,8 +218,8 @@ it('deletes the consumption marks of an entry once it is acknowledged when guard
 });
 
 it('leaves the consumption marks to stream:prune-consumptions when guard_cleanup is prune', function () {
-    config()->set('microservices.events.guard', true);
-    config()->set('microservices.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
+    config()->set('distributable.events.guard', true);
+    config()->set('distributable.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
     $transport = app(Transport::class);
     $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable()));
 
@@ -232,8 +232,8 @@ it('leaves the consumption marks to stream:prune-consumptions when guard_cleanup
 });
 
 it('announces a source row on the Redis stream its model names, and nothing on the default one', function () {
-    $key = 'microservices-test:'.Str::random(8);
-    config()->set('microservices.events.streams.shadows', ['driver' => 'redis', 'key' => $key, 'block' => 100]);
+    $key = 'distributable-test:'.Str::random(8);
+    config()->set('distributable.events.streams.shadows', ['driver' => 'redis', 'key' => $key, 'block' => 100]);
 
     $refund = Refund::query()->create(['amount' => 30]);
 

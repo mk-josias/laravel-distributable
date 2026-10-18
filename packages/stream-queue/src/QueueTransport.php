@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace StreamQueue;
 
-use Distributable\Config\Services;
 use Distributable\Contracts\Stream\RedeliversEnvelopes;
 use Distributable\Contracts\Stream\Transport;
 use Distributable\Data\Envelope;
+use Distributable\Services\ModuleRegistry;
 use Illuminate\Contracts\Queue\Factory as Queue;
 use Illuminate\Contracts\Queue\Queue as Connection;
 use Throwable;
@@ -28,12 +28,14 @@ final class QueueTransport implements RedeliversEnvelopes, Transport
     public function __construct(
         private readonly Queue $queues,
         private readonly QueueStream $config,
-        private readonly Services $services,
+        private readonly ModuleRegistry $registry,
     ) {}
 
     public function publish(Envelope $envelope): void
     {
-        foreach ($this->services->getDeclared() as $service) {
+        foreach ($this->registry->all() as $module) {
+            $service = $module->name;
+
             if ($envelope->isFor($service)) {
                 $this->connection()->pushRaw($envelope->toJson(), $this->queue($service));
             }

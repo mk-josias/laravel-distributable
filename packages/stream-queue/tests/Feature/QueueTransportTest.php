@@ -12,7 +12,7 @@ use StreamQueue\QueueTransport;
 
 beforeEach(function () {
     config()->set('queue.connections.events', ['driver' => 'database', 'connection' => 'testing', 'table' => 'jobs', 'queue' => 'default', 'retry_after' => 90]);
-    config()->set('microservices.events.streams.default', ['driver' => 'queue', 'connection' => 'events']);
+    config()->set('distributable.events.streams.default', ['driver' => 'queue', 'connection' => 'events']);
 
     Schema::create('jobs', function (Blueprint $table): void {
         $table->id();
@@ -38,7 +38,7 @@ it('copies an envelope to one queue per declared service', function () {
     app(Transport::class)->publish(paid(1));
 
     expect(DB::table('jobs')->orderBy('queue')->pluck('queue')->all())
-        ->toBe(['microservices-default-billing', 'microservices-default-orders']);
+        ->toBe(['distributable-default-billing', 'distributable-default-orders']);
 });
 
 it('hands the consumer its own copy, then deletes it', function () {
@@ -52,7 +52,7 @@ it('hands the consumer its own copy, then deletes it', function () {
     });
 
     expect($received)->toBe([['order_id' => 1]])
-        ->and(DB::table('jobs')->pluck('queue')->all())->toBe(['microservices-default-billing']);
+        ->and(DB::table('jobs')->pluck('queue')->all())->toBe(['distributable-default-billing']);
 });
 
 it('serves several consumers from one loop, each from its own queue', function () {

@@ -17,6 +17,13 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 
 ### Changed
 
+- **Breaking:** one provider and one config: `MicroservicesServiceProvider` merges into
+  `DistributableServiceProvider`, and the `rpc` and `events` sections of `config/microservices.php`
+  move into `config/distributable.php`. `MICROSERVICES_*` variables become `DISTRIBUTABLE_*`, the
+  Redis stream `distributable:events`, the copies' events `distributable.shadow.*`, the RPC routes
+  `distributable.rpc.{module}`.
+- **Breaking:** a module's host is its `host` in `distributable.declared`, its copies its provider's
+  `$shadows`; `microservices.name`, `services` and `shadows` are gone.
 - **Breaking:** `owner` is a key of a module's `config/database.php`, next to `default`, naming a
   connection; the `owner` sub-key of a connection and the `{connection}:owner` name are gone.
 - **Breaking:** the migrations of a copy are those its `migrations()` names, no longer files
@@ -32,6 +39,10 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 
 ### Removed
 
+- **Breaking:** `Contracts\Colocation`, `SingleService`, `ModuleColocation` and `Config\Services`:
+  `ModuleRegistry` (`ownerOf()`, `connectionOf()`, `localNames()`) and `ModuleContext` answer
+  which module runs and what it owns. `RpcServiceProvider` merges into `FoundationServiceProvider`,
+  and `foundation:make` goes: `modules:install` and `modules:make` create the foundation.
 - Starter: the `api_token` column of `iam_users`, and `POST /iam/api/v1/tokens`.
 - **Breaking:** `Migrations\ShadowMigration`, from laravel-microservices: the migration of a copy
   is a plain migration; a subclass with its own `$table` names its own `migrations()`.

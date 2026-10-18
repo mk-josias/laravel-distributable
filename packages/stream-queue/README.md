@@ -8,11 +8,11 @@ composer require mk-josias/laravel-microservices-stream-queue
 ```
 
 ```php
-// config/microservices.php
+// config/distributable.php
 'default' => [
     'driver' => 'queue',
     // a queue.connections entry, null for the default one
-    'connection' => env('MICROSERVICES_QUEUE_CONNECTION'),
+    'connection' => env('DISTRIBUTABLE_QUEUE_CONNECTION'),
     // each service reads {key}-{service}
     'key' => 'microservices-events',
     // seconds to wait when the queue is empty

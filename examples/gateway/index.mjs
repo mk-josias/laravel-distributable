@@ -9,9 +9,9 @@ const IAM = process.env.IAM_HOST ?? 'http://127.0.0.1:8001';
 const ROUTES = { '/iam/api': IAM, '/notifications/api': process.env.NOTIFICATIONS_HOST ?? 'http://127.0.0.1:8002' };
 // No identity yet: forwarded as they are.
 const PUBLIC = ['POST /iam/api/v1/login'];
-const RPC_SECRET = process.env.MICROSERVICES_RPC_SECRET;
+const RPC_SECRET = process.env.DISTRIBUTABLE_RPC_SECRET;
 const GATEWAY_SECRET = process.env.GATEWAY_SECRET;
-const RPC_PATH = process.env.MICROSERVICES_RPC_PATH ?? '{service}/rpc/{method}';
+const RPC_PATH = process.env.DISTRIBUTABLE_RPC_PATH ?? '{service}/rpc/{method}';
 const IDENTITY_TTL = 60;
 
 createServer(async (request, response) => {

@@ -6,15 +6,15 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 export APP_KEY=base64:$(printf 'example-key-example-key-example!' | base64)
-export MICROSERVICES_RPC_SECRET=example-secret GATEWAY_SECRET=gateway-secret
-export DB_CONNECTION=sqlite CACHE_STORE=array SESSION_DRIVER=array QUEUE_CONNECTION=sync MAIL_MAILER=log REDIS_PREFIX= MICROSERVICES_STREAM_DRIVER=redis
+export DISTRIBUTABLE_RPC_SECRET=example-secret GATEWAY_SECRET=gateway-secret
+export DB_CONNECTION=sqlite CACHE_STORE=array SESSION_DRIVER=array QUEUE_CONNECTION=sync MAIL_MAILER=log REDIS_PREFIX= DISTRIBUTABLE_STREAM_DRIVER=redis
 
 for app in iam notifications analytics; do
     mkdir -p $app/storage/framework/{cache,sessions,views} $app/storage/logs $app/bootstrap/cache
     (cd $app && composer install --quiet --no-interaction && rm -f bootstrap/cache/*.php && php artisan package:discover --quiet && rm -f database/database.sqlite && touch database/database.sqlite && php artisan migrate --force --quiet)
 done
 
-redis-cli del microservices:events > /dev/null
+redis-cli del distributable:events > /dev/null
 
 pids=()
 (cd iam && exec php -S 127.0.0.1:8001 -t public > /dev/null 2>&1) & pids+=($!)

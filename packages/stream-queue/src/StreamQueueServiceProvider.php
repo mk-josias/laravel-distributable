@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StreamQueue;
 
-use Distributable\Config\Services;
+use Distributable\Services\ModuleRegistry;
 use Distributable\Services\Stream\TransportManager;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
@@ -19,7 +19,7 @@ final class StreamQueueServiceProvider extends ServiceProvider
             $transports->extend('queue', static fn (Container $app, array $options, string $stream): QueueTransport => new QueueTransport(
                 $app->make(Queue::class),
                 new QueueStream($app->make(Repository::class), $stream),
-                $app->make(Services::class),
+                $app->make(ModuleRegistry::class),
             ));
         });
     }

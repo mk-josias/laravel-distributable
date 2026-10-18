@@ -7,16 +7,16 @@ composer require mk-josias/laravel-microservices-stream-redis
 ```
 
 Its provider is discovered and registers the driver. The shipped `default` stream uses it once
-`MICROSERVICES_STREAM_DRIVER=redis`:
+`DISTRIBUTABLE_STREAM_DRIVER=redis`:
 
 ```php
-// config/microservices.php
+// config/distributable.php
 'default' => [
-    'driver' => env('MICROSERVICES_STREAM_DRIVER', 'array'),
+    'driver' => env('DISTRIBUTABLE_STREAM_DRIVER', 'array'),
     // a database.redis connection, null for `default`
-    'connection' => env('MICROSERVICES_STREAM_CONNECTION'),
+    'connection' => env('DISTRIBUTABLE_STREAM_CONNECTION'),
     // the one Redis stream every service writes to
-    'key' => 'microservices:events',
+    'key' => 'distributable:events',
     // how long a read waits, in ms
     'block' => 5_000,
     // entries per read

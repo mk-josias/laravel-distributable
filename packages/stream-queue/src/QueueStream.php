@@ -6,7 +6,7 @@ namespace StreamQueue;
 
 use Illuminate\Contracts\Config\Repository;
 
-/** The microservices.events.streams.{name}.* settings of a stream on the `queue` driver; read live, never snapshotted. */
+/** The distributable.events.streams.{name}.* settings of a stream on the `queue` driver; read live, never snapshotted. */
 final readonly class QueueStream
 {
     public function __construct(private Repository $config, public string $name) {}
@@ -14,7 +14,7 @@ final readonly class QueueStream
     /** Null is the application's default queue connection. */
     public function getConnection(): ?string
     {
-        $connection = $this->config->get("microservices.events.streams.{$this->name}.connection");
+        $connection = $this->config->get("distributable.events.streams.{$this->name}.connection");
 
         return is_string($connection) && $connection !== '' ? $connection : null;
     }
@@ -22,11 +22,11 @@ final readonly class QueueStream
     /** Each service reads its own queue, {key}-{service}. */
     public function getKey(): string
     {
-        return (string) $this->config->get("microservices.events.streams.{$this->name}.key", "microservices-{$this->name}");
+        return (string) $this->config->get("distributable.events.streams.{$this->name}.key", "distributable-{$this->name}");
     }
 
     public function getSleep(): int
     {
-        return (int) $this->config->get("microservices.events.streams.{$this->name}.sleep", 1);
+        return (int) $this->config->get("distributable.events.streams.{$this->name}.sleep", 1);
     }
 }
