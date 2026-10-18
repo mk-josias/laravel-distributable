@@ -35,5 +35,7 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 - Starter: the `api_token` column of `iam_users`, and `POST /iam/api/v1/tokens`.
 - **Breaking:** `Migrations\ShadowMigration`, from laravel-microservices: the migration of a copy
   is a plain migration; a subclass with its own `$table` names its own `migrations()`.
+- `modules:doctor` no longer reports a `database` cache, queue or session driver: the application
+  chooses its stores.
 
 [Unreleased]: https://github.com/mk-josias/laravel-distributable-modules/compare/v0.2.0...HEAD
