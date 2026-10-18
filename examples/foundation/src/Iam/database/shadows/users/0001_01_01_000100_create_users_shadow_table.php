@@ -1,20 +1,15 @@
 <?php
 
-use Distributable\Migrations\ShadowMigration;
 use Foundation\Iam\Shadows\UserShadow;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends ShadowMigration
+return new class extends Migration
 {
-    protected function shadow(): string
-    {
-        return UserShadow::class;
-    }
-
     public function up(): void
     {
-        Schema::create($this->table(), function (Blueprint $table) {
+        Schema::create((new UserShadow)->getTable(), function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->string('name');
             $table->string('email');

@@ -22,4 +22,9 @@ class UserShadow extends ShadowModel
     {
         return 'users';
     }
+
+    public static function migrations(): array
+    {
+        return [__DIR__.'/../database/shadows/users'];
+    }
 }

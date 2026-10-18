@@ -9,8 +9,8 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 ### Added
 
 - `modules.routes.prefix` (`{module}/{name}`) and a module's own `prefix` in `modules.declared`.
-- `Contracts\PublishesMigrations`: a copy names the files or folders of its migrations.
-- `modules:doctor` reports a kept copy with no migration, or a path holding none.
+- `ShadowModel::migrations()`, abstract: every copy names the files or folders of its migrations.
+- `modules:doctor` reports a path a kept copy names that holds no migration.
 - `model:prune` and `model:show` find the models of the module `--module` names.
 - Starter: Sanctum tokens, one per device; `POST /iam/api/v1/login`, `refresh`, `logout`, `logout-all`.
 - Starter: the analytics datasets are partitioned by month on MySQL and MariaDB too.
@@ -30,5 +30,7 @@ Notable changes to `mk-josias/laravel-distributable-modules` and its starter. Th
 ### Removed
 
 - Starter: the `api_token` column of `iam_users`, and `POST /iam/api/v1/tokens`.
+- **Breaking:** `Migrations\ShadowMigration`, from laravel-microservices: the migration of a copy
+  is a plain migration; a subclass with its own `$table` names its own `migrations()`.
 
 [Unreleased]: https://github.com/mk-josias/laravel-distributable-modules/compare/v0.2.0...HEAD
