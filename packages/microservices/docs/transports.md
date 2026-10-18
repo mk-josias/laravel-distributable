@@ -1,9 +1,9 @@
 # Writing a transport
 
-An events driver implements `Microservices\Contracts\Stream\Transport` and is registered by name:
+An events driver implements `Distributable\Contracts\Stream\Transport` and is registered by name:
 
 ```php
-app(\Microservices\Services\Stream\TransportManager::class)
+app(\Distributable\Services\Stream\TransportManager::class)
     ->extend('kafka', fn ($app, array $options, string $stream) => new KafkaTransport($options));
 ```
 

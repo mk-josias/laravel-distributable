@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /**
  * The single seam services emit events through. The binding decides what emitting means —

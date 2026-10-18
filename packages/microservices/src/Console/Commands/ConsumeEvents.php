@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Config\Services;
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\ReportsAcknowledgements;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
+use Distributable\Services\Stream\Dispatcher;
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Console\Command;
-use Microservices\Config\Services;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\ReportsAcknowledgements;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
-use Microservices\Services\Stream\Dispatcher;
-use Microservices\Services\Stream\TransportManager;
 
 /**
  * The consumer role: reads the envelopes published by every service and runs the handlers of the

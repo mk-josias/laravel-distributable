@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 use Carbon\CarbonImmutable;
-use Microservices\Data\Envelope;
+use Distributable\Data\Envelope;
 
 /** A transport that keeps envelopes after delivery, and reads them back for an archive. */
 interface ArchivesStreams

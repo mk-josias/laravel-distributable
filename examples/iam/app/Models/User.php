@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Distributable\Contracts\Shadows\Shadowed;
+use Distributable\Traits\ShadowSource;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
-use Microservices\Contracts\Shadows\Shadowed;
-use Microservices\Traits\ShadowSource;
 
 /**
  * @property int $id

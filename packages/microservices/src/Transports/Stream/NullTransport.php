@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Transports\Stream;
+namespace Distributable\Transports\Stream;
 
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
 
 /** Drops every envelope — for tests, and for running a node with its reactions cut. */
 final class NullTransport implements Transport

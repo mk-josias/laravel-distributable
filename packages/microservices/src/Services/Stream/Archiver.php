@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
 use Carbon\CarbonImmutable;
-use Microservices\Contracts\Stream\ArchivesStreams;
-use Microservices\Contracts\Stream\ArchiveStore;
-use Microservices\Data\Envelope;
-use Microservices\Exceptions\ConfigurationException;
+use Distributable\Contracts\Stream\ArchivesStreams;
+use Distributable\Contracts\Stream\ArchiveStore;
+use Distributable\Data\Envelope;
+use Distributable\Exceptions\ConfigurationException;
 
 /** Copies the entries of a stream to an archive store, and puts them back on a stream. */
 final class Archiver

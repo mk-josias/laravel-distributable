@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Rpc;
+namespace Distributable\Contracts\Rpc;
 
 /** Carries a call to a method of a contract, answered by the service that implements it. */
 interface Transport

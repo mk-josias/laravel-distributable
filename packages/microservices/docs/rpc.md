@@ -24,7 +24,7 @@ protected array $rpc = [\Foundation\Billing\Contracts\BillingService::class => \
 protected array $services = [\Foundation\Billing\Contracts\BillingService::class => \App\Services\BillingService::class];
 ```
 
-Both providers extend `Microservices\Providers\RpcServiceProvider`. The `RpcService` finds the
+Both providers extend `Distributable\Providers\RpcServiceProvider`. The `RpcService` finds the
 service it calls from its namespace: `Foundation\Billing\Services\BillingRpcService` is under
 `Foundation\Billing`, the namespace of `billing`.
 
@@ -40,7 +40,7 @@ orders ─► BillingService (the contract) ─► BillingRpcService::call('invo
 billing ─► the `rpc` group checks the signature ─► LocalServices runs the implementation in $services
 ```
 
-`Microservices\Services\Rpc\LocalServices` runs the method and returns the answer as JSON decodes
+`Distributable\Services\Rpc\LocalServices` runs the method and returns the answer as JSON decodes
 it. Only a method declared on a contract of `$services` can be called.
 
 `Contracts\Rpc\Transport` is what an `RpcService` is given, bound to `Services\Rpc\TransportManager`. A
@@ -126,7 +126,7 @@ answer is filed by Laravel under its tags, and its key is Laravel's tagged one.
 'services' => ['billing' => ['host' => ['url' => 'grpc://billing.internal', 'transport' => 'grpc']]],
 'rpc'      => ['transports' => ['http' => ['driver' => 'http'], 'grpc' => ['driver' => 'grpc', 'port' => 50051]]],
 
-app(\Microservices\Services\Rpc\TransportManager::class)
+app(\Distributable\Services\Rpc\TransportManager::class)
     ->extend('grpc', fn ($app, array $config, string $name) => new GrpcTransport($config));
 ```
 

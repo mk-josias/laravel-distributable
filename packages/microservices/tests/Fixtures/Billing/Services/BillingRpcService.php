@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\Billing\Services;
+namespace Distributable\Tests\Microservices\Fixtures\Billing\Services;
 
-use Microservices\Services\Rpc\RpcService;
-use Microservices\Tests\Fixtures\Billing\Contracts\BillingService;
+use Distributable\Services\Rpc\RpcService;
+use Distributable\Tests\Microservices\Fixtures\Billing\Contracts\BillingService;
 
 final class BillingRpcService extends RpcService implements BillingService
 {

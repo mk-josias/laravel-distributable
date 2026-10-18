@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Contracts\Stream\TrimsStreams;
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Console\Command;
-use Microservices\Contracts\Stream\TrimsStreams;
-use Microservices\Services\Stream\TransportManager;
 
 final class TrimEvents extends Command
 {

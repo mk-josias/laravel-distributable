@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StreamRedis\Tests;
 
-use Microservices\Tests\TestCase as CoreTestCase;
+use Distributable\Tests\Microservices\TestCase as CoreTestCase;
 use StreamRedis\StreamRedisServiceProvider;
 
 /** The core's `orders` application, with the redis driver installed. */

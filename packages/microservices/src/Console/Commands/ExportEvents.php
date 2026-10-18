@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Console\ArchiveOptions;
+use Distributable\Services\Stream\Archiver;
 use Illuminate\Console\Command;
-use Microservices\Console\ArchiveOptions;
-use Microservices\Services\Stream\Archiver;
 
 /** Copies what the stream keeps to an archive. Nothing is deleted: stream:trim drops what every consumer has read. */
 final class ExportEvents extends Command

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Rpc;
+namespace Distributable\Services\Rpc;
 
 /** Each contract bound to an RpcService, with the service it calls. */
 final class RpcServices

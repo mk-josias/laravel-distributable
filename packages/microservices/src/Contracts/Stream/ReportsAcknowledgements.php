@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
-use Microservices\Data\Envelope;
+use Distributable\Data\Envelope;
 
 /** A transport that tells, once an envelope is acknowledged, which consumer acknowledged it. */
 interface ReportsAcknowledgements

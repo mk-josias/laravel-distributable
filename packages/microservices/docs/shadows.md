@@ -6,15 +6,15 @@ the data.
 
 ```php
 // billing: the source; the $shadowed fields are copied
-final class Customer extends Model implements \Microservices\Contracts\Shadows\Shadowed
+final class Customer extends Model implements \Distributable\Contracts\Shadows\Shadowed
 {
-    use \Microservices\Traits\ShadowSource;
+    use \Distributable\Traits\ShadowSource;
 
     protected array $shadowed = ['name'];
 }
 
 // foundation: the copy as billing describes it, for every service that keeps one
-class CustomerShadow extends \Microservices\Models\ShadowModel
+class CustomerShadow extends \Distributable\Models\ShadowModel
 {
     public static function owner(): string { return 'billing'; }
 
@@ -31,13 +31,13 @@ brings its own migration. A copy is a model like any other: it reads the databas
 running, so it is read inside that service.
 
 The keeper creates the copy's table with a migration extending
-`Microservices\Migrations\ShadowMigration`. `shadow()` names the copy by its class, so the source
+`Distributable\Migrations\ShadowMigration`. `shadow()` names the copy by its class, so the source
 table is written once, in the copy's `sourceTable()`; `table()` is the name the keeper's copy model
 reads: the source's own, or its `$table`. The copy has the source's key as its own, the shadowed
 columns and a `deleted_at`:
 
 ```php
-return new class extends \Microservices\Migrations\ShadowMigration
+return new class extends \Distributable\Migrations\ShadowMigration
 {
     protected function shadow(): string { return \Foundation\Billing\Shadows\CustomerShadow::class; }
 

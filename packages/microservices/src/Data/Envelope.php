@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Data;
+namespace Distributable\Data;
 
 use Carbon\CarbonImmutable;
+use Distributable\Contracts\Stream\Event;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
-use Microservices\Contracts\Stream\Event;
 
 /**
  * The wire contract. Every transport carries this shape and nothing else — that is what makes

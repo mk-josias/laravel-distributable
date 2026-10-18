@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Contracts;
+namespace Distributable\Tests\Microservices\Fixtures\App\Contracts;
 
 interface OrdersService
 {

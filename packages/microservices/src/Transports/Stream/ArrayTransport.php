@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Transports\Stream;
+namespace Distributable\Transports\Stream;
 
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
 
 /**
  * An in-memory stream for tests: publishing appends, consuming hands every envelope of the

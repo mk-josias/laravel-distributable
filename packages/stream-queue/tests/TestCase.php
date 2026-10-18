@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StreamQueue\Tests;
 
-use Microservices\Tests\TestCase as CoreTestCase;
+use Distributable\Tests\Microservices\TestCase as CoreTestCase;
 use StreamQueue\StreamQueueServiceProvider;
 
 /** The core's `orders` application, with the queue driver installed. */

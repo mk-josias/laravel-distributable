@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace StreamRedis;
 
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Redis\Factory as Redis;
 use Illuminate\Support\ServiceProvider;
-use Microservices\Services\Stream\TransportManager;
 
 final class StreamRedisServiceProvider extends ServiceProvider
 {

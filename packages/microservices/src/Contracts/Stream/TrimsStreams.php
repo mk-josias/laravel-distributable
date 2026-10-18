@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /** A transport that keeps envelopes after delivery, and drops only those every consumer acknowledged. */
 interface TrimsStreams

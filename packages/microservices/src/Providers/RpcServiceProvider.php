@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Providers;
+namespace Distributable\Providers;
 
+use Distributable\Config\Services;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Versioned;
+use Distributable\Services\Rpc\LocalServices;
+use Distributable\Services\Rpc\RpcService;
+use Distributable\Services\Rpc\RpcServices;
+use Distributable\Services\Stream\PayloadVersions;
 use Illuminate\Support\ServiceProvider;
-use Microservices\Config\Services;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Versioned;
-use Microservices\Services\Rpc\LocalServices;
-use Microservices\Services\Rpc\RpcService;
-use Microservices\Services\Rpc\RpcServices;
-use Microservices\Services\Stream\PayloadVersions;
 
 /**
  * Base of the provider that wires an application's contracts: the ones it calls, each bound to

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream\Outbox;
+namespace Distributable\Services\Stream\Outbox;
 
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
+use Distributable\Data\Envelope;
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
-use Microservices\Data\Envelope;
-use Microservices\Services\Stream\TransportManager;
 use stdClass;
 use Throwable;
 

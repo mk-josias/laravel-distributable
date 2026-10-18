@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console;
+namespace Distributable\Console;
 
-use Microservices\Contracts\Stream\ArchiveStore;
-use Microservices\Services\Stream\ArchiveStores;
+use Distributable\Contracts\Stream\ArchiveStore;
+use Distributable\Services\Stream\ArchiveStores;
 
 /** The options stream:export and stream:import share. */
 trait ArchiveOptions

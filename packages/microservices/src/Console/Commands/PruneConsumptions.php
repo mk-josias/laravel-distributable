@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
 use Throwable;
 
 /** A consumption mark only matters while its event can still be redelivered: past the stream's retention it guards nothing. */

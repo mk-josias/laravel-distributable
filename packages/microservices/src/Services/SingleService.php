@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services;
+namespace Distributable\Services;
 
 use Closure;
-use Microservices\Config\Services;
-use Microservices\Contracts\Colocation;
+use Distributable\Config\Services;
+use Distributable\Contracts\Colocation;
 
 /**
  * One application, one service (microservices.name). A class belongs to the service whose

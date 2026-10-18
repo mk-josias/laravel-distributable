@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /**
  * A service's reaction to an event, declared in microservices.events.listen. The signature is

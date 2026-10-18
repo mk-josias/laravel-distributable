@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Foundation\Iam\Shadows;
 
-use Microservices\Models\ShadowModel;
+use Distributable\Models\ShadowModel;
 
 /**
  * @property int $id

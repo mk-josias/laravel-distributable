@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /** What the bus emits: a name and a payload; Events\Event implements the rest with its defaults. */
 interface Event

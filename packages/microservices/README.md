@@ -86,7 +86,7 @@ interface BillingService
 }
 
 // Foundation\Billing\Services\BillingRpcService, in the foundation, used by the callers
-final class BillingRpcService extends \Microservices\Services\Rpc\RpcService implements BillingService
+final class BillingRpcService extends \Distributable\Services\Rpc\RpcService implements BillingService
 {
     public function invoiceFor(int $orderId): ?array
     {
@@ -95,7 +95,7 @@ final class BillingRpcService extends \Microservices\Services\Rpc\RpcService imp
 }
 
 // app/Providers/ServicesProvider.php, in orders
-final class ServicesProvider extends \Microservices\Providers\RpcServiceProvider
+final class ServicesProvider extends \Distributable\Providers\RpcServiceProvider
 {
     // the contracts orders calls
     protected array $rpc = [BillingService::class => BillingRpcService::class];
@@ -111,7 +111,7 @@ contract in its `$services`: no route to write. See [RPC](docs/rpc.md).
 ## Announcing and handling events
 
 ```php
-final class OrderPlaced extends \Microservices\Events\Event
+final class OrderPlaced extends \Distributable\Events\Event
 {
     public function __construct(private readonly int $id) {}
 
@@ -123,7 +123,7 @@ final class OrderPlaced extends \Microservices\Events\Event
     public function version(): int { return 1; }
 }
 
-app(\Microservices\Contracts\Stream\Bus::class)->emit(new OrderPlaced($order->id));
+app(\Distributable\Contracts\Stream\Bus::class)->emit(new OrderPlaced($order->id));
 ```
 
 The consuming service lists its handlers and runs a consumer:
@@ -146,9 +146,9 @@ in its own database. Only the owner writes them: the copy follows its events and
 
 ```php
 // in billing: the source, announced on every write
-final class Customer extends Model implements \Microservices\Contracts\Shadows\Shadowed
+final class Customer extends Model implements \Distributable\Contracts\Shadows\Shadowed
 {
-    use \Microservices\Traits\ShadowSource;
+    use \Distributable\Traits\ShadowSource;
 
     protected array $shadowed = ['name'];
 }
@@ -156,7 +156,7 @@ final class Customer extends Model implements \Microservices\Contracts\Shadows\S
 // in the foundation: the copy as billing describes it
 namespace Foundation\Billing\Shadows;
 
-class CustomerShadow extends \Microservices\Models\ShadowModel
+class CustomerShadow extends \Distributable\Models\ShadowModel
 {
     public static function owner(): string { return 'billing'; }
 
@@ -167,7 +167,7 @@ class CustomerShadow extends \Microservices\Models\ShadowModel
 'shadows' => [\Foundation\Billing\Shadows\CustomerShadow::class],
 
 // in orders: the migration of that table
-return new class extends \Microservices\Migrations\ShadowMigration
+return new class extends \Distributable\Migrations\ShadowMigration
 {
     protected function shadow(): string { return \Foundation\Billing\Shadows\CustomerShadow::class; }
 

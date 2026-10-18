@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Exceptions;
+namespace Distributable\Exceptions;
 
 use RuntimeException;
 

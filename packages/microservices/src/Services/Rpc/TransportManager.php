@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Rpc;
+namespace Distributable\Services\Rpc;
 
 use Closure;
+use Distributable\Config\Rpc;
+use Distributable\Contracts\Rpc\Transport;
+use Distributable\Exceptions\ConfigurationException;
 use Illuminate\Contracts\Container\Container;
-use Microservices\Config\Rpc;
-use Microservices\Contracts\Rpc\Transport;
-use Microservices\Exceptions\ConfigurationException;
 
 /**
  * Routes each call to the named transport of microservices.rpc.transports its service's host

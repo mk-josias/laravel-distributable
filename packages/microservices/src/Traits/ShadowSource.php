@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Traits;
+namespace Distributable\Traits;
 
 use BackedEnum;
 use DateTimeInterface;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Events\ShadowChanged;
+use Distributable\Exceptions\ServiceException;
 use Illuminate\Database\Eloquent\Model;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Events\ShadowChanged;
-use Microservices\Exceptions\ServiceException;
 
 /**
  * Put on a model other services keep a copy of. Every write announces the row as it now stands;

@@ -18,7 +18,7 @@ The consuming service declares its handlers:
 'events' => ['listen' => ['orders.order.placed' => [OpenInvoice::class]]],
 ```
 
-A handler implements `Microservices\Contracts\Stream\Handler` and receives the event name and the
+A handler implements `Distributable\Contracts\Stream\Handler` and receives the event name and the
 raw payload.
 
 ## The envelope
@@ -53,7 +53,7 @@ Renaming a field, removing one or changing what one means raises it.
 The emitter declares its versions on a payload class, which consumers can read too:
 
 ```php
-final class OrderPlacedPayload implements \Microservices\Contracts\Stream\Versioned
+final class OrderPlacedPayload implements \Distributable\Contracts\Stream\Versioned
 {
     public static function version(): int { return 2; }
 
@@ -107,7 +107,7 @@ Order is only kept within a stream.
 You can add your own driver; [Writing a transport](transports.md) lists what it has to guarantee:
 
 ```php
-app(\Microservices\Services\Stream\TransportManager::class)
+app(\Distributable\Services\Stream\TransportManager::class)
     ->extend('kafka', fn ($app, array $options, string $stream) => new KafkaTransport($options));
 ```
 
@@ -179,7 +179,7 @@ The archive is a store: `file` (JSON lines, one envelope per line) ships, and
 `Contracts\Stream\ArchiveStore` (`write($target, $rows)`, `read($source)`) and is registered by name:
 
 ```php
-app(\Microservices\Services\Stream\ArchiveStores::class)
+app(\Distributable\Services\Stream\ArchiveStores::class)
     ->extend('s3', fn ($app) => new S3ArchiveStore($app->make('filesystem')->disk('s3')));
 ```
 
@@ -214,7 +214,7 @@ php artisan stream:skip --service=billing --until="2026-10-16 12:00"
 `--until` only moves the cursor forward, never past the present moment, and says how many entries it dropped. The `redis` transport
 does it; a transport that can't answers that it cannot skip entries.
 
-In a test, `Microservices\Testing\InteractsWithServices::receive('orders.order.placed', [...])`
+In a test, `Distributable\Testing\InteractsWithServices::receive('orders.order.placed', [...])`
 hands the event to the handlers, without a stream or a consumer.
 
 ## Idempotent handlers

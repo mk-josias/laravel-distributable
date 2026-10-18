@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream\Outbox;
+namespace Distributable\Services\Stream\Outbox;
 
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
+use Distributable\Data\Envelope;
 use Illuminate\Database\DatabaseManager;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
-use Microservices\Data\Envelope;
 
 /**
  * Writes a publication row on the emitting service's own connection, so it lands inside the

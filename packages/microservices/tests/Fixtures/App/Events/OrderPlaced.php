@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Events;
+namespace Distributable\Tests\Microservices\Fixtures\App\Events;
 
-use Microservices\Events\Event;
+use Distributable\Events\Event;
 
 final class OrderPlaced extends Event
 {

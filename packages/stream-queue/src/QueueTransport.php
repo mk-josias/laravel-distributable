@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace StreamQueue;
 
+use Distributable\Config\Services;
+use Distributable\Contracts\Stream\RedeliversEnvelopes;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
 use Illuminate\Contracts\Queue\Factory as Queue;
 use Illuminate\Contracts\Queue\Queue as Connection;
-use Microservices\Config\Services;
-use Microservices\Contracts\Stream\RedeliversEnvelopes;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
 use Throwable;
 
 /**

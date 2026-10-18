@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console;
+namespace Distributable\Console;
 
+use Distributable\Contracts\Colocation;
 use Illuminate\Container\Container;
-use Microservices\Contracts\Colocation;
 
 /** The services a command works on: those --service names, else the one running, else every local one. */
 trait LocalServicesOption

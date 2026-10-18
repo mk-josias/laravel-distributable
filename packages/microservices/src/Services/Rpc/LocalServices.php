@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Rpc;
+namespace Distributable\Services\Rpc;
 
+use Distributable\Contracts\Colocation;
+use Distributable\Exceptions\ServiceException;
 use Illuminate\Container\Container;
-use Microservices\Contracts\Colocation;
-use Microservices\Exceptions\ServiceException;
 
 /**
  * The implementation each local service gives its contracts (a provider's $services). Every

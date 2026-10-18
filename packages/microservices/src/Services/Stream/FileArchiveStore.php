@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
-use Microservices\Contracts\Stream\ArchiveStore;
+use Distributable\Contracts\Stream\ArchiveStore;
 use SplFileObject;
 
 /** A JSON-lines file per target: one envelope per line. */

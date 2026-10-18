@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Handlers;
 
 use App\Models\Notification;
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Contracts\Stream\Handler;
 use Foundation\Iam\Events\UserRegistered;
 use Foundation\Iam\Shadows\UserShadow;
 use Foundation\Notifications\Events\MailSent;
 use Illuminate\Support\Facades\Mail;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Contracts\Stream\Handler;
 
 /** The address comes from notifications' copy of iam's users, filled by the event iam emitted just before. */
 final readonly class SendWelcome implements Handler

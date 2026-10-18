@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Events;
+namespace Distributable\Events;
 
-use Microservices\Contracts\Stream\Event as EventContract;
+use Distributable\Contracts\Stream\Event as EventContract;
 
 /**
  * Base for events: a concrete event returns its name and its typed payload as an array. Nothing

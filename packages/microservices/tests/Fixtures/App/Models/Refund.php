@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Models;
+namespace Distributable\Tests\Microservices\Fixtures\App\Models;
 
+use Distributable\Contracts\Shadows\Shadowed;
+use Distributable\Traits\ShadowSource;
 use Illuminate\Database\Eloquent\Model;
-use Microservices\Contracts\Shadows\Shadowed;
-use Microservices\Traits\ShadowSource;
 
 /**
  * @property int $id

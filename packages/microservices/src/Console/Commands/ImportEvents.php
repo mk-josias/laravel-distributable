@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Console\ArchiveOptions;
+use Distributable\Services\Stream\Archiver;
 use Illuminate\Console\Command;
-use Microservices\Console\ArchiveOptions;
-use Microservices\Services\Stream\Archiver;
 
 /** Publishes the entries of an export back on a stream, e.g. to rebuild one that was emptied. */
 final class ImportEvents extends Command

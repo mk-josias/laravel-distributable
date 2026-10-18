@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
 use Closure;
+use Distributable\Contracts\Stream\ArchiveStore;
+use Distributable\Exceptions\ConfigurationException;
 use Illuminate\Contracts\Container\Container;
-use Microservices\Contracts\Stream\ArchiveStore;
-use Microservices\Exceptions\ConfigurationException;
 
 /** The archive stores by name: `file` ships; extend('s3', fn ($app) => …) registers any other. */
 final class ArchiveStores

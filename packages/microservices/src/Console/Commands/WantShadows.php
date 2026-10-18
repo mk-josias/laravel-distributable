@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Events\ShadowWanted;
+use Distributable\Services\Shadows\ShadowRegistry;
 use Illuminate\Console\Command;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Events\ShadowWanted;
-use Microservices\Services\Shadows\ShadowRegistry;
 
 /** Run by a service keeping copies: asks the owner of each source table to announce what it holds. */
 final class WantShadows extends Command

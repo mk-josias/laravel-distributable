@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Config\Services;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Microservices\Config\Services;
 
 /** The Composer package every service requires: under Foundation\{Service}\, what each one shares with the others. */
 final class MakeFoundation extends Command

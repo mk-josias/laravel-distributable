@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
-use Microservices\Data\Envelope;
+use Distributable\Data\Envelope;
 
 /**
  * How an envelope leaves this process and how it comes back. THE extension point: the package

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Services\Shadows\ShadowRegistry;
 use Illuminate\Console\Command;
-use Microservices\Services\Shadows\ShadowRegistry;
 
 /** Run by the owner of a source table: every row goes out again, for copies created after it. */
 final class AnnounceShadows extends Command

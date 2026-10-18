@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Handler;
+use Distributable\Contracts\Stream\Idempotent;
+use Distributable\Contracts\Stream\RedeliversEnvelopes;
+use Distributable\Data\Envelope;
+use Distributable\Events\ShadowChanged;
+use Distributable\Events\ShadowWanted;
+use Distributable\Exceptions\ConfigurationException;
+use Distributable\Exceptions\ServiceException;
+use Distributable\Handlers\AnnounceShadowSource;
+use Distributable\Handlers\SyncShadows;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Date;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Handler;
-use Microservices\Contracts\Stream\Idempotent;
-use Microservices\Contracts\Stream\RedeliversEnvelopes;
-use Microservices\Data\Envelope;
-use Microservices\Events\ShadowChanged;
-use Microservices\Events\ShadowWanted;
-use Microservices\Exceptions\ConfigurationException;
-use Microservices\Exceptions\ServiceException;
-use Microservices\Handlers\AnnounceShadowSource;
-use Microservices\Handlers\SyncShadows;
 
 /**
  * Runs the local handlers of an envelope. Every transport ends here — in-process delivery and a

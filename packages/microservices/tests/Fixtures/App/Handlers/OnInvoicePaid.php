@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Handlers;
+namespace Distributable\Tests\Microservices\Fixtures\App\Handlers;
 
+use Distributable\Contracts\Stream\Handler;
 use Illuminate\Support\Facades\DB;
-use Microservices\Contracts\Stream\Handler;
 
 /** Each run leaves a row, so a replay the guard let through would show. */
 final class OnInvoicePaid implements Handler

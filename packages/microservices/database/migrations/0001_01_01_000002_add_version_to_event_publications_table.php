@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use Distributable\Config\Streamer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Microservices\Config\Streamer;
 
 return new class extends Migration
 {

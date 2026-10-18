@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
+use Distributable\Events\ShadowChanged;
+use Distributable\Services\Stream\Dispatcher;
+use Distributable\Services\Stream\TransportManager;
+use Distributable\Tests\Microservices\Fixtures\App\Models\CustomerShadow;
+use Distributable\Tests\Microservices\Fixtures\App\Models\Order;
+use Distributable\Tests\Microservices\Fixtures\App\Models\Refund;
 use Illuminate\Support\Facades\DB;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
-use Microservices\Events\ShadowChanged;
-use Microservices\Services\Stream\Dispatcher;
-use Microservices\Services\Stream\TransportManager;
-use Microservices\Tests\Fixtures\App\Models\CustomerShadow;
-use Microservices\Tests\Fixtures\App\Models\Order;
-use Microservices\Tests\Fixtures\App\Models\Refund;
 
 function customerChanged(int $key, array $attributes): Envelope
 {

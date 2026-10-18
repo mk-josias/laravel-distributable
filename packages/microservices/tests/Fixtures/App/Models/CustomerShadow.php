@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Models;
+namespace Distributable\Tests\Microservices\Fixtures\App\Models;
 
-use Microservices\Models\ShadowModel;
+use Distributable\Models\ShadowModel;
 
 /** Billing's customers, as orders keeps them: the table customers. */
 final class CustomerShadow extends ShadowModel

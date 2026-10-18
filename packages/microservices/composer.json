@@ -28,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Microservices\\": "src/"
+            "Distributable\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -37,7 +37,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Microservices\\Providers\\MicroservicesServiceProvider"
+                "Distributable\\Providers\\MicroservicesServiceProvider"
             ]
         }
     },

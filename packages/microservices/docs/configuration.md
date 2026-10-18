@@ -1,7 +1,7 @@
 # Configuration
 
 `php artisan vendor:publish --tag=microservices-config` publishes `config/microservices.php`. The
-package reads it only through the classes in `Microservices\Config\`: `Services`, `Rpc` and
+package reads it only through the classes in `Distributable\Config\`: `Services`, `Rpc` and
 `Streamer`. A driver reads its own stream options: `StreamRedis\RedisStream`,
 `StreamQueue\QueueStream`.
 
@@ -41,7 +41,7 @@ Stream options, by driver (`redis` and `queue` come with their packages):
 ## Several services in one process
 
 An application is one service. A package that runs several services in one process binds
-`Microservices\Contracts\Colocation`, which answers what the package needs to know about them:
+`Distributable\Contracts\Colocation`, which answers what the package needs to know about them:
 
 | Method | Returns |
 |---|---|

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /**
  * A transport that may hand the same envelope over more than once (an unacknowledged broker

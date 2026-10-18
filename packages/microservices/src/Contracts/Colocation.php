@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts;
+namespace Distributable\Contracts;
 
 use Closure;
 

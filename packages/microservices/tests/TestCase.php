@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests;
+namespace Distributable\Tests\Microservices;
 
+use Distributable\Providers\MicroservicesServiceProvider;
+use Distributable\Testing\InteractsWithServices;
+use Distributable\Tests\Microservices\Fixtures\App\Models\CustomerShadow;
+use Distributable\Tests\Microservices\Fixtures\App\Providers\OrdersServiceProvider;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Microservices\Providers\MicroservicesServiceProvider;
-use Microservices\Testing\InteractsWithServices;
-use Microservices\Tests\Fixtures\App\Models\CustomerShadow;
-use Microservices\Tests\Fixtures\App\Providers\OrdersServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 /** The `orders` application, on its own: it answers OrdersService and calls `billing`, which runs elsewhere. */
@@ -35,7 +35,7 @@ abstract class TestCase extends Orchestra
         $config->set('database.default', 'testing');
         $config->set('microservices.name', 'orders');
         $config->set('microservices.services', [
-            'billing' => ['host' => 'http://billing.test', 'namespace' => 'Microservices\Tests\Fixtures\Billing'],
+            'billing' => ['host' => 'http://billing.test', 'namespace' => 'Distributable\Tests\Microservices\Fixtures\Billing'],
         ]);
         $config->set('microservices.shadows', [CustomerShadow::class]);
         $config->set('microservices.rpc.secret', 'test-secret');

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Distributable\Migrations\ShadowMigration;
+use Distributable\Tests\Microservices\Fixtures\App\Models\CustomerShadow;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Microservices\Migrations\ShadowMigration;
-use Microservices\Tests\Fixtures\App\Models\CustomerShadow;
 
 return new class extends Migration
 {

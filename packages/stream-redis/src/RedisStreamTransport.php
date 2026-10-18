@@ -6,15 +6,15 @@ namespace StreamRedis;
 
 use Carbon\CarbonImmutable;
 use Closure;
+use Distributable\Contracts\Stream\ArchivesStreams;
+use Distributable\Contracts\Stream\RedeliversEnvelopes;
+use Distributable\Contracts\Stream\ReportsAcknowledgements;
+use Distributable\Contracts\Stream\SkipsEntries;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Contracts\Stream\TrimsStreams;
+use Distributable\Data\Envelope;
 use Illuminate\Contracts\Redis\Factory as Redis;
 use Illuminate\Redis\Connections\Connection;
-use Microservices\Contracts\Stream\ArchivesStreams;
-use Microservices\Contracts\Stream\RedeliversEnvelopes;
-use Microservices\Contracts\Stream\ReportsAcknowledgements;
-use Microservices\Contracts\Stream\SkipsEntries;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Contracts\Stream\TrimsStreams;
-use Microservices\Data\Envelope;
 use Throwable;
 
 /**

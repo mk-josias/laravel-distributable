@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Events;
+namespace Distributable\Events;
 
 /** A service keeping a copy asks the owner of the source table to announce every row, to it alone. */
 final class ShadowWanted extends Event

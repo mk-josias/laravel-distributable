@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Handlers;
+namespace Distributable\Handlers;
 
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Handler;
-use Microservices\Contracts\Stream\Idempotent;
-use Microservices\Services\Shadows\ShadowRegistry;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Handler;
+use Distributable\Contracts\Stream\Idempotent;
+use Distributable\Services\Shadows\ShadowRegistry;
 
 /** Writes an announced source row into the copies of the consuming service, or of every local keeper, each in its own context. */
 final readonly class SyncShadows implements Handler, Idempotent

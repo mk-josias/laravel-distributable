@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Models\User;
+use Distributable\Contracts\Stream\Bus;
 use Foundation\Iam\Events\UserRegistered;
 use Illuminate\Support\Facades\DB;
-use Microservices\Contracts\Stream\Bus;
 
 final readonly class RegisterUser
 {

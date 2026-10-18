@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Testing;
+namespace Distributable\Testing;
 
+use Distributable\Contracts\Colocation;
+use Distributable\Data\Envelope;
+use Distributable\Services\Stream\Dispatcher;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
-use Microservices\Contracts\Colocation;
-use Microservices\Data\Envelope;
-use Microservices\Services\Stream\Dispatcher;
 
 /** For a test case: hand a service an event without its emitter running. */
 trait InteractsWithServices

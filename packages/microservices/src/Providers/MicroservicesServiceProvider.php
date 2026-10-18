@@ -2,33 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Providers;
+namespace Distributable\Providers;
 
+use Distributable\Console\Commands\AnnounceShadows;
+use Distributable\Console\Commands\ConsumeEvents;
+use Distributable\Console\Commands\ExportEvents;
+use Distributable\Console\Commands\ImportEvents;
+use Distributable\Console\Commands\MakeFoundation;
+use Distributable\Console\Commands\PruneConsumptions;
+use Distributable\Console\Commands\RepublishEvents;
+use Distributable\Console\Commands\SkipEntries;
+use Distributable\Console\Commands\TrimEvents;
+use Distributable\Console\Commands\WantShadows;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Rpc\Transport as RpcTransport;
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Services\Rpc\LocalServices;
+use Distributable\Services\Rpc\RpcServices;
+use Distributable\Services\Rpc\TransportManager as RpcTransportManager;
+use Distributable\Services\Shadows\ShadowRegistry;
+use Distributable\Services\SingleService;
+use Distributable\Services\Stream\ArchiveStores;
+use Distributable\Services\Stream\Emitter;
+use Distributable\Services\Stream\PayloadVersions;
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Microservices\Console\Commands\AnnounceShadows;
-use Microservices\Console\Commands\ConsumeEvents;
-use Microservices\Console\Commands\ExportEvents;
-use Microservices\Console\Commands\ImportEvents;
-use Microservices\Console\Commands\MakeFoundation;
-use Microservices\Console\Commands\PruneConsumptions;
-use Microservices\Console\Commands\RepublishEvents;
-use Microservices\Console\Commands\SkipEntries;
-use Microservices\Console\Commands\TrimEvents;
-use Microservices\Console\Commands\WantShadows;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Rpc\Transport as RpcTransport;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Services\Rpc\LocalServices;
-use Microservices\Services\Rpc\RpcServices;
-use Microservices\Services\Rpc\TransportManager as RpcTransportManager;
-use Microservices\Services\Shadows\ShadowRegistry;
-use Microservices\Services\SingleService;
-use Microservices\Services\Stream\ArchiveStores;
-use Microservices\Services\Stream\Emitter;
-use Microservices\Services\Stream\PayloadVersions;
-use Microservices\Services\Stream\TransportManager;
 
 final class MicroservicesServiceProvider extends ServiceProvider
 {

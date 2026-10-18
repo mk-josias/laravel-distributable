@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
 use Closure;
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Exceptions\ConfigurationException;
+use Distributable\Transports\Stream\ArrayTransport;
+use Distributable\Transports\Stream\NullTransport;
 use Illuminate\Contracts\Container\Container;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Exceptions\ConfigurationException;
-use Microservices\Transports\Stream\ArrayTransport;
-use Microservices\Transports\Stream\NullTransport;
 
 /**
  * Resolves a named stream of microservices.events.streams to its transport, like QueueManager::connection(),

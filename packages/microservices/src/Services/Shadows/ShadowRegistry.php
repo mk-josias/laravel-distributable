@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Shadows;
+namespace Distributable\Services\Shadows;
 
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Shadows\Shadowed;
+use Distributable\Models\ShadowModel;
 use Illuminate\Database\Eloquent\Model;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Shadows\Shadowed;
-use Microservices\Models\ShadowModel;
 
 /** Finds, among the services this process runs, the copies each one declares and the source models it owns. */
 class ShadowRegistry

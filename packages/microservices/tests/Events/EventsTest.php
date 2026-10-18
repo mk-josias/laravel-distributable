@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
+use Distributable\Exceptions\ConfigurationException;
+use Distributable\Providers\MicroservicesServiceProvider;
+use Distributable\Services\Stream\Dispatcher;
+use Distributable\Services\Stream\TransportManager;
+use Distributable\Tests\Microservices\Fixtures\App\Events\OrderPlaced;
+use Distributable\Tests\Microservices\Fixtures\App\FlakyTransport;
+use Distributable\Tests\Microservices\Fixtures\App\Handlers\OnInvoicePaid;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
-use Microservices\Exceptions\ConfigurationException;
-use Microservices\Providers\MicroservicesServiceProvider;
-use Microservices\Services\Stream\Dispatcher;
-use Microservices\Services\Stream\TransportManager;
-use Microservices\Tests\Fixtures\App\Events\OrderPlaced;
-use Microservices\Tests\Fixtures\App\FlakyTransport;
-use Microservices\Tests\Fixtures\App\Handlers\OnInvoicePaid;
 
 it('stamps an event with this service as its emitter, and the propagated context', function () {
     config()->set('microservices.events.propagate', ['trace_id']);

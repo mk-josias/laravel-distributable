@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
-use Microservices\Contracts\Stream\Versioned;
-use Microservices\Data\Envelope;
-use Microservices\Exceptions\ConfigurationException;
-use Microservices\Exceptions\ServiceException;
+use Distributable\Contracts\Stream\Versioned;
+use Distributable\Data\Envelope;
+use Distributable\Exceptions\ConfigurationException;
+use Distributable\Exceptions\ServiceException;
 
 /** Lifts the payload of an envelope to the version this process reads, so a handler only ever sees the current shape. */
 final class PayloadVersions

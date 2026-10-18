@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Config;
+namespace Distributable\Config;
 
+use Distributable\Exceptions\ConfigurationException;
 use Illuminate\Contracts\Config\Repository;
-use Microservices\Exceptions\ConfigurationException;
 
 /** The microservices.events.* settings, typed and defaulted; read live, never snapshotted. */
 final readonly class Streamer

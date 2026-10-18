@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Config;
+namespace Distributable\Config;
 
+use Distributable\Exceptions\ConfigurationException;
 use Illuminate\Contracts\Config\Repository;
-use Microservices\Exceptions\ConfigurationException;
 
 /** The microservices.rpc.* settings, and each service's host; read live, never snapshotted. */
 final readonly class Rpc

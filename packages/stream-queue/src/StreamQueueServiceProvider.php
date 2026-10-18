@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace StreamQueue;
 
+use Distributable\Config\Services;
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Queue\Factory as Queue;
 use Illuminate\Support\ServiceProvider;
-use Microservices\Config\Services;
-use Microservices\Services\Stream\TransportManager;
 
 final class StreamQueueServiceProvider extends ServiceProvider
 {

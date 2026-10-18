@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
 use StreamQueue\QueueTransport;
 
 beforeEach(function () {

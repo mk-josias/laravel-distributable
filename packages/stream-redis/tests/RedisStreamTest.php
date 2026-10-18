@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
+use Distributable\Events\ShadowChanged;
+use Distributable\Services\Stream\Dispatcher;
+use Distributable\Services\Stream\TransportManager;
+use Distributable\Tests\Microservices\Fixtures\App\Handlers\OnInvoicePaid;
+use Distributable\Tests\Microservices\Fixtures\App\Models\Refund;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
-use Microservices\Events\ShadowChanged;
-use Microservices\Services\Stream\Dispatcher;
-use Microservices\Services\Stream\TransportManager;
-use Microservices\Tests\Fixtures\App\Handlers\OnInvoicePaid;
-use Microservices\Tests\Fixtures\App\Models\Refund;
 
 beforeEach(function () {
     try {

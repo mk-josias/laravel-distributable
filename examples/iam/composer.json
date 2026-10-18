@@ -28,7 +28,7 @@
         },
         "microservices": {
             "type": "path",
-            "url": "../../packages/core",
+            "url": "../../packages/microservices",
             "options": {"versions": {"mk-josias/laravel-microservices": "0.1.0"}}
         }
     },

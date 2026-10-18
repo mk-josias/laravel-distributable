@@ -8,10 +8,26 @@
         <testsuite name="Distributable">
             <directory>packages/core/tests</directory>
         </testsuite>
+        <testsuite name="Microservices">
+            <directory>packages/microservices/tests</directory>
+        </testsuite>
+        <testsuite name="RpcHttp">
+            <directory>packages/rpc-http/tests</directory>
+        </testsuite>
+        <testsuite name="StreamRedis">
+            <directory>packages/stream-redis/tests</directory>
+        </testsuite>
+        <testsuite name="StreamQueue">
+            <directory>packages/stream-queue/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>packages/core/src</directory>
+            <directory>packages/microservices/src</directory>
+            <directory>packages/rpc-http/src</directory>
+            <directory>packages/stream-redis/src</directory>
+            <directory>packages/stream-queue/src</directory>
         </include>
     </source>
 </phpunit>

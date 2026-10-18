@@ -12,5 +12,15 @@ parameters:
         - packages/core/src
         - packages/core/tests/Fixtures
         - packages/core/tests/Support
+        - packages/microservices/src
+        - packages/microservices/database
+        - packages/microservices/tests/Fixtures
+        - packages/microservices/tests/TestCase.php
+        - packages/rpc-http/src
+        - packages/rpc-http/tests/TestCase.php
+        - packages/stream-redis/src
+        - packages/stream-redis/tests/TestCase.php
+        - packages/stream-queue/src
+        - packages/stream-queue/tests/TestCase.php
     excludePaths:
         - packages/core/tests/Fixtures/apps/*/tests/*

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Microservices\Exceptions\ConfigurationException;
-use Microservices\Exceptions\ServiceException;
-use Microservices\Services\Rpc\LocalServices;
-use Microservices\Tests\Fixtures\Billing\Contracts\BillingService;
+use Distributable\Exceptions\ConfigurationException;
+use Distributable\Exceptions\ServiceException;
+use Distributable\Services\Rpc\LocalServices;
+use Distributable\Tests\Microservices\Fixtures\Billing\Contracts\BillingService;
 
 it('refuses a method of a contract the service does not answer', function () {
     app(LocalServices::class)->call('orders', BillingService::class, 'invoiceFor', ['orderId' => 1]);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Events;
+namespace Distributable\Events;
 
 /** A source row as it now stands, announced to the services keeping a copy of it. */
 final class ShadowChanged extends Event

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
 use Carbon\CarbonImmutable;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\SkipsEntries;
+use Distributable\Services\Stream\TransportManager;
 use Illuminate\Console\Command;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\SkipsEntries;
-use Microservices\Services\Stream\TransportManager;
 
 final class SkipEntries extends Command
 {

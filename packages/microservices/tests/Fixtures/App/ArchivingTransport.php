@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App;
+namespace Distributable\Tests\Microservices\Fixtures\App;
 
 use Carbon\CarbonImmutable;
-use Microservices\Contracts\Stream\ArchivesStreams;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Data\Envelope;
+use Distributable\Contracts\Stream\ArchivesStreams;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Data\Envelope;
 
 /** A stream that keeps what it is given, and has no consumer: the first $acknowledged entries count as acknowledged. */
 final class ArchivingTransport implements ArchivesStreams, Transport

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Services;
+namespace Distributable\Tests\Microservices\Fixtures\App\Services;
 
+use Distributable\Tests\Microservices\Fixtures\App\Models\Order;
 use Illuminate\Support\Facades\Context;
-use Microservices\Tests\Fixtures\App\Models\Order;
 
-final class OrdersService implements \Microservices\Tests\Fixtures\App\Contracts\OrdersService
+final class OrdersService implements \Distributable\Tests\Microservices\Fixtures\App\Contracts\OrdersService
 {
     public function find(int $id): ?array
     {

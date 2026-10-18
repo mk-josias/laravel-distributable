@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Migrations;
+namespace Distributable\Migrations;
 
+use Distributable\Contracts\Colocation;
+use Distributable\Models\ShadowModel;
+use Distributable\Services\Shadows\ShadowRegistry;
 use Illuminate\Database\Migrations\Migration;
-use Microservices\Contracts\Colocation;
-use Microservices\Models\ShadowModel;
-use Microservices\Services\Shadows\ShadowRegistry;
 
 /** The migration of a copy: it creates the table the keeper's copy model reads. */
 abstract class ShadowMigration extends Migration

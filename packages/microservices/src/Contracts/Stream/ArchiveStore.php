@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /** Where stream:export puts published outbox rows, and where stream:import reads them back, in order. */
 interface ArchiveStore

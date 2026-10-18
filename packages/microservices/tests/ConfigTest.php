@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Microservices\Config\Services;
+use Distributable\Config\Services;
 
 it('falls back to the application key for the RPC secret', function () {
     putenv('MICROSERVICES_RPC_SECRET');

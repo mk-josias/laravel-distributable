@@ -22,15 +22,9 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 5
 
     steps:
-      # composer.json reaches laravel-microservices through path repositories at ../laravel-microservices.
       - uses: actions/checkout@v4
         with:
           path: distributable
-
-      - uses: actions/checkout@v4
-        with:
-          repository: mk-josias/laravel-microservices
-          path: laravel-microservices
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -48,6 +42,12 @@ jobs:
         working-directory: distributable
         run: composer check
 
+      - name: Example, iam, notifications and analytics behind a Node gateway
+        working-directory: distributable
+        run: |
+          command -v redis-cli > /dev/null || { sudo apt-get update > /dev/null && sudo apt-get install -y redis-tools > /dev/null; }
+          examples/run.sh
+
   starter:
     runs-on: ubuntu-latest
 
@@ -55,11 +55,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: distributable
-
-      - uses: actions/checkout@v4
-        with:
-          repository: mk-josias/laravel-microservices
-          path: laravel-microservices
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -85,11 +80,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: distributable
-
-      - uses: actions/checkout@v4
-        with:
-          repository: mk-josias/laravel-microservices
-          path: laravel-microservices
 
       - name: Journey
         working-directory: distributable/starter

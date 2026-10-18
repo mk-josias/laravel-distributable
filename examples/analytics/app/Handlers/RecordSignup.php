@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Handlers;
 
 use App\Models\Signup;
+use Distributable\Contracts\Stream\Handler;
 use Foundation\Iam\Events\UserRegistered;
-use Microservices\Contracts\Stream\Handler;
 
 final class RecordSignup implements Handler
 {

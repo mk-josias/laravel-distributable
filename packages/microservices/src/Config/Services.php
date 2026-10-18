@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Config;
+namespace Distributable\Config;
 
 use Illuminate\Contracts\Config\Repository;
 

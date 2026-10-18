@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Stream;
+namespace Distributable\Contracts\Stream;
 
 /** A payload whose shape has changed: the version this code reads, and how an older payload is lifted one version up. */
 interface Versioned

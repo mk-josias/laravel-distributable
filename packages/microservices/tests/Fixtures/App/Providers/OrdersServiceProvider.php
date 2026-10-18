@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Tests\Fixtures\App\Providers;
+namespace Distributable\Tests\Microservices\Fixtures\App\Providers;
 
-use Microservices\Providers\RpcServiceProvider;
-use Microservices\Tests\Fixtures\App\Contracts\OrdersService as OrdersContract;
-use Microservices\Tests\Fixtures\App\Services\OrdersService;
-use Microservices\Tests\Fixtures\Billing\Contracts\BillingService;
-use Microservices\Tests\Fixtures\Billing\Services\BillingRpcService;
+use Distributable\Providers\RpcServiceProvider;
+use Distributable\Tests\Microservices\Fixtures\App\Contracts\OrdersService as OrdersContract;
+use Distributable\Tests\Microservices\Fixtures\App\Services\OrdersService;
+use Distributable\Tests\Microservices\Fixtures\Billing\Contracts\BillingService;
+use Distributable\Tests\Microservices\Fixtures\Billing\Services\BillingRpcService;
 
 final class OrdersServiceProvider extends RpcServiceProvider
 {

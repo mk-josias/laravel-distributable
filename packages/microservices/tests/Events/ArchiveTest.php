@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
+use Distributable\Contracts\Stream\ArchiveStore;
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Contracts\Stream\Transport;
+use Distributable\Exceptions\ConfigurationException;
+use Distributable\Services\Stream\ArchiveStores;
+use Distributable\Services\Stream\TransportManager;
+use Distributable\Tests\Microservices\Fixtures\App\ArchivingTransport;
+use Distributable\Tests\Microservices\Fixtures\App\Events\OrderPlaced;
 use Illuminate\Support\Facades\Date;
-use Microservices\Contracts\Stream\ArchiveStore;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Contracts\Stream\Transport;
-use Microservices\Exceptions\ConfigurationException;
-use Microservices\Services\Stream\ArchiveStores;
-use Microservices\Services\Stream\TransportManager;
-use Microservices\Tests\Fixtures\App\ArchivingTransport;
-use Microservices\Tests\Fixtures\App\Events\OrderPlaced;
 
 /** A stream that keeps three orders of this service, emitted on the 1st, 2nd and 3rd of September. */
 function streamOfOrders(): ArchivingTransport

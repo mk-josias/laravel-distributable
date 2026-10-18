@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Console\Commands;
+namespace Distributable\Console\Commands;
 
+use Distributable\Config\Streamer;
+use Distributable\Console\LocalServicesOption;
+use Distributable\Services\Stream\Outbox\Relay;
 use Illuminate\Console\Command;
-use Microservices\Config\Streamer;
-use Microservices\Console\LocalServicesOption;
-use Microservices\Services\Stream\Outbox\Relay;
 
 /**
  * Sends the events still stored in the database: those that could not go out right after their

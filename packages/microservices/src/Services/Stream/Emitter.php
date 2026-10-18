@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Bus;
+use Distributable\Contracts\Stream\Event;
+use Distributable\Services\Stream\Outbox\Relay;
+use Distributable\Services\Stream\Outbox\Writer;
 use Illuminate\Database\DatabaseManager;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Bus;
-use Microservices\Contracts\Stream\Event;
-use Microservices\Services\Stream\Outbox\Relay;
-use Microservices\Services\Stream\Outbox\Writer;
 
 /**
  * The single emission path: an event becomes an envelope stamped with its emitting service, then

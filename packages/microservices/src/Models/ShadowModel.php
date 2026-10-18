@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Models;
+namespace Distributable\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

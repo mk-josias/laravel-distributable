@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Contracts\Shadows;
+namespace Distributable\Contracts\Shadows;
 
 /** A model other services keep a copy of; implemented by the ShadowSource trait. */
 interface Shadowed

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream;
+namespace Distributable\Services\Stream;
 
+use Distributable\Config\Streamer;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Stream\Event;
+use Distributable\Data\Envelope;
+use Distributable\Exceptions\ServiceException;
 use Illuminate\Support\Facades\Context;
-use Microservices\Config\Streamer;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\Event;
-use Microservices\Data\Envelope;
-use Microservices\Exceptions\ServiceException;
 
 /** Stamps an event with its emitting service and the propagated context — the only place that does. */
 final class EnvelopeFactory

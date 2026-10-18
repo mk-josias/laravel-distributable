@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Rpc;
+namespace Distributable\Services\Rpc;
 
 use Closure;
+use Distributable\Config\Rpc;
+use Distributable\Contracts\Colocation;
+use Distributable\Contracts\Rpc\Transport;
+use Distributable\Exceptions\ServiceException;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Cache\TaggedCache;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Microservices\Config\Rpc;
-use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Rpc\Transport;
-use Microservices\Exceptions\ServiceException;
 use Throwable;
 
 /**
