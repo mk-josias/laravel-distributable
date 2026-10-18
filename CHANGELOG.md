@@ -18,9 +18,8 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ### Changed
 
-- **Breaking:** the packages are `mk-josias/laravel-distributable`, `-rpc-http`, `-stream-redis`,
-  `-stream-queue` and `-starter`; the drivers' namespaces become `Distributable\RpcHttp\`,
-  `Distributable\Stream\Redis\` and `Distributable\Stream\Queue\`.
+- **Breaking:** the packages are `mk-josias/laravel-distributable`, `-rpc-http`, `-stream-redis` and
+  `-starter`; the drivers' namespaces become `Distributable\RpcHttp\` and `Distributable\Stream\Redis\`.
 - **Breaking:** one provider and one config: `MicroservicesServiceProvider` merges into
   `DistributableServiceProvider`, and the `rpc` and `events` sections of `config/microservices.php`
   move into `config/distributable.php`. `MICROSERVICES_*` variables become `DISTRIBUTABLE_*`, the
@@ -43,6 +42,8 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ### Removed
 
+- **Breaking:** the `queue` events driver (`laravel-microservices-stream-queue`): on a `database`
+  queue, every module's events landed in one module's database.
 - **Breaking:** `Contracts\Colocation`, `SingleService`, `ModuleColocation` and `Config\Services`:
   `ModuleRegistry` (`ownerOf()`, `connectionOf()`, `localNames()`) and `ModuleContext` answer
   which module runs and what it owns. `RpcServiceProvider` merges into `FoundationServiceProvider`,

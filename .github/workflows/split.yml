@@ -17,7 +17,6 @@ jobs:
           - { prefix: packages/core, repository: laravel-distributable-core, key: SPLIT_KEY_CORE }
           - { prefix: packages/rpc-http, repository: laravel-distributable-rpc-http, key: SPLIT_KEY_RPC_HTTP }
           - { prefix: packages/stream-redis, repository: laravel-distributable-stream-redis, key: SPLIT_KEY_STREAM_REDIS }
-          - { prefix: packages/stream-queue, repository: laravel-distributable-stream-queue, key: SPLIT_KEY_STREAM_QUEUE }
           - { prefix: starter, repository: laravel-distributable-starter, key: SPLIT_KEY_STARTER }
 
     steps:

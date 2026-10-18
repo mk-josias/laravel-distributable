@@ -18,16 +18,14 @@
         "psr-4": {
             "Distributable\\": "packages/core/src/",
             "Distributable\\RpcHttp\\": "packages/rpc-http/src/",
-            "Distributable\\Stream\\Redis\\": "packages/stream-redis/src/",
-            "Distributable\\Stream\\Queue\\": "packages/stream-queue/src/"
+            "Distributable\\Stream\\Redis\\": "packages/stream-redis/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Distributable\\Tests\\": "packages/core/tests/",
             "Distributable\\RpcHttp\\Tests\\": "packages/rpc-http/tests/",
-            "Distributable\\Stream\\Redis\\Tests\\": "packages/stream-redis/tests/",
-            "Distributable\\Stream\\Queue\\Tests\\": "packages/stream-queue/tests/"
+            "Distributable\\Stream\\Redis\\Tests\\": "packages/stream-redis/tests/"
         }
     },
     "extra": {
