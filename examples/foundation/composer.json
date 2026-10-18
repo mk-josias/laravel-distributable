@@ -9,5 +9,10 @@
         "psr-4": {
             "Foundation\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": ["Foundation\\FoundationServiceProvider"]
+        }
     }
 }

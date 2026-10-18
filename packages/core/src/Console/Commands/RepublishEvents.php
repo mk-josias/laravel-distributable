@@ -5,37 +5,34 @@ declare(strict_types=1);
 namespace Microservices\Console\Commands;
 
 use Illuminate\Console\Command;
+use Microservices\Config\Streamer;
 use Microservices\Console\LocalServicesOption;
 use Microservices\Services\Stream\Outbox\Relay;
 
 /**
- * For the day the broker is emptied while the outboxes are intact: the stream is rebuilt from
- * each service's own journal, in order. The consumption guard turns what consumers already
- * applied into no-ops, so replaying costs time and changes nothing.
+ * Sends the events still stored in the database: those that could not go out right after their
+ * commit. The consumption guard turns what a consumer already applied into a no-op, so sending
+ * twice costs time and changes nothing.
  */
 final class RepublishEvents extends Command
 {
     use LocalServicesOption;
 
     protected $signature = 'stream:republish
-        {--service=* : Limit to these services}
-        {--since= : Only rows emitted on or after this date}
-        {--force : Skip the confirmation}';
+        {--service=* : Limit to these services}';
 
-    protected $description = 'Queue already-published outbox rows again, to rebuild an emptied stream.';
+    protected $description = 'Send the events stored in the database that could not be sent after their commit.';
 
-    public function handle(Relay $relay): int
+    public function handle(Relay $relay, Streamer $config): int
     {
-        $since = $this->option('since');
+        if (! $config->publishesReliably()) {
+            $this->error('Events are not published reliably: set MICROSERVICES_EVENTS_RELIABLE_PUBLISH=true first.');
+
+            return self::FAILURE;
+        }
 
         foreach ($this->selectedServices() as $service) {
-            if (! $this->option('force') && ! $this->confirm("Republish the outbox of [{$service}]?")) {
-                continue;
-            }
-
-            $count = $relay->requeue($service, is_string($since) ? $since : null);
-
-            $this->line("→ {$service}: {$count} requeued");
+            $this->line("→ {$service}: {$relay->drain($service)} sent");
         }
 
         return self::SUCCESS;

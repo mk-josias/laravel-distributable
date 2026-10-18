@@ -12,7 +12,7 @@ use Microservices\Data\Envelope;
 /**
  * Writes a publication row on the emitting service's own connection, so it lands inside the
  * caller's business transaction — one transactional write, no dual write. Putting it on the wire
- * is the publisher role's job alone (see Relay).
+ * is the Relay's job, right after the commit.
  */
 final class Writer
 {

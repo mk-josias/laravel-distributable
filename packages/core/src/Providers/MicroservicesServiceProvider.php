@@ -12,8 +12,8 @@ use Microservices\Console\Commands\ExportEvents;
 use Microservices\Console\Commands\ImportEvents;
 use Microservices\Console\Commands\MakeFoundation;
 use Microservices\Console\Commands\PruneConsumptions;
-use Microservices\Console\Commands\PublishEvents;
 use Microservices\Console\Commands\RepublishEvents;
+use Microservices\Console\Commands\SkipEntries;
 use Microservices\Console\Commands\TrimEvents;
 use Microservices\Console\Commands\WantShadows;
 use Microservices\Contracts\Colocation;
@@ -25,8 +25,8 @@ use Microservices\Services\Rpc\RpcServices;
 use Microservices\Services\Rpc\TransportManager as RpcTransportManager;
 use Microservices\Services\Shadows\ShadowRegistry;
 use Microservices\Services\SingleService;
+use Microservices\Services\Stream\ArchiveStores;
 use Microservices\Services\Stream\Emitter;
-use Microservices\Services\Stream\Outbox\ArchiveStores;
 use Microservices\Services\Stream\PayloadVersions;
 use Microservices\Services\Stream\TransportManager;
 
@@ -69,7 +69,7 @@ final class MicroservicesServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                PublishEvents::class, RepublishEvents::class, ConsumeEvents::class, TrimEvents::class, PruneConsumptions::class,
+                RepublishEvents::class, ConsumeEvents::class, SkipEntries::class, TrimEvents::class, PruneConsumptions::class,
                 ExportEvents::class, ImportEvents::class, AnnounceShadows::class, WantShadows::class, MakeFoundation::class,
             ]);
         }

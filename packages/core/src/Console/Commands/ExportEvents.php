@@ -6,47 +6,41 @@ namespace Microservices\Console\Commands;
 
 use Illuminate\Console\Command;
 use Microservices\Console\ArchiveOptions;
-use Microservices\Console\LocalServicesOption;
-use Microservices\Services\Stream\Outbox\Archive;
+use Microservices\Services\Stream\Archiver;
 
-/** Keeps the outbox small without losing the journal: published rows move to an archive. */
+/** Copies what the stream keeps to an archive. Nothing is deleted: stream:trim drops what every consumer has read. */
 final class ExportEvents extends Command
 {
     use ArchiveOptions;
-    use LocalServicesOption;
 
     protected $signature = 'stream:export
-        {target : Where the store appends the rows, e.g. a JSON-lines file for `file`}
+        {target : Where the store appends the entries, e.g. a JSON-lines file for `file`}
         {--store= : The archive store (default: microservices.events.archive)}
-        {--service=* : Limit to these services}
-        {--stream= : Only rows of this stream}
-        {--since= : Only rows emitted on or after this date}
-        {--until= : Only rows emitted before this date}
-        {--where=* : Only rows matching column=value, or payload.field=value}
-        {--acknowledged : Only rows every consumer has acknowledged}
-        {--batch=1000 : Rows read and deleted per batch}';
+        {--service=* : Only entries these services emitted}
+        {--stream= : The stream to read (default: microservices.events.stream)}
+        {--since= : Only entries on or after this date}
+        {--until= : Only entries before this date}
+        {--where=* : Only entries matching name=value, emitter=value, or payload.field=value}
+        {--acknowledged : Only entries every consumer has acknowledged}
+        {--batch=1000 : Entries written per batch}';
 
-    protected $description = 'Move published outbox rows to an archive, then delete them from the outbox.';
+    protected $description = 'Copy the entries of a stream to an archive.';
 
-    public function handle(Archive $archive): int
+    public function handle(Archiver $archiver): int
     {
-        $store = $this->archiveStore();
+        $count = $archiver->export(
+            store: $this->archiveStore(),
+            target: (string) $this->argument('target'),
+            stream: $this->stringOption('stream'),
+            services: array_values(array_map(strval(...), (array) $this->option('service'))),
+            since: $this->stringOption('since'),
+            until: $this->stringOption('until'),
+            where: $this->whereOption(),
+            acknowledged: (bool) $this->option('acknowledged'),
+            batch: max(1, (int) $this->option('batch')),
+        );
 
-        foreach ($this->selectedServices() as $service) {
-            $count = $archive->export(
-                service: $service,
-                store: $store,
-                target: (string) $this->argument('target'),
-                since: $this->stringOption('since'),
-                until: $this->stringOption('until'),
-                stream: $this->stringOption('stream'),
-                where: $this->whereOption(),
-                acknowledged: (bool) $this->option('acknowledged'),
-                batch: max(1, (int) $this->option('batch')),
-            );
-
-            $this->line("→ {$service}: {$count} exported");
-        }
+        $this->line("→ {$count} exported");
 
         return self::SUCCESS;
     }

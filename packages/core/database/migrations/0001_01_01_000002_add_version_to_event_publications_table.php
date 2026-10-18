@@ -9,6 +9,11 @@ use Microservices\Config\Streamer;
 
 return new class extends Migration
 {
+    public function shouldRun(): bool
+    {
+        return app(Streamer::class)->publishesReliably();
+    }
+
     public function up(): void
     {
         Schema::table(app(Streamer::class)->getPublicationsTable(), function (Blueprint $table): void {

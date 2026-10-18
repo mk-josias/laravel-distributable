@@ -15,6 +15,12 @@ use Microservices\Config\Streamer;
  */
 return new class extends Migration
 {
+    /** The table is only for a guard that is not switched off. */
+    public function shouldRun(): bool
+    {
+        return app(Streamer::class)->getGuard() !== false;
+    }
+
     public function up(): void
     {
         Schema::create(app(Streamer::class)->getConsumptionsTable(), function (Blueprint $table): void {

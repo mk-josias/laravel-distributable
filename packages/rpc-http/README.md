@@ -7,20 +7,19 @@ composer require mk-josias/laravel-microservices-rpc-http
 ```
 
 Its provider is discovered. It registers the driver of the shipped `http` transport, and serves
-`POST {service}/rpc/{method}` for each service this process runs. It reads these keys of
-`config/microservices.php`:
+`POST {service}/rpc/{method}` for each service this process runs. Its settings are in
+`config/rpc-http.php` (`php artisan vendor:publish --tag=rpc-http-config`); the secret stays
+`microservices.rpc.secret`, shared by caller and called:
 
 ```php
-'rpc' => [
+return [
     // the same in every service
     'path' => env('MICROSERVICES_RPC_PATH', '{service}/rpc/{method}'),
     // the group of those routes, which checks the signature
     'middleware_group' => 'rpc',
-    // shared by caller and called
-    'secret' => env('MICROSERVICES_RPC_SECRET', env('APP_KEY', '')),
     // seconds a signature stays valid
     'signature_ttl' => 30,
-],
+];
 ```
 
 | What it guarantees | |

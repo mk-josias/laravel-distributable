@@ -15,6 +15,8 @@ final class RpcHttpServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/rpc-http.php', 'rpc-http');
+
         $this->callAfterResolving(TransportManager::class, static function (TransportManager $transports): void {
             $transports->extend('http', static fn (Container $app): HttpTransport => $app->make(HttpTransport::class));
         });
@@ -23,6 +25,8 @@ final class RpcHttpServiceProvider extends ServiceProvider
     /** The called side of HttpTransport, one endpoint per local service: nothing unsigned reaches it. */
     public function boot(): void
     {
+        $this->publishes([__DIR__.'/../config/rpc-http.php' => config_path('rpc-http.php')], 'rpc-http-config');
+
         $config = $this->app->make(RpcHttp::class);
         $this->app->make(Router::class)->pushMiddlewareToGroup($config->getMiddlewareGroup(), VerifyRpcSignature::class);
 

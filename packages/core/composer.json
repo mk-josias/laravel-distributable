@@ -1,6 +1,7 @@
 {
     "name": "mk-josias/laravel-microservices",
-    "description": "Laravel apps as microservices: signed RPC through contracts, ordered events with an outbox, and read-only copies of another service's rows.",
+    "description": "Laravel apps as microservices: signed RPC through contracts, events that can be made reliable, and read-only copies of another service's rows.",
+    "homepage": "https://mk-josias.github.io/laravel-microservices/",
     "license": "MIT",
     "type": "library",
     "keywords": [

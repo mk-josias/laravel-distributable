@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Microservices\Migrations\ShadowMigration;
+use Microservices\Tests\Fixtures\App\Models\CustomerShadow;
 
 return new class extends Migration
 {
@@ -28,9 +29,9 @@ return new class extends Migration
 
         (new class extends ShadowMigration
         {
-            protected function source(): string
+            protected function shadow(): string
             {
-                return 'customers';
+                return CustomerShadow::class;
             }
 
             public function up(): void

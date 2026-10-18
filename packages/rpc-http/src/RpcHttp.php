@@ -6,7 +6,7 @@ namespace RpcHttp;
 
 use Illuminate\Contracts\Config\Repository;
 
-/** The microservices.rpc.* settings of calls over HTTP; read live, never snapshotted. */
+/** The rpc-http.* settings of calls over HTTP, and the secret every service shares; read live, never snapshotted. */
 final readonly class RpcHttp
 {
     public function __construct(private Repository $config) {}
@@ -14,13 +14,13 @@ final readonly class RpcHttp
     /** Where a service answers a call, the same for caller and called: {service} and {method} are filled in. */
     public function getPath(): string
     {
-        return trim((string) $this->config->get('microservices.rpc.path', '{service}/rpc/{method}'), '/');
+        return trim((string) $this->config->get('rpc-http.path', '{service}/rpc/{method}'), '/');
     }
 
     /** The middleware group of the called side's routes, which checks the signature. */
     public function getMiddlewareGroup(): string
     {
-        return (string) $this->config->get('microservices.rpc.middleware_group', 'rpc');
+        return (string) $this->config->get('rpc-http.middleware_group', 'rpc');
     }
 
     public function getSecret(): string
@@ -30,6 +30,6 @@ final readonly class RpcHttp
 
     public function getSignatureTtl(): int
     {
-        return (int) $this->config->get('microservices.rpc.signature_ttl', 30);
+        return (int) $this->config->get('rpc-http.signature_ttl', 30);
     }
 }

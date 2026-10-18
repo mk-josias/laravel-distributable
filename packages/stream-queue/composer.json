@@ -1,6 +1,7 @@
 {
     "name": "mk-josias/laravel-microservices-stream-queue",
     "description": "Laravel queue driver for the events of mk-josias/laravel-microservices, for a stack without Redis: one queue per service; order is not kept after a failure.",
+    "homepage": "https://mk-josias.github.io/laravel-microservices/",
     "license": "MIT",
     "type": "library",
     "keywords": [

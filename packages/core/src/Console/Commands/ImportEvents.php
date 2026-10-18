@@ -6,9 +6,9 @@ namespace Microservices\Console\Commands;
 
 use Illuminate\Console\Command;
 use Microservices\Console\ArchiveOptions;
-use Microservices\Services\Stream\Outbox\Archive;
+use Microservices\Services\Stream\Archiver;
 
-/** Replays an export: its rows become pending publications again, put on the wire by the publisher. */
+/** Publishes the entries of an export back on a stream, e.g. to rebuild one that was emptied. */
 final class ImportEvents extends Command
 {
     use ArchiveOptions;
@@ -16,26 +16,24 @@ final class ImportEvents extends Command
     protected $signature = 'stream:import
         {source : What stream:export wrote, e.g. its JSON-lines file for `file`}
         {--store= : The archive store (default: microservices.events.archive)}
-        {--service=* : Only rows these services emitted}
-        {--stream= : Only rows of this stream}
-        {--since= : Only rows emitted on or after this date}
-        {--until= : Only rows emitted before this date}
-        {--where=* : Only rows matching column=value, or payload.field=value}
-        {--batch=1000 : Rows inserted per batch}';
+        {--service=* : Only entries these services emitted}
+        {--stream= : The stream to publish on (default: microservices.events.stream)}
+        {--since= : Only entries emitted on or after this date}
+        {--until= : Only entries emitted before this date}
+        {--where=* : Only entries matching name=value, emitter=value, or payload.field=value}';
 
-    protected $description = 'Queue the rows of an export for publication again.';
+    protected $description = 'Publish the entries of an export back on a stream.';
 
-    public function handle(Archive $archive): int
+    public function handle(Archiver $archiver): int
     {
-        $count = $archive->import(
+        $count = $archiver->import(
             store: $this->archiveStore(),
             source: (string) $this->argument('source'),
+            stream: $this->stringOption('stream'),
             services: array_values(array_map(strval(...), (array) $this->option('service'))),
             since: $this->stringOption('since'),
             until: $this->stringOption('until'),
-            stream: $this->stringOption('stream'),
             where: $this->whereOption(),
-            batch: max(1, (int) $this->option('batch')),
         );
 
         $this->line("→ {$count} imported");

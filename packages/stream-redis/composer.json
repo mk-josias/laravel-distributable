@@ -1,6 +1,7 @@
 {
     "name": "mk-josias/laravel-microservices-stream-redis",
-    "description": "Redis Streams driver for the events of mk-josias/laravel-microservices: one ordered stream, a consumer group per service, failed entries retried before later ones.",
+    "description": "Redis Streams driver for the events of mk-josias/laravel-microservices: one ordered stream, a consumer group per service, failed entries retried before later ones, or dropped.",
+    "homepage": "https://mk-josias.github.io/laravel-microservices/",
     "license": "MIT",
     "type": "library",
     "keywords": [

@@ -52,7 +52,7 @@ a plain method call.
 
 The `http` driver comes with its own package, [`mk-josias/laravel-microservices-rpc-http`](https://github.com/mk-josias/laravel-microservices/tree/main/packages/rpc-http).
 It serves `POST {service}/rpc/{method}` for each service this process runs, in the `rpc`
-middleware group. `microservices.rpc.path` and `microservices.rpc.middleware_group` change both,
+middleware group. `rpc-http.path` and `rpc-http.middleware_group` change both,
 for instance to `internal/{service}/{method}`: the caller reads the same path, so every service
 must set the same one. It rejects a request that is unsigned, too old, modified or replayed: each call is
 signed with an HMAC of the timestamp, a nonce, the path, the body and the propagated context, and
@@ -74,6 +74,37 @@ otherwise every call is rejected with a 403.
 
 ## Caching answers
 
+Reference data, read often and changed rarely (a user, a product), is what to cache: a long
+lifetime, and the owner forgets the answer when it writes it. Leave uncached what must be exact on
+every call, such as a token that can be revoked. Data to join, filter or sort on locally belongs in
+a [copy](shadows.md), not in this cache.
+
+The owner writes these methods, in the `RpcService` it ships in the foundation; a caller only calls
+the contract's method.
+
+```php
+// foundation/Iam/Services/IamRpcService.php, written by iam
+public function findUser(int $id): ?array
+{
+    return $this->readThrough("iam:user:{$id}", self::DEFAULT_TTL,
+        fn (): mixed => $this->call('findUser', ['id' => $id]),
+        fn (array $raw): array => ['id' => (int) $raw['id'], 'name' => (string) $raw['name']],
+    );
+}
+
+// iam calls it when the user changes
+public function forgetUser(int $id): void
+{
+    $this->forget("iam:user:{$id}");
+}
+
+// not cached: a revoked token must stop working at once
+public function findUserByToken(string $token): ?array
+{
+    return $this->call('findUserByToken', ['token' => $token]);
+}
+```
+
 `RpcService` caches answers with a read-through:
 
 | Method | What it does |
@@ -83,7 +114,10 @@ otherwise every call is rejected with a 403.
 | `forget($key, $tags)` | drops an answer. The owner calls it when it writes, which is why `DEFAULT_TTL` can be a week. |
 
 The answers live in the store `microservices.rpc.cache` names. The caller keeps an answer and the
-owner forgets it, so every service must use the same store.
+owner forgets it, so every service must use the same store, with the same `CACHE_PREFIX` and
+`REDIS_PREFIX`. An answer is kept as JSON: on Redis, the key `{REDIS_PREFIX}{CACHE_PREFIX}iam:user:42`
+holds `{"id":42,"name":"Ada"}`, so a service in another language reads or deletes it. A tagged
+answer is filed by Laravel under its tags, and its key is Laravel's tagged one.
 
 ## Your own transport
 

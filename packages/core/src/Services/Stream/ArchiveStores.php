@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream\Outbox;
+namespace Microservices\Services\Stream;
 
 use Closure;
 use Illuminate\Contracts\Container\Container;

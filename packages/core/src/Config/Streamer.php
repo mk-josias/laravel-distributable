@@ -38,9 +38,10 @@ final readonly class Streamer
         return (string) $this->config->get('microservices.events.tables.consumptions', 'event_consumptions');
     }
 
-    public function usesOutbox(string $stream): bool
+    /** Whether each event is stored in the emitting service's database, in the transaction, until it is sent. */
+    public function publishesReliably(): bool
     {
-        return (bool) $this->config->get("microservices.events.streams.{$stream}.outbox", false);
+        return (bool) $this->config->get('microservices.events.reliable_publish', false);
     }
 
     public function getGuard(): ?bool
@@ -48,6 +49,12 @@ final readonly class Streamer
         $guard = $this->config->get('microservices.events.guard');
 
         return $guard === null ? null : (bool) $guard;
+    }
+
+    /** `acknowledge` deletes a consumption mark once its entry is acknowledged; anything else leaves it to stream:prune-consumptions. */
+    public function getGuardCleanup(): string
+    {
+        return (string) $this->config->get('microservices.events.guard_cleanup', 'prune');
     }
 
     /** @return list<class-string> */

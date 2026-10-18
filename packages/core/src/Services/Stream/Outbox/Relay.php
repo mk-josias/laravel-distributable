@@ -6,25 +6,19 @@ namespace Microservices\Services\Stream\Outbox;
 
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
 use Microservices\Config\Streamer;
 use Microservices\Contracts\Colocation;
-use Microservices\Contracts\Stream\TracksAcknowledgements;
 use Microservices\Data\Envelope;
 use Microservices\Services\Stream\TransportManager;
 use stdClass;
 use Throwable;
 
 /**
- * Puts a service's pending publications on the wire in `sequence` order — the order a consumer
- * applies them in when it rebuilds its state by replaying the stream. That order holds only with
- * one relay per service, so the publisher role is the sole caller.
+ * Puts a service's stored events on the wire: the row just committed, or every row still there.
+ * A row is deleted once it is sent; one that fails to go out stays, with its attempts and last error.
  *
- * Rows are claimed by FLAG (`published_at IS NULL`), never by a cursor: a cursor loses the rows
- * of a long transaction that commits after it has gone past.
- *
- * Delivery is at-least-once — a crash between publishing and marking republishes. That is why
+ * Delivery is at-least-once — a crash between sending and deleting sends again. That is why
  * the consumption guard exists.
  */
 final class Relay
@@ -36,56 +30,57 @@ final class Relay
         private readonly Streamer $config,
     ) {}
 
+    /** Sends the row just committed; a failure leaves it stored, and never reaches the caller. */
+    public function publishNow(string $service, string $id): void
+    {
+        try {
+            $row = $this->table($service)->where('id', $id)->first();
+
+            if ($row !== null) {
+                $this->publish($service, $row);
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
     /**
-     * A row that fails stops the pass: publishing the next one would put it on the wire ahead of
-     * the one that failed. Only the service's own rows: services sharing a database share the table.
+     * Sends every row of the service, in batches. A row that fails stays and the pass goes on.
+     * Only the service's own rows: services sharing a database share the table.
      *
-     * @return int the number of rows published
+     * @return int the number of rows sent
      */
     public function drain(string $service, int $batch = 100): int
     {
-        $rows = $this->table($service)
-            ->where('emitter', $service)
-            ->whereNull('published_at')
-            ->orderBy('sequence')
-            ->limit($batch)
-            ->get();
+        $sent = 0;
+        $after = 0;
 
-        $published = 0;
+        do {
+            $rows = $this->table($service)
+                ->where('emitter', $service)
+                ->where('sequence', '>', $after)
+                ->orderBy('sequence')
+                ->limit($batch)
+                ->get();
 
-        foreach ($rows as $row) {
-            if (! $this->publish($service, $row)) {
-                break;
+            foreach ($rows as $row) {
+                $after = (int) $row->sequence;
+
+                if ($this->publish($service, $row)) {
+                    $sent++;
+                }
             }
+        } while ($rows->count() === $batch);
 
-            $published++;
-        }
-
-        return $published;
-    }
-
-    /** Puts already-published rows back in the queue, to rebuild an emptied stream from the journal. */
-    public function requeue(string $service, ?string $since = null): int
-    {
-        return $this->table($service)
-            ->where('emitter', $service)
-            ->whereNotNull('published_at')
-            ->when($since !== null, fn (Builder $q) => $q->where('emitted_at', '>=', $since))
-            ->update(['published_at' => null, 'attempts' => 0, 'last_error' => null]);
+        return $sent;
     }
 
     private function publish(string $service, stdClass $row): bool
     {
         try {
             $envelope = $this->envelope($row);
-            $transport = $this->transports->stream($envelope->stream);
-            $entryId = null;
 
-            if ($transport instanceof TracksAcknowledgements) {
-                $entryId = $transport->publishTracked($envelope);
-            } else {
-                $transport->publish($envelope);
-            }
+            $this->transports->stream($envelope->stream)->publish($envelope);
         } catch (Throwable $e) {
             $this->table($service)->where('sequence', $row->sequence)->update([
                 'attempts' => (int) $row->attempts + 1,
@@ -95,11 +90,7 @@ final class Relay
             return false;
         }
 
-        $this->table($service)->where('sequence', $row->sequence)->update([
-            'published_at' => Date::now(),
-            'stream_id' => $entryId,
-            'last_error' => null,
-        ]);
+        $this->table($service)->where('sequence', $row->sequence)->delete();
 
         return true;
     }

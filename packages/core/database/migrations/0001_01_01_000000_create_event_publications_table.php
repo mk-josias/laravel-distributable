@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\Schema;
 use Microservices\Config\Streamer;
 
 /**
- * The outbox, in the EMITTING service's own database: the publication is written inside the
+ * The publications, in the EMITTING service's own database: the event is written inside the
  * business transaction, so there is a single transactional write and no dual write left.
  */
 return new class extends Migration
 {
+    public function shouldRun(): bool
+    {
+        return app(Streamer::class)->publishesReliably();
+    }
+
     public function up(): void
     {
         $name = app(Streamer::class)->getPublicationsTable();
@@ -28,13 +33,11 @@ return new class extends Migration
             $table->timestamp('emitted_at');
             $table->json('recipients');
             $table->string('stream');
-            $table->timestamp('published_at')->nullable();
-            $table->string('stream_id')->nullable(); // the entry's id on a transport that tracks acknowledgements
             $table->unsignedSmallInteger('attempts')->default(0);
             $table->text('last_error')->nullable();
 
-            // The only hot query: a service's pending rows, in emission order.
-            $table->index(['emitter', 'published_at', 'sequence'], "{$name}_pending_index");
+            // The only hot query: a service's stored rows, in emission order.
+            $table->index(['emitter', 'sequence'], "{$name}_pending_index");
         });
     }
 

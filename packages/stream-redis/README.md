@@ -23,7 +23,7 @@ Its provider is discovered and registers the driver. The shipped `default` strea
     'count' => 50,
     // after how long a dead consumer's pending entries are taken back, in ms
     'claim_after' => 60_000,
-    // block: a failed entry is retried before later ones; skip: later ones go on
+    // block: a failed entry is retried before later ones; skip: later ones go on, the failed one is dropped
     'on_failure' => 'block',
 ],
 ```
@@ -33,9 +33,10 @@ Its provider is discovered and registers the driver. The shipped `default` strea
 | Order | every service writes to one Redis stream, so its entries keep the order they were published in |
 | A cursor per consumer | one consumer group per consuming service: a new consumer disturbs none of the others |
 | At least once | an entry is acknowledged after its handlers succeed; an unacknowledged one comes back |
-| After a failure | `block`: the failed entry is retried before any later one; `skip`: later ones go on, it comes back after `claim_after` |
+| After a failure | `block`: the failed entry is retried before any later one; `skip`: later ones go on, the failed one is dropped |
 
-It implements `TracksAcknowledgements` (`stream:export --acknowledged`) and `TrimsStreams`
-(`stream:trim`). Nothing is trimmed on write: run `stream:trim` on a schedule.
+It implements `ArchivesStreams` (`stream:export`, and `--acknowledged`), `ReportsAcknowledgements`
+(`guard_cleanup => acknowledge`) and `TrimsStreams` (`stream:trim`). Nothing is trimmed on write:
+run `stream:trim` on a schedule.
 
 Needs Redis 5 or later, with PhpRedis or Predis.

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Client\Request as ClientRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 use Microservices\Tests\Fixtures\App\Contracts\OrdersService;
 use Microservices\Tests\Fixtures\App\Models\Order;
 use Microservices\Tests\Fixtures\Billing\Contracts\BillingService;
@@ -81,9 +83,9 @@ it('restores the propagated context on the called side', function () {
     $this->postJson('/orders/rpc/traceId', $body, $headers)->assertOk()->assertContent('"abc"');
 });
 
-it('calls and answers on the path microservices.rpc.path names, in the group it names', function () {
-    config()->set('microservices.rpc.path', 'internal/{service}/{method}');
-    config()->set('microservices.rpc.middleware_group', 'internal-rpc');
+it('calls and answers on the path rpc-http.path names, in the group it names', function () {
+    config()->set('rpc-http.path', 'internal/{service}/{method}');
+    config()->set('rpc-http.middleware_group', 'internal-rpc');
     (new RpcHttpServiceProvider(app()))->boot();
     Http::fake(['billing.test/*' => Http::response(['order_id' => 7])]);
 
@@ -94,4 +96,54 @@ it('calls and answers on the path microservices.rpc.path names, in the group it 
     Http::assertSent(fn (ClientRequest $request): bool => $request->url() === 'http://billing.test/internal/billing/invoiceFor');
     $this->postJson('/internal/orders/find', $body, $headers)->assertOk();
     $this->postJson('/internal/orders/find', ['contract' => OrdersService::class, 'arguments' => ['id' => 1]])->assertForbidden();
+});
+
+it('keeps an answer until the owner forgets it, with or without tags', function (?array $tags) {
+    Http::fake(['billing.test/*' => Http::sequence()->push(['order_id' => 7, 'amount' => 120])->push(['order_id' => 7, 'amount' => 90])]);
+    $billing = app(BillingRpcService::class);
+
+    expect($billing->cachedInvoiceFor(7, $tags))->toBe(['order_id' => 7, 'amount' => 120])
+        ->and($billing->cachedInvoiceFor(7, $tags))->toBe(['order_id' => 7, 'amount' => 120]);
+
+    $billing->forgetInvoice(7, $tags);
+
+    expect($billing->cachedInvoiceFor(7, $tags))->toBe(['order_id' => 7, 'amount' => 90]);
+    Http::assertSentCount(2);
+})->with([null, [['billing']]]);
+
+it('writes the answer as JSON on Redis, under the key Laravel names, so any language reads it', function () {
+    try {
+        Redis::connection()->ping();
+    } catch (Throwable) {
+        $this->markTestSkipped('No Redis server reachable.');
+    }
+
+    config()->set('microservices.rpc.cache', 'redis');
+    Http::fake(['billing.test/*' => Http::response(['order_id' => 7, 'amount' => 120])]);
+    $store = Cache::store('redis')->getStore();
+
+    app(BillingRpcService::class)->cachedInvoiceFor(7);
+    $written = $store->connection()->get($store->getPrefix().'billing:invoice:7');
+    app(BillingRpcService::class)->forgetInvoice(7);
+
+    expect($written)->toBe('{"order_id":7,"amount":120}')
+        ->and($store->connection()->get($store->getPrefix().'billing:invoice:7'))->toBeIn([null, false]);
+});
+
+it('files a tagged answer under its tag on Redis, so flushing the tag drops it', function () {
+    try {
+        Redis::connection()->ping();
+    } catch (Throwable) {
+        $this->markTestSkipped('No Redis server reachable.');
+    }
+
+    config()->set('microservices.rpc.cache', 'redis');
+    Http::fake(['billing.test/*' => Http::sequence()->push(['order_id' => 7, 'amount' => 120])->push(['order_id' => 7, 'amount' => 90])]);
+    $billing = app(BillingRpcService::class);
+
+    $billing->cachedInvoiceFor(7, ['billing']);
+    Cache::store('redis')->tags(['billing'])->flush();
+
+    expect($billing->cachedInvoiceFor(7, ['billing']))->toBe(['order_id' => 7, 'amount' => 90]);
+    $billing->forgetInvoice(7, ['billing']);
 });

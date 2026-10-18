@@ -37,7 +37,7 @@ final readonly class RedisStream
         return (int) $this->config->get("microservices.events.streams.{$this->name}.claim_after", 60_000);
     }
 
-    /** `block` (default): a failed entry is retried before any later one. `skip`: later entries go on, the failed one comes back after claim_after. */
+    /** `block` (default): a failed entry is retried before any later one. `skip`: later entries go on, the failed one is acknowledged and dropped. */
     public function blocksOnFailure(): bool
     {
         return $this->config->get("microservices.events.streams.{$this->name}.on_failure", 'block') !== 'skip';

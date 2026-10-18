@@ -76,7 +76,20 @@ final class Dispatcher
         $stream ??= $this->config->getDefaultStream();
 
         return $this->config->getGuard()
-            ?? ($this->config->usesOutbox($stream) || $this->transports->stream($stream) instanceof RedeliversEnvelopes);
+            ?? ($this->config->publishesReliably() || $this->transports->stream($stream) instanceof RedeliversEnvelopes);
+    }
+
+    /** Deletes the consumption marks of an envelope its consumer has acknowledged: it can no longer be redelivered. */
+    public function forget(Envelope $envelope, string $consumer): void
+    {
+        if (! $this->guarded($envelope->stream)) {
+            return;
+        }
+
+        $this->db->connection($this->colocation->connection($consumer))
+            ->table($this->config->getConsumptionsTable())
+            ->where('event_id', $envelope->id)
+            ->delete();
     }
 
     /** @param class-string $class */

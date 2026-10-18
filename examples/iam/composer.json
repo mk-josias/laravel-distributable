@@ -5,6 +5,7 @@
         "php": "^8.4",
         "example/foundation": "*",
         "laravel/framework": "^12.0 || ^13.0",
+        "laravel/sanctum": "^4.0",
         "mk-josias/laravel-microservices-rpc-http": "*",
         "mk-josias/laravel-microservices": "*",
         "mk-josias/laravel-microservices-stream-redis": "*"

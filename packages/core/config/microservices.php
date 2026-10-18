@@ -32,7 +32,7 @@ return [
     |--------------------------------------------------------------------------
     | Named transports, like queue connections; every driver comes from
     | Services\Rpc\TransportManager::extend(), `http` from mk-josias/laravel-microservices-rpc-http,
-    | which reads path, middleware_group, secret and signature_ttl. A service's
+    | which has its own config/rpc-http.php and reads the secret below. A service's
     | host may name the one its calls travel on.
     */
 
@@ -43,13 +43,8 @@ return [
             'http' => ['driver' => 'http'],
         ],
 
-        // Where a service answers a call over http, the same in every service, and the middleware group of those routes.
-        'path' => env('MICROSERVICES_RPC_PATH', '{service}/rpc/{method}'),
-        'middleware_group' => 'rpc',
-
         // Signs every call; the caller and the called process must share it, so it falls back to APP_KEY.
         'secret' => env('MICROSERVICES_RPC_SECRET', env('APP_KEY', '')),
-        'signature_ttl' => 30,
 
         // The cache store of the RpcService answers, shared by every process: the caller keeps an
         // answer, the owner forgets it when it writes. Null is the default store.
@@ -76,13 +71,12 @@ return [
             // Nothing is trimmed on write: stream:trim drops only what every consumer group acknowledged.
             'default' => [
                 'driver' => env('MICROSERVICES_STREAM_DRIVER', 'array'), // redis or queue once its package is installed
-                'outbox' => env('MICROSERVICES_STREAM_OUTBOX', false), // true: written with the business transaction, published by stream:publish
                 'connection' => env('MICROSERVICES_STREAM_CONNECTION'), // null: the driver's own default connection
                 'key' => 'microservices:events', // the Redis stream every service writes to, or the queue prefix
                 'block' => 5_000,           // read block window, ms
                 'count' => 50,              // entries per read
                 'claim_after' => 60_000,    // reclaim entries a dead consumer left pending, ms
-                'on_failure' => 'block',    // block: a failed entry is retried before later ones; skip: later ones go on
+                'on_failure' => 'block',    // block: a failed entry is retried before later ones; skip: later ones go on, the failed one is dropped
             ],
 
             // 'jobs' => [
@@ -97,7 +91,10 @@ return [
         // 'event.name' => [Handler::class, …]
         'listen' => [],
 
-        // The outbox and the consumption marks, in each service's own database.
+        // true: each event is stored in event_publications, in the transaction, until it is sent: a committed event is not lost if the process dies before sending. Off: it is only sent after the commit.
+        'reliable_publish' => env('MICROSERVICES_EVENTS_RELIABLE_PUBLISH', false),
+
+        // The publications and the consumption marks, in each service's own database.
         'tables' => [
             'publications' => 'event_publications',
             'consumptions' => 'event_consumptions',
@@ -109,6 +106,9 @@ return [
         // Marks (event, handler) in the consumptions table inside the handler's transaction, so a
         // redelivery is a no-op. Null turns it on exactly when delivery is at-least-once.
         'guard' => env('MICROSERVICES_STREAM_GUARD'),
+
+        // prune: a mark stays until stream:prune-consumptions. acknowledge: it is deleted once its entry is acknowledged (redis transport only).
+        'guard_cleanup' => 'prune',
 
         // Keys of Laravel's Context carried in the envelope headers and restored around each handler.
         'propagate' => [],

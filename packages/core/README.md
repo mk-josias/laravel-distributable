@@ -1,13 +1,13 @@
 # Laravel Microservices
 
 Laravel Microservices lets Laravel applications work together as microservices: each one owns its
-data, and they talk only through signed RPC calls on shared contracts, ordered events with an
-outbox, and read-only copies of each other's rows. It depends on nothing but Laravel.
+data, and they talk only through signed RPC calls on shared contracts, events that can be
+made reliable, and read-only copies of each other's rows. It depends on nothing but Laravel.
 
 - **Calls through contracts.** A service calls another through an interface it shares with it. The
   call is a signed HTTP request; no route to write on either side.
-- **Events that are not lost.** An event can be written in the same transaction as the data, then
-  published in order. A redelivered event is handled once.
+- **Events that are not lost.** An event is sent once the transaction commits; it can also be kept
+  in the database until it is sent. A redelivered event is handled once.
 - **Copies of another service's rows.** A service keeps the columns it needs from another service's
   table in its own database, kept up to date by events.
 - **Any broker, any language.** Events travel through a driver installed next to the package:
@@ -169,7 +169,7 @@ class CustomerShadow extends \Microservices\Models\ShadowModel
 // in orders: the migration of that table
 return new class extends \Microservices\Migrations\ShadowMigration
 {
-    protected function source(): string { return 'customers'; }
+    protected function shadow(): string { return \Foundation\Billing\Shadows\CustomerShadow::class; }
 
     public function up(): void
     {
@@ -203,7 +203,7 @@ A copy created after the source had data is filled with `shadows:want`. See [Cop
 |---|---|---|
 | carry events on Kafka, RabbitMQ, another package | `Contracts\Stream\Transport` | `Services\Stream\TransportManager::extend()` |
 | carry calls on gRPC, an existing REST API | `Contracts\Rpc\Transport` | `Services\Rpc\TransportManager::extend()` |
-| keep exported events on S3, in a database | `Contracts\Stream\ArchiveStore` | `Services\Stream\Outbox\ArchiveStores::extend()` |
+| keep exported events on S3, in a database | `Contracts\Stream\ArchiveStore` | `Services\Stream\ArchiveStores::extend()` |
 | run several services in one process | `Contracts\Colocation` | the container (laravel-distributable-modules does) |
 | emit an object that already extends another class | `Contracts\Stream\Event` (`Events\Event` implements it with defaults) | nothing: `Bus::emit()` takes the interface |
 | emit differently (another outbox, a log of every emission) | `Contracts\Stream\Bus` | the container |

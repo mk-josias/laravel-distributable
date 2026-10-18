@@ -40,6 +40,14 @@ abstract class TestCase extends Orchestra
         $config->set('microservices.shadows', [CustomerShadow::class]);
         $config->set('microservices.rpc.secret', 'test-secret');
         $config->set('microservices.events.streams.default.driver', 'array');
+        $config->set('microservices.events.reliable_publish', true);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('microservices.events.reliable_publish', false);
     }
 
     protected function defineDatabaseMigrations(): void

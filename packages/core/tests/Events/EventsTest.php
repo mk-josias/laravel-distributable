@@ -10,7 +10,9 @@ use Microservices\Data\Envelope;
 use Microservices\Exceptions\ConfigurationException;
 use Microservices\Providers\MicroservicesServiceProvider;
 use Microservices\Services\Stream\Dispatcher;
+use Microservices\Services\Stream\TransportManager;
 use Microservices\Tests\Fixtures\App\Events\OrderPlaced;
+use Microservices\Tests\Fixtures\App\FlakyTransport;
 use Microservices\Tests\Fixtures\App\Handlers\OnInvoicePaid;
 
 it('stamps an event with this service as its emitter, and the propagated context', function () {
@@ -36,27 +38,74 @@ it('runs the handlers listening to an event another service emitted', function (
     expect(DB::table('paid_orders')->pluck('order_id')->all())->toBe([7]);
 });
 
-it('writes the event in the outbox with the business transaction, then publishes it', function () {
-    config()->set('microservices.events.streams.default.outbox', true);
+it('publishes right after the commit and writes no row when events are not published reliably', function () {
+    DB::transaction(function (): void {
+        app(Bus::class)->emit(new OrderPlaced(7));
+
+        expect(app(Transport::class)->published())->toBe([]);
+    });
+
+    expect(app(Transport::class)->published())->toHaveCount(1)
+        ->and(DB::table('event_publications')->count())->toBe(0);
+});
+
+it('publishes nothing when the transaction rolls back and events are not written in it', function () {
+    try {
+        DB::transaction(function (): void {
+            app(Bus::class)->emit(new OrderPlaced(7));
+
+            throw new RuntimeException('rollback');
+        });
+    } catch (RuntimeException) {
+    }
+
+    expect(app(Transport::class)->published())->toBe([]);
+});
+
+it('writes the event in the publications table with the business transaction, and deletes the row once it is sent after the commit', function () {
+    config()->set('microservices.events.reliable_publish', true);
+
+    DB::transaction(function (): void {
+        app(Bus::class)->emit(new OrderPlaced(7));
+
+        expect(app(Transport::class)->published())->toBe([])
+            ->and(DB::table('event_publications')->where('emitter', 'orders')->count())->toBe(1);
+    });
+
+    expect(app(Transport::class)->published()[0]->name)->toBe('orders.order.placed')
+        ->and(DB::table('event_publications')->count())->toBe(0);
+});
+
+it('keeps the row when the sending after the commit fails, and sends it on demand', function () {
+    $flaky = new FlakyTransport;
+    app(TransportManager::class)->extend('flaky', fn (): Transport => $flaky);
+    config()->set('microservices.events.reliable_publish', true);
+    config()->set('microservices.events.streams.default.driver', 'flaky');
 
     DB::transaction(fn () => app(Bus::class)->emit(new OrderPlaced(7)));
 
-    expect(app(Transport::class)->published())->toBe([])
-        ->and(DB::table('event_publications')->where('emitter', 'orders')->whereNull('published_at')->count())->toBe(1);
+    $row = DB::table('event_publications')->first();
 
-    $this->artisan('stream:publish', ['--once' => true])->assertSuccessful();
+    expect((int) $row->attempts)->toBe(1)
+        ->and($row->last_error)->toContain('broker down');
 
-    expect(app(Transport::class)->published()[0]->name)->toBe('orders.order.placed')
-        ->and(DB::table('event_publications')->whereNull('published_at')->count())->toBe(0);
+    $flaky->down = false;
+    $this->artisan('stream:republish')->assertSuccessful();
+
+    expect(DB::table('event_publications')->count())->toBe(0)
+        ->and($flaky->published)->toHaveCount(1);
 });
 
-it('keeps the outbox and the consumption marks in the tables microservices.events.tables names', function () {
+it('keeps the publications and the consumption marks in the tables microservices.events.tables names', function () {
+    $flaky = new FlakyTransport;
+    app(TransportManager::class)->extend('flaky', fn (): Transport => $flaky);
+    config()->set('microservices.events.streams.default.driver', 'flaky');
     config()->set('microservices.events.tables', ['publications' => 'outbox', 'consumptions' => 'inbox']);
     $migrations = dirname((string) (new ReflectionClass(MicroservicesServiceProvider::class))->getFileName(), 3).'/database/migrations';
     foreach (['0001_01_01_000000_create_event_publications_table', '0001_01_01_000001_create_event_consumptions_table', '0001_01_01_000002_add_version_to_event_publications_table'] as $file) {
         (require "{$migrations}/{$file}.php")->up();
     }
-    config()->set('microservices.events.streams.default.outbox', true);
+    config()->set('microservices.events.reliable_publish', true);
     config()->set('microservices.events.guard', true);
     config()->set('microservices.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
 

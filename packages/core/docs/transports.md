@@ -25,7 +25,7 @@ The transport decides what an application gets. The package does not check it: i
 
 | Guarantee | What depends on it | Without it |
 |---|---|---|
-| **Order within a stream**, including after a failure | a consumer that reads a copy filled by an earlier event (a welcome mail reading the user's copy); the publisher, which sends each service's outbox in `sequence` order | an event can overtake the one it depends on: declare it, so applications put such events on a transport that keeps order |
+| **Order within a stream**, including after a failure | a consumer that reads a copy filled by an earlier event (a welcome mail reading the user's copy) | an event can overtake the one it depends on: declare it, so applications put such events on a transport that keeps order |
 | **At least once**: an unacknowledged envelope comes back | nothing is lost when a handler or a process fails | an event can be lost |
 | **One cursor per consumer** | a new consumer disturbs none of the others | consumers steal each other's envelopes |
 
@@ -35,6 +35,7 @@ Say which ones yours keeps, as the drivers shipped here do in their README.
 
 | Interface | Used by | Without it |
 |---|---|---|
-| `RedeliversEnvelopes` | the consumption guard turns itself on (`Dispatcher::guarded()`), so a redelivered envelope runs its handlers once | the guard stays off unless the stream has an outbox, or `microservices.events.guard` is set |
-| `TracksAcknowledgements` | the publisher records the stream id of each row; `stream:export --acknowledged` | `--acknowledged` fails; publishing works |
+| `RedeliversEnvelopes` | the consumption guard turns itself on (`Dispatcher::guarded()`), so a redelivered envelope runs its handlers once | the guard stays off unless events are published reliably, or `microservices.events.guard` is set |
+| `ArchivesStreams` | `stream:export`, which reads the entries the stream keeps, all of them or those below what every consumer acknowledged | the command says the transport cannot give its entries back |
+| `ReportsAcknowledgements` | `events.guard_cleanup => acknowledge`: the consumption mark of an entry is deleted once the entry is acknowledged | the marks stay until `stream:prune-consumptions` |
 | `TrimsStreams` | `stream:trim` | the command says there is nothing to trim |

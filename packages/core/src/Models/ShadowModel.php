@@ -50,6 +50,14 @@ abstract class ShadowModel extends Model
     public static function sync(int|string $key, array $attributes): void
     {
         $shadow = static::query()->withoutGlobalScopes()->find($key) ?? new static;
+
+        $announced = self::version($attributes);
+        $kept = $shadow->exists ? self::version($shadow->getAttributes()) : null;
+
+        if ($announced !== null && $kept !== null && $announced < $kept) {
+            return;
+        }
+
         $shadow->syncing = true;
 
         if (! static::shouldBeShadowed($attributes)) {
@@ -61,6 +69,21 @@ abstract class ShadowModel extends Model
         $shadow->forceFill([...static::beforeSync($attributes, $shadow->exists ? $shadow : null), $shadow->getKeyName() => $key])->save();
 
         $shadow->syncing = false;
+    }
+
+    /**
+     * When the row last changed, to the second; null when it carries neither date, and no order is checked then.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    private static function version(array $attributes): ?int
+    {
+        $times = array_filter([
+            strtotime((string) ($attributes['updated_at'] ?? '')),
+            strtotime((string) ($attributes['deleted_at'] ?? '')),
+        ]);
+
+        return $times === [] ? null : max($times);
     }
 
     /**

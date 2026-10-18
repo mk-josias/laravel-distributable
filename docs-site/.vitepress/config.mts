@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'Laravel Microservices',
-  description: 'Laravel applications working together as microservices: signed RPC, ordered events, read-only copies.',
+  description: 'Laravel applications working together as microservices: signed RPC, events, read-only copies.',
   rewrites: { 'README.md': 'index.md' },
   cleanUrls: true,
   base: '/laravel-microservices/',

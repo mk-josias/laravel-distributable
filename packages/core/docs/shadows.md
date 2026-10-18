@@ -31,13 +31,15 @@ brings its own migration. A copy is a model like any other: it reads the databas
 running, so it is read inside that service.
 
 The keeper creates the copy's table with a migration extending
-`Microservices\Migrations\ShadowMigration`, whose `table()` is the name the keeper's copy model reads: the source's own, or its `$table`. The copy has
-the source's key as its own, the shadowed columns and a `deleted_at`:
+`Microservices\Migrations\ShadowMigration`. `shadow()` names the copy by its class, so the source
+table is written once, in the copy's `sourceTable()`; `table()` is the name the keeper's copy model
+reads: the source's own, or its `$table`. The copy has the source's key as its own, the shadowed
+columns and a `deleted_at`:
 
 ```php
 return new class extends \Microservices\Migrations\ShadowMigration
 {
-    protected function source(): string { return 'customers'; }
+    protected function shadow(): string { return \Foundation\Billing\Shadows\CustomerShadow::class; }
 
     public function up(): void
     {
@@ -66,6 +68,11 @@ protected static function shouldBeShadowed(array $attributes): bool
     return (bool) $attributes['is_admin'];
 }
 ```
+
+An announcement that arrives late, after a newer one, is ignored when the source row and the copy
+both carry a date: the latest of `updated_at` and `deleted_at`, to the second. A source without
+those columns announces no date, and the copy then keeps whichever announcement arrived last. Such
+a copy can be overwritten by an older announcement; `shadows:announce` repairs it.
 
 To fill a copy created after the source already had data:
 
@@ -96,8 +103,8 @@ public function shadowStream(): ?string
 ```php
 // config/microservices.php, in billing and in every service keeping the copy
 'events' => ['streams' => [
-    'default' => ['driver' => 'redis', 'outbox' => true],
-    'shadows' => ['driver' => 'redis', 'outbox' => true],
+    'default' => ['driver' => 'redis'],
+    'shadows' => ['driver' => 'redis'],
 ]],
 ```
 
@@ -106,7 +113,7 @@ public function shadowStream(): ?string
 php artisan stream:consume --stream=shadows
 ```
 
-A keeper has to read that stream, or its copy stays empty. The outbox follows the stream: a row
+A keeper has to read that stream, or its copy stays empty. With `events.reliable_publish` on, a row
 announced on `shadows` is written to `event_publications` with that stream, then published there.
 `shadows:want` and `shadows:announce` need nothing more: the want goes out on the default stream,
 the answer on the source's own.

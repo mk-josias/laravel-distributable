@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace StreamRedis;
 
+use Carbon\CarbonImmutable;
+use Closure;
 use Illuminate\Contracts\Redis\Factory as Redis;
 use Illuminate\Redis\Connections\Connection;
+use Microservices\Contracts\Stream\ArchivesStreams;
 use Microservices\Contracts\Stream\RedeliversEnvelopes;
-use Microservices\Contracts\Stream\TracksAcknowledgements;
+use Microservices\Contracts\Stream\ReportsAcknowledgements;
+use Microservices\Contracts\Stream\SkipsEntries;
 use Microservices\Contracts\Stream\Transport;
 use Microservices\Contracts\Stream\TrimsStreams;
 use Microservices\Data\Envelope;
@@ -22,7 +26,7 @@ use Throwable;
  * cursor, so plugging a new one disturbs nobody. Delivery is at-least-once — unacknowledged
  * entries come back, which is exactly what the consumption guard is for.
  */
-final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowledgements, Transport, TrimsStreams
+final class RedisStreamTransport implements ArchivesStreams, RedeliversEnvelopes, ReportsAcknowledgements, SkipsEntries, Transport, TrimsStreams
 {
     private const string OWN_PENDING = '0';
 
@@ -30,7 +34,11 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
 
     private const int MAX_BACKOFF_SECONDS = 60;
 
+    private const int ARCHIVE_BATCH = 500;
+
     private bool $listening = true;
+
+    private ?Closure $acknowledged = null;
 
     public function __construct(
         private readonly Redis $redis,
@@ -39,38 +47,44 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
 
     public function publish(Envelope $envelope): void
     {
-        $this->publishTracked($envelope);
+        $this->connection()->command('xadd', [$this->config->getKey(), '*', ['envelope' => $envelope->toJson()]]);
     }
 
-    public function publishTracked(Envelope $envelope): string
+    public function onAcknowledged(callable $callback): void
     {
-        return (string) $this->connection()->command('xadd', [$this->config->getKey(), '*', ['envelope' => $envelope->toJson()]]);
+        $this->acknowledged = Closure::fromCallable($callback);
     }
 
-    /** Every group must have been delivered the entry, and hold no pending entry at or below it. */
-    public function isAcknowledged(string $entryId): bool
+    /** With $acknowledgedOnly, it stops below the floor trim() uses: every group has acknowledged what lies under it. */
+    public function entries(?CarbonImmutable $since, ?CarbonImmutable $until, bool $acknowledgedOnly): iterable
     {
         $key = $this->config->getKey();
+        $end = $until !== null ? '('.$until->getTimestampMs() : '+';
 
-        try {
-            /** @var list<array<string, mixed>>|false $groups */
-            $groups = $this->connection()->command('xinfo', ['GROUPS', $key]);
-        } catch (Throwable) {
-            return false;
-        }
+        if ($acknowledgedOnly) {
+            $floor = $this->floor($key);
 
-        foreach ($groups ?: [] as $group) {
-            /** @var array{0?: int, 1?: string|null}|false $pending */
-            $pending = $this->connection()->command('xpending', [$key, (string) $group['name']]);
-            $delivered = self::compareIds($entryId, (string) $group['last-delivered-id']) <= 0;
-            $stillPending = is_array($pending) && ($pending[0] ?? 0) > 0 && self::compareIds($entryId, (string) $pending[1]) >= 0;
+            if ($floor === null) {
+                return;
+            }
 
-            if (! $delivered || $stillPending) {
-                return false;
+            if ($end === '+' || self::compareIds($floor, substr($end, 1)) < 0) {
+                $end = '('.$floor;
             }
         }
 
-        return ($groups ?: []) !== [];
+        $from = $since !== null ? (string) $since->getTimestampMs() : '-';
+
+        do {
+            /** @var array<string, array<string, string>> $entries */
+            $entries = $this->connection()->command('xrange', [$key, $from, $end, self::ARCHIVE_BATCH]) ?: [];
+
+            foreach ($entries as $id => $fields) {
+                yield Envelope::fromJson($fields['envelope'] ?? '{}');
+
+                $from = '('.$id;
+            }
+        } while (count($entries) === self::ARCHIVE_BATCH);
     }
 
     public function trim(): int
@@ -84,6 +98,81 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
 
         // phpredis: xTrim(key, threshold, approximate, minid)
         return (int) $this->connection()->command('xtrim', [$key, $floor, false, true]);
+    }
+
+    public function skipOldest(string $consumer): ?Envelope
+    {
+        $key = $this->config->getKey();
+
+        /** @var list<array{0: string}>|false $pending */
+        $pending = $this->connection()->command('xpending', [$key, $consumer, '-', '+', 1]);
+        $id = is_array($pending) && isset($pending[0][0]) ? (string) $pending[0][0] : null;
+
+        if ($id === null) {
+            return null;
+        }
+
+        /** @var array<string, array<string, string>> $entry */
+        $entry = $this->connection()->command('xrange', [$key, $id, $id]) ?: [];
+        $this->connection()->command('xack', [$key, $consumer, [$id]]);
+
+        return Envelope::fromJson($entry[$id]['envelope'] ?? '{}');
+    }
+
+    /** The cursor never goes back, which would deliver again what was handled, nor past now, which would swallow what is yet to be published. */
+    public function skipUntil(string $consumer, CarbonImmutable $until): int
+    {
+        $key = $this->config->getKey();
+        $end = min($until->getTimestampMs(), CarbonImmutable::now()->getTimestampMs()).'-18446744073709551615';
+        $skipped = 0;
+
+        do {
+            /** @var list<array{0: string}> $pending */
+            $pending = $this->connection()->command('xpending', [$key, $consumer, '-', $end, self::ARCHIVE_BATCH]) ?: [];
+            $ids = array_map(static fn (array $row): string => (string) $row[0], $pending);
+
+            if ($ids !== []) {
+                $this->connection()->command('xack', [$key, $consumer, $ids]);
+                $skipped += count($ids);
+            }
+        } while (count($ids) === self::ARCHIVE_BATCH);
+
+        $delivered = $this->lastDelivered($key, $consumer);
+
+        if ($delivered === null || self::compareIds($delivered, $end) >= 0) {
+            return $skipped;
+        }
+
+        $from = '('.$delivered;
+
+        do {
+            /** @var array<string, array<string, string>> $entries */
+            $entries = $this->connection()->command('xrange', [$key, $from, $end, self::ARCHIVE_BATCH]) ?: [];
+            $skipped += count($entries);
+            $from = '('.(string) array_key_last($entries);
+        } while (count($entries) === self::ARCHIVE_BATCH);
+
+        $this->connection()->command('xgroup', ['SETID', $key, $consumer, $end]);
+
+        return $skipped;
+    }
+
+    private function lastDelivered(string $key, string $group): ?string
+    {
+        try {
+            /** @var list<array<string, mixed>>|false $groups */
+            $groups = $this->connection()->command('xinfo', ['GROUPS', $key]);
+        } catch (Throwable) {
+            return null;
+        }
+
+        foreach ($groups ?: [] as $info) {
+            if ((string) $info['name'] === $group) {
+                return (string) $info['last-delivered-id'];
+            }
+        }
+
+        return null;
     }
 
     /** Every entry below it is acknowledged by every group; null while no group reads the stream. */
@@ -235,8 +324,9 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
     }
 
     /**
-     * A failed entry stays unacknowledged. Blocking, the pass stops there: handling the next one would
-     * apply it ahead of the one that failed. An entry from an emitter outside $channels is acknowledged unread.
+     * Blocking, a failed entry stays unacknowledged and the pass stops there: handling the next one would
+     * apply it ahead of the one that failed. Skipping, it is acknowledged and dropped. An entry from an
+     * emitter outside $channels is acknowledged unread.
      *
      * @param  array<string, array<string, string>>  $entries
      * @param  list<string>  $channels
@@ -245,11 +335,14 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
     private function handleEntries(string $key, array $entries, string $group, array $channels, callable $handle): bool
     {
         foreach ($entries as $id => $fields) {
+            $handled = null;
+
             try {
                 $envelope = Envelope::fromJson($fields['envelope'] ?? '{}');
 
                 if (in_array($envelope->emitter, $channels, true)) {
                     $handle($envelope);
+                    $handled = $envelope;
                 }
             } catch (Throwable $e) {
                 report($e);
@@ -257,11 +350,13 @@ final class RedisStreamTransport implements RedeliversEnvelopes, TracksAcknowled
                 if ($this->config->blocksOnFailure()) {
                     return false;
                 }
-
-                continue;
             }
 
             $this->connection()->command('xack', [$key, $group, [$id]]);
+
+            if ($handled !== null && $this->acknowledged !== null) {
+                ($this->acknowledged)($handled, $group);
+            }
         }
 
         return true;

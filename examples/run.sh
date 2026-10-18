@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# iam registers a user; notifications mails a welcome from its copy of iam's users; analytics counts
-# both events; the client reads its inbox through the Node gateway. Needs Redis on localhost and Node.
+# iam registers a user, who logs in through the Node gateway; notifications mails a welcome from its
+# copy of iam's users; analytics journals both events and computes its hourly datasets; the client
+# reads its inbox through the gateway. Needs Redis on localhost and Node.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -24,12 +25,14 @@ pids=()
 trap 'kill "${pids[@]}" 2> /dev/null' EXIT
 sleep 2
 
-token=$(cd iam && php artisan users:register Ada ada@example.com)
+(cd iam && php artisan users:register Ada ada@example.com correct-horse > /dev/null)
+token=$(curl -s -X POST http://127.0.0.1:8000/iam/api/v1/login -H 'Content-Type: application/json' \
+    -d '{"email":"ada@example.com","password":"correct-horse"}' | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
 sleep 3
 
-inbox=$(curl -s -H "Authorization: Bearer $token" http://127.0.0.1:8000/notifications)
-stats=$(cd analytics && php artisan stats)
+inbox=$(curl -s -H "Authorization: Bearer $token" http://127.0.0.1:8000/notifications/api/v1/notifications)
+stats=$(cd analytics && php artisan analytics:compute > /dev/null && php artisan analytics:stats)
 output="inbox: $inbox"$'\n'"$stats"
 echo "$output"
 [ "$output" = $'inbox: ["welcome"]\nsignups: 1, mails: 1' ]
-[ "$(curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer wrong' http://127.0.0.1:8000/notifications)" = 401 ]
+[ "$(curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer wrong' http://127.0.0.1:8000/notifications/api/v1/notifications)" = 401 ]

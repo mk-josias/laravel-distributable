@@ -5,7 +5,8 @@ use Illuminate\Foundation\Application;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([ServicesProvider::class])
-    ->withRouting(commands: __DIR__.'/../routes/console.php')
+    ->withRouting(api: __DIR__.'/../routes/api.php', apiPrefix: 'iam/api')
+    ->withCommands()
     ->withMiddleware()
     ->withExceptions()
     ->create();

@@ -6,13 +6,20 @@ namespace App\Services;
 
 use App\Models\User;
 use Foundation\Iam\Contracts\IamService as Contract;
+use Laravel\Sanctum\PersonalAccessToken;
 
 final class IamService implements Contract
 {
+    /** An `access` token not expired; a logout or a new login on its device deletes it. */
     public function findUserByToken(string $token): ?array
     {
-        $user = User::query()->where('api_token', hash('sha256', $token))->first();
+        $access = PersonalAccessToken::findToken($token);
+        $user = $access?->tokenable;
 
-        return $user === null ? null : ['id' => $user->id, 'name' => $user->name];
+        if ($access === null || ! $access->can('access') || $access->expires_at?->isFuture() !== true || ! $user instanceof User) {
+            return null;
+        }
+
+        return ['id' => $user->id, 'name' => $user->name];
     }
 }

@@ -45,19 +45,19 @@ final class ConfigurationException extends RuntimeException
             : "RPC driver [{$driver}] of transport [{$transport}] is not supported: register it with Services\\Rpc\\TransportManager::extend().");
     }
 
-    public static function untrackedAcknowledgements(string $stream): self
+    public static function unarchivableStream(string $stream): self
     {
-        return new self("The transport of stream [{$stream}] does not know who acknowledged what: --acknowledged needs one implementing Contracts\\Stream\\TracksAcknowledgements.");
+        return new self("The transport of stream [{$stream}] cannot give its entries back: exporting needs one implementing Contracts\\Stream\\ArchivesStreams.");
     }
 
     public static function invalidExportFilter(string $column): self
     {
-        return new self("Cannot filter an export on [{$column}]: use name, emitter, stream or payload.{field}.");
+        return new self("Cannot filter an export on [{$column}]: use name, emitter or payload.{field}.");
     }
 
     public static function unknownArchiveStore(string $name): self
     {
-        return new self("Archive store [{$name}] is not supported: register it with Services\\Stream\\Outbox\\ArchiveStores::extend().");
+        return new self("Archive store [{$name}] is not supported: register it with Services\\Stream\\ArchiveStores::extend().");
     }
 
     public static function missingRpcHost(string $service): self

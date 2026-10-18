@@ -1,6 +1,7 @@
 {
     "name": "mk-josias/laravel-microservices-rpc-http",
     "description": "HTTP driver for the RPC of mk-josias/laravel-microservices: signed calls between services, one endpoint per service.",
+    "homepage": "https://mk-josias.github.io/laravel-microservices/",
     "license": "MIT",
     "type": "library",
     "keywords": [

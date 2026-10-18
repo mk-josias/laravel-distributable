@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Microservices\Services\Stream\Outbox;
+namespace Microservices\Services\Stream;
 
 use Microservices\Contracts\Stream\ArchiveStore;
 use SplFileObject;
 
-/** A JSON-lines file per target: one row per line. */
+/** A JSON-lines file per target: one envelope per line. */
 final readonly class FileArchiveStore implements ArchiveStore
 {
     public function write(string $target, array $rows): void

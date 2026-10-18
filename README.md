@@ -1,7 +1,7 @@
 # Laravel Microservices
 
-Laravel applications working together as microservices: signed RPC through shared contracts, ordered
-events with an outbox, and read-only copies of each other's rows. Each service owns its data; the
+Laravel applications working together as microservices: signed RPC through shared contracts, events
+that can be made reliable, and read-only copies of each other's rows. Each service owns its data; the
 package depends on nothing but Laravel.
 
 [Documentation](https://mk-josias.github.io/laravel-microservices/) · [Packagist](https://packagist.org/packages/mk-josias/laravel-microservices)
@@ -11,7 +11,7 @@ package depends on nothing but Laravel.
 | A service needs to | It does |
 |---|---|
 | ask another service something | calls an interface it shares with it: `app(BillingService::class)->invoiceFor(7)` is a signed HTTP request, with no route to write on either side |
-| tell the others something happened | emits an event: written in the same transaction as the data, published in order, handled once even when it is delivered twice |
+| tell the others something happened | emits an event: sent once the transaction commits, and handled once even when it is delivered twice |
 | join, filter or sort on another service's rows | keeps the columns it needs in its own database, filled by that service's events, and refuses any write that doesn't come from them |
 | work with a service in another language | reads and writes the same JSON envelopes on the stream, and calls the same signed endpoints |
 

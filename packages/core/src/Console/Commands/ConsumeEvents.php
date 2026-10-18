@@ -6,7 +6,9 @@ namespace Microservices\Console\Commands;
 
 use Illuminate\Console\Command;
 use Microservices\Config\Services;
+use Microservices\Config\Streamer;
 use Microservices\Contracts\Colocation;
+use Microservices\Contracts\Stream\ReportsAcknowledgements;
 use Microservices\Contracts\Stream\Transport;
 use Microservices\Data\Envelope;
 use Microservices\Services\Stream\Dispatcher;
@@ -25,9 +27,13 @@ final class ConsumeEvents extends Command
 
     protected $description = 'Consume events from a stream and run this service handlers.';
 
-    public function handle(Colocation $colocation, Services $services, TransportManager $transports, Dispatcher $dispatcher): int
+    public function handle(Colocation $colocation, Services $services, TransportManager $transports, Dispatcher $dispatcher, Streamer $streamer): int
     {
         $transport = $transports->stream($this->option('stream') !== null ? (string) $this->option('stream') : null);
+
+        if ($transport instanceof ReportsAcknowledgements && $streamer->getGuardCleanup() === 'acknowledge') {
+            $transport->onAcknowledged($dispatcher->forget(...));
+        }
         $consumers = $this->consumers($colocation);
 
         if ($consumers === []) {

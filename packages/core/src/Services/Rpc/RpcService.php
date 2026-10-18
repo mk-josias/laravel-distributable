@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Microservices\Services\Rpc;
 
 use Closure;
+use Illuminate\Cache\RedisStore;
 use Illuminate\Cache\TaggableStore;
+use Illuminate\Cache\TaggedCache;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -59,8 +61,7 @@ abstract class RpcService
      */
     protected function readThrough(string $key, int $ttl, Closure $fetch, Closure $map, ?array $tags = null): mixed
     {
-        $store = $this->cache($tags);
-        $raw = $store->get($key);
+        $raw = $this->read($key, $tags);
 
         if (! is_array($raw)) {
             $raw = $fetch();
@@ -69,7 +70,7 @@ abstract class RpcService
                 return null;
             }
 
-            $store->put($key, $raw, $ttl);
+            $this->write($key, $raw, $ttl, $tags);
         }
 
         return $this->mapOrForget($key, $raw, $map, $tags);
@@ -88,7 +89,7 @@ abstract class RpcService
      */
     protected function readThroughUntil(string $key, Closure $fetch, Closure $map, Closure $ttlOf): mixed
     {
-        $raw = $this->cache()->get($key);
+        $raw = $this->read($key);
 
         if (is_array($raw)) {
             return $this->mapOrForget($key, $raw, $map);
@@ -101,9 +102,53 @@ abstract class RpcService
             return null;
         }
 
-        $this->cache()->put($key, $raw, $ttl);
+        $this->write($key, $raw, $ttl);
 
         return $mapped;
+    }
+
+    /**
+     * An answer is kept as JSON, so a service in another language reads the same key. On Redis it is
+     * written as is, under the key Laravel uses: its own put() would serialize it in PHP. With tags,
+     * Laravel's put() still files the key under them, so flushing a tag drops it.
+     *
+     * @param  array<array-key, mixed>  $raw
+     * @param  list<string>|null  $tags
+     */
+    private function write(string $key, array $raw, int $ttl, ?array $tags = null): void
+    {
+        $cache = $this->cache($tags);
+        $store = $cache->getStore();
+        $json = json_encode($raw, JSON_THROW_ON_ERROR);
+
+        if (! $store instanceof RedisStore || $cache instanceof TaggedCache) {
+            $cache->put($key, $json, $ttl);
+        }
+
+        if ($store instanceof RedisStore) {
+            $store->connection()->setex($store->getPrefix().$this->itemKey($cache, $key), $ttl, $json);
+        }
+    }
+
+    /**
+     * @param  list<string>|null  $tags
+     * @return array<array-key, mixed>|null
+     */
+    private function read(string $key, ?array $tags = null): ?array
+    {
+        $cache = $this->cache($tags);
+        $store = $cache->getStore();
+        $json = $store instanceof RedisStore
+            ? $store->connection()->get($store->getPrefix().$this->itemKey($cache, $key))
+            : $cache->get($key);
+        $raw = is_string($json) ? json_decode($json, true) : null;
+
+        return is_array($raw) ? $raw : null;
+    }
+
+    private function itemKey(Repository $cache, string $key): string
+    {
+        return $cache instanceof TaggedCache ? $cache->taggedItemKey($key) : $key;
     }
 
     /** @param list<string>|null $tags the ones the entry was written under */
