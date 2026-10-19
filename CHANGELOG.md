@@ -6,34 +6,44 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ## [Unreleased]
 
+### Added
+
+- A call between modules is a message: a `readonly` class of the foundation that implements
+  `Contracts\Rpc\Message`, carries `#[Rpc(module, version, name)]` and the `rules()` that validate
+  its payload. The module answers it with a class that implements `Contracts\Rpc\Handler`,
+  declared in its provider's `$rpc` (message => handler). A handler that does not implement
+  `Handler`, or whose `handle()` takes another message, is refused at boot. A new version of a
+  message is a new class, and a module serves both while callers move over.
+- `modules:doctor` checks the messages of the foundation: one that names an undeclared module, or
+  a remote module with no host.
+- Starter: iam writes the users the gateway needs into its own Redis, `gateway-cache`
+  (`gateway:user:{id}`, one hour at most), and Traefik reads only that one.
+
 ### Changed
 
-- **Breaking:** a call between modules is a message: a `readonly` class of the foundation that
-  implements `Contracts\Rpc\Message`, carries `#[Rpc(module, version, name)]` and the `rules()`
-  that validate its payload; the module answers it with a handler declared in its provider's
-  `$rpc`. A new version is a new class, and a module serves both while callers move over.
-- **Breaking:** `Contracts\Rpc\Transport::invoke()` takes `($module, $name, $version, $payload)`,
-  and rpc-http serves `POST {module}/rpc/{version}/{message}` with `{"payload": {…}}`; a payload
-  its rules refuse is a 422, read back as a `ValidationException`.
-- **Breaking:** `RpcService` becomes `RpcClient`: it sends messages (`send()`) and keeps its cache
-  helpers; `call()` and the contract it implemented are gone.
-- `modules:doctor` finds the messages in the foundation, and reports one that names an undeclared
-  module or a remote module with no host.
-- Starter: iam writes the users the gateway reads into a Redis of its own, `gateway-cache`
-  (`gateway:user:{id}`, one hour at most), and Traefik reads only that one; three networks (`public`,
-  `internal`, `gateway`) keep Traefik away from Postgres and from the modules' Redis. The gateway's
-  `redisDatabase` and `cachePrefix` settings are gone.
-- Starter: `IamService` and `IamRpcService` give way to the messages `FindUser`, `FindUserByToken`
-  and `Grants`, their handlers in `apps/Iam/app/Rpc/`, and `Foundation\Iam\Services\IamClient`.
+- **Breaking:** `RpcService` becomes `RpcClient`, and `call('findUser', ['id' => $id])` becomes
+  `send(new FindUser($id))`.
+- **Breaking:** the RPC route is `POST {module}/rpc/{version}/{message}` with `{"payload": {…}}`,
+  where it was `{service}/rpc/{method}`. `DISTRIBUTABLE_RPC_PATH` takes the new placeholders, and a
+  caller that is not PHP, such as a gateway, sends the new path and body. A payload the message's
+  rules refuse is a 422, read back by the caller as a `ValidationException`.
+- **Breaking:** a custom RPC driver implements `Contracts\Rpc\Transport::invoke($module, $name,
+  $version, $payload)`.
+- **Breaking** (starter): `IamService` and `IamRpcService` give way to the messages `FindUser`,
+  `FindUserByToken` and `Grants`, answered by handlers in `apps/Iam/app/Rpc/`, and to
+  `Foundation\Iam\Services\IamClient`.
 - **Breaking** (starter): every module's API has one shape: a controller in `Http/Controllers/Api/`,
   a request whose `toDto()` feeds an action or a `Repositories/` read. Analytics serves
-  `GET /analytics/api/v1/metrics` instead of `datasets`, with `filter[from]` and `filter[to]`;
+  `GET /analytics/api/v1/metrics` with `filter[from]` and `filter[to]`, where it served `datasets`;
   `foundation/Common` is ranged by nature.
+- **Breaking** (starter): three Docker networks (`public`, `internal`, `gateway`) keep Traefik away
+  from Postgres and from the modules' Redis, and the gateway's `redisDatabase` and `cachePrefix`
+  settings are gone.
 
 ### Removed
 
-- **Breaking:** `LocalServices`, `RpcServices`, `ServiceProvider::$services`, and
-  `FoundationServiceProvider::$rpc`.
+- **Breaking:** `LocalServices`, `RpcServices`, `ServiceProvider::$services` and
+  `FoundationServiceProvider::$rpc`: the methods a module offered become messages and handlers.
 - **Breaking** (starter): `GET /analytics/api/v1/signups` and `users/{id}`.
 
 ## [0.3.0] - 2026-10-18
