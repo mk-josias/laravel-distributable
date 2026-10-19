@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Rpc\FindUserByTokenHandler;
 use Distributable\Providers\ServiceProvider;
-use Foundation\Iam\Contracts\IamService;
+use Foundation\Iam\Rpc\FindUserByToken;
 
 final class ServicesProvider extends ServiceProvider
 {
-    protected array $services = [IamService::class => \App\Services\IamService::class];
+    protected array $rpc = [FindUserByToken::class => FindUserByTokenHandler::class];
 }

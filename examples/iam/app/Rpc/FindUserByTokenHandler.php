@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Rpc;
 
 use App\Models\User;
-use Foundation\Iam\Contracts\IamService as Contract;
+use Distributable\Contracts\Rpc\Handler;
+use Foundation\Iam\Rpc\FindUserByToken;
 use Laravel\Sanctum\PersonalAccessToken;
 
-final class IamService implements Contract
+/** @implements Handler<FindUserByToken> */
+final class FindUserByTokenHandler implements Handler
 {
     /** An `access` token not expired; a logout or a new login on its device deletes it. */
-    public function findUserByToken(string $token): ?array
+    public function handle(FindUserByToken $message): ?array
     {
-        $access = PersonalAccessToken::findToken($token);
+        $access = PersonalAccessToken::findToken($message->token);
         $user = $access?->tokenable;
 
         if ($access === null || ! $access->can('access') || $access->expires_at?->isFuture() !== true || ! $user instanceof User) {

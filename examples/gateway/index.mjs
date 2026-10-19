@@ -11,7 +11,7 @@ const ROUTES = { '/iam/api': IAM, '/notifications/api': process.env.NOTIFICATION
 const PUBLIC = ['POST /iam/api/v1/login'];
 const RPC_SECRET = process.env.DISTRIBUTABLE_RPC_SECRET;
 const GATEWAY_SECRET = process.env.GATEWAY_SECRET;
-const RPC_PATH = process.env.DISTRIBUTABLE_RPC_PATH ?? '{service}/rpc/{method}';
+const RPC_PATH = process.env.DISTRIBUTABLE_RPC_PATH ?? '{module}/rpc/{version}/{message}';
 const IDENTITY_TTL = 60;
 
 createServer(async (request, response) => {
@@ -25,7 +25,7 @@ createServer(async (request, response) => {
 
         const open = PUBLIC.includes(`${request.method} ${request.url}`);
         const token = /^Bearer (.+)$/.exec(request.headers.authorization ?? '')?.[1];
-        const user = !open && token ? await rpc('iam', 'findUserByToken', 'Foundation\\Iam\\Contracts\\IamService', { token }) : null;
+        const user = !open && token ? await rpc('iam', 1, 'find-user-by-token', { token }) : null;
 
         if (!open && !user) {
             response.writeHead(401).end();
@@ -70,9 +70,9 @@ function identity(id) {
     return `${payload}.` + createHmac('sha256', GATEWAY_SECRET).update(payload).digest('hex');
 }
 
-async function rpc(service, method, contract, args) {
-    const path = '/' + RPC_PATH.replace('{service}', service).replace('{method}', method);
-    const body = JSON.stringify({ contract, arguments: args });
+async function rpc(module, version, message, payload) {
+    const path = '/' + RPC_PATH.replace('{module}', module).replace('{version}', version).replace('{message}', message);
+    const body = JSON.stringify({ payload });
     const timestamp = String(Math.floor(Date.now() / 1000));
     const nonce = randomUUID();
     const context = '{}';

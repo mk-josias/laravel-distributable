@@ -4,7 +4,7 @@
  client ── POST /iam/api/v1/login ──► gateway/ (Node, :8000) ──────────────────────► iam/ (:8001)
                                                                                       a Sanctum token per device
  client ── Bearer token ──► gateway/ ── X-Identity: {claims}.{hmac} ──► notifications/ (:8002)
-                              │ RPC findUserByToken                     GET /notifications/api/v1/notifications
+                              │ RPC FindUserByToken                     GET /notifications/api/v1/notifications
                               ▼
  iam/ ── users:register ──► stream ──► notifications/ ──► stream ──► analytics/
    User, source of        shadow.changed   copy of users;  mail.sent   RecordSignup, RecordMail: journals
@@ -13,7 +13,7 @@
 
 ```
 foundation/   example/foundation, required by the three: what they share
-              Iam/Contracts/IamService  Iam/Services/IamRpcService  Iam/Shadows/UserShadow  Iam/Auth/TrustedIdentity
+              Iam/Rpc/FindUserByToken  Iam/Shadows/UserShadow  Iam/Auth/TrustedIdentity
               Iam/Events/UserRegistered  Notifications/Events/MailSent
 ```
 
