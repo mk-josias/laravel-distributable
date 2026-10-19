@@ -16,8 +16,14 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
   message is a new class, and a module serves both while callers move over.
 - `modules:doctor` checks the messages of the foundation: one that names an undeclared module, or
   a remote module with no host.
+- `rpc:serve` starts the process of a transport that answers calls in one of its own: a transport
+  declares it by implementing `Contracts\Rpc\Serves`.
+- rpc-http: with `DISTRIBUTABLE_RPC_PORT` set, the RPC answers on that port only, and `rpc:serve`
+  starts an Octane server for it. Without it, the RPC answers wherever the application is served.
 - Starter: iam writes the users the gateway needs into its own Redis, `gateway-cache`
   (`gateway:user:{id}`, one hour at most), and Traefik reads only that one.
+- Starter: `WITH_RPC` runs `rpc:serve`, and the compose files run iam's RPC in a container of its
+  own, `iam-rpc`, so a busy API never starves the calls between modules.
 
 ### Changed
 
@@ -32,6 +38,8 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 - **Breaking** (starter): `IamService` and `IamRpcService` give way to the messages `FindUser`,
   `FindUserByToken` and `Grants`, answered by handlers in `apps/Iam/app/Rpc/`, and to
   `Foundation\Iam\Services\IamClient`.
+- **Breaking** (starter): `IamClient::findUser()` and `findUserByToken()` return a `UserData`, where
+  they returned an `['id' => …, 'name' => …]` array.
 - **Breaking** (starter): every module's API has one shape: a controller in `Http/Controllers/Api/`,
   a request whose `toDto()` feeds an action or a `Repositories/` read. Analytics serves
   `GET /analytics/api/v1/metrics` with `filter[from]` and `filter[to]`, where it served `datasets`;
