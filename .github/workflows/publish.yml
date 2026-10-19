@@ -1,4 +1,4 @@
-name: Split
+name: Publish
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     tags: ['v*']
 
 jobs:
-  split:
+  publish:
     name: ${{ matrix.prefix }}
     runs-on: ubuntu-latest
 
