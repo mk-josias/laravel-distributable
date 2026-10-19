@@ -24,6 +24,7 @@
     "autoload-dev": {
         "psr-4": {
             "Distributable\\Tests\\": "packages/core/tests/",
+            "Foundation\\": "packages/core/tests/Fixtures/foundation/",
             "Distributable\\RpcHttp\\Tests\\": "packages/rpc-http/tests/",
             "Distributable\\Stream\\Redis\\Tests\\": "packages/stream-redis/tests/"
         }

@@ -7,6 +7,9 @@ on:
       - packages/core/README.md
       - packages/core/docs/**
       - starter/README.md
+      - packages/rpc-http/README.md
+      - packages/stream-redis/README.md
+      - starter/docs/**
       - docs-site/**
       - .github/workflows/docs.yml
   workflow_dispatch:

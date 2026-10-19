@@ -10,5 +10,5 @@ use Distributable\RpcHttp\Tests\TestCase as RpcHttpTestCase;
 use Distributable\Stream\Redis\Tests\TestCase as RedisTestCase;
 
 // The imported packages keep one base class per folder, as they had; packages/core/tests is not among them.
-uses(RpcHttpTestCase::class)->in(__DIR__.'/../packages/rpc-http/tests');
+uses(RpcHttpTestCase::class)->in(__DIR__.'/../packages/rpc-http/tests/Feature');
 uses(RedisTestCase::class)->in(__DIR__.'/../packages/stream-redis/tests');

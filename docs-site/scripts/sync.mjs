@@ -12,5 +12,8 @@ for (const generated of ['docs', 'starter.md']) {
 }
 
 cpSync(join(core, 'docs'), join(site, 'docs'), { recursive: true })
+cpSync(join(starter, 'docs'), join(site, 'docs'), { recursive: true })
+cpSync(join(site, '..', 'packages', 'rpc-http', 'README.md'), join(site, 'docs', 'rpc-http.md'))
+cpSync(join(site, '..', 'packages', 'stream-redis', 'README.md'), join(site, 'docs', 'stream-redis.md'))
 cpSync(join(core, 'README.md'), join(site, 'README.md'))
 cpSync(join(starter, 'README.md'), join(site, 'starter.md'))

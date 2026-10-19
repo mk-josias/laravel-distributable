@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Foundation\Notifications\Events;
 
+use Distributable\Attributes\Emitter;
 use Distributable\Events\Event;
 
+#[Emitter(module: 'notifications')]
 final class MailSent extends Event
 {
     public const string NAME = 'notifications.mail.sent';

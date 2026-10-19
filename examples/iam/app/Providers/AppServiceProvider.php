@@ -8,7 +8,7 @@ use App\Rpc\FindUserByTokenHandler;
 use Distributable\Providers\ServiceProvider;
 use Foundation\Iam\Rpc\FindUserByToken;
 
-final class ServicesProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     protected array $rpc = [FindUserByToken::class => FindUserByTokenHandler::class];
 }

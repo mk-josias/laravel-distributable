@@ -22,8 +22,8 @@ use Throwable;
  * Redis Streams, straight on Illuminate\Redis — no third-party event package, because the wire
  * format has to be ours for transports to stay interchangeable.
  *
- * One Redis stream per configured stream, written by every service, so its entries keep the order
- * they were published in; one consumer group per CONSUMING service: each consumer keeps its own
+ * One Redis stream per configured stream, written by every module, so its entries keep the order
+ * they were published in; one consumer group per CONSUMING module: each consumer keeps its own
  * cursor, so plugging a new one disturbs nobody. Delivery is at-least-once — unacknowledged
  * entries come back, which is exactly what the consumption guard is for.
  */

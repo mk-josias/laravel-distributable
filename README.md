@@ -1,4 +1,4 @@
-# Laravel Distributable Modules
+# Laravel Distributable
 
 Design each Laravel module as a microservice: a context bounded to its module, contracts and
 events to talk to the others, and the same code whether modules run in the same process or in
@@ -9,7 +9,7 @@ separate, distributed processes.
 ```bash
 composer require mk-josias/laravel-distributable
 php artisan modules:install
-php artisan modules:make iam --database
+php artisan modules:make iam
 ```
 
 Or start from the example application, three modules each with its own database:
@@ -23,15 +23,15 @@ composer create-project mk-josias/laravel-distributable-starter my-app
 | Folder | Published as | |
 |---|---|---|
 | `packages/core` | `mk-josias/laravel-distributable` | the package: [README and documentation](packages/core/README.md) |
+| `packages/rpc-http` | `mk-josias/laravel-distributable-rpc-http` | the HTTP transport of the calls between modules |
+| `packages/stream-redis` | `mk-josias/laravel-distributable-stream-redis` | the Redis Streams driver of the events |
 | `starter` | `mk-josias/laravel-distributable-starter` | the example application |
-
-It builds on [laravel-microservices](https://github.com/mk-josias/laravel-microservices), which
-provides the events, calls and copies between services.
 
 ## Developing
 
-`composer.json` reaches laravel-microservices through a path repository at
-`../laravel-microservices`: clone it next to this repository, then run `composer check`
-(Pint, PHPStan, Pest).
+```bash
+composer install
+composer check   # Pint, PHPStan, Pest
+```
 
 MIT license.

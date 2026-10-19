@@ -16,7 +16,7 @@ final readonly class RedisStream
         return (string) ($this->config->get("distributable.events.streams.{$this->name}.connection") ?? 'default');
     }
 
-    /** The one Redis stream every service writes this stream's events to. */
+    /** The one Redis stream every module writes this stream's events to. */
     public function getKey(): string
     {
         return (string) $this->config->get("distributable.events.streams.{$this->name}.key", "distributable:{$this->name}");

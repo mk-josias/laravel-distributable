@@ -1,6 +1,6 @@
 {
     "name": "mk-josias/laravel-distributable-stream-redis",
-    "description": "Redis Streams driver for the events of mk-josias/laravel-distributable: one ordered stream, a consumer group per service, failed entries retried before later ones, or dropped.",
+    "description": "Redis Streams driver for the events of mk-josias/laravel-distributable: one ordered stream, a consumer group per module, failed entries retried before later ones, or dropped.",
     "homepage": "https://mk-josias.github.io/laravel-distributable/",
     "license": "MIT",
     "type": "library",

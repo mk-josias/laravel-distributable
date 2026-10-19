@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Foundation\Iam\Events;
 
+use Distributable\Attributes\Emitter;
 use Distributable\Events\Event;
 
+#[Emitter(module: 'iam')]
 final class UserRegistered extends Event
 {
     public const string NAME = 'iam.user.registered';

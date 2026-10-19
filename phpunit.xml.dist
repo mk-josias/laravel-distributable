@@ -12,6 +12,7 @@
         </testsuite>
         <testsuite name="Integration">
             <directory>packages/core/tests/Integration</directory>
+            <directory>packages/rpc-http/tests/Integration</directory>
             <directory>packages/core/tests/Fixtures/apps/Analytics/tests</directory>
         </testsuite>
     </testsuites>

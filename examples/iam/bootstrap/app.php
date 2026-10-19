@@ -1,10 +1,10 @@
 <?php
 
-use App\Providers\ServicesProvider;
+use App\Providers\AppServiceProvider;
 use Illuminate\Foundation\Application;
 
 return Application::configure(basePath: dirname(__DIR__))
-    ->withProviders([ServicesProvider::class])
+    ->withProviders([AppServiceProvider::class])
     ->withRouting(api: __DIR__.'/../routes/api.php', apiPrefix: 'iam/api')
     ->withCommands()
     ->withMiddleware()

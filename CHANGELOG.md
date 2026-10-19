@@ -6,6 +6,8 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-19
+
 ### Added
 
 - A call between modules is a message: a `readonly` class of the foundation that implements
@@ -17,7 +19,7 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 - `modules:doctor` checks the messages of the foundation: one that names an undeclared module, or
   a remote module with no host.
 - `rpc:serve` starts the process of a transport that answers calls in one of its own: a transport
-  declares it by implementing `Contracts\Rpc\Serves`.
+  declares it by implementing `Contracts\Rpc\ServesRpc`.
 - rpc-http: with `DISTRIBUTABLE_RPC_PORT` set, the RPC answers on that port only, and `rpc:serve`
   starts an Octane server for it. Without it, the RPC answers wherever the application is served.
 - Starter: iam writes the users the gateway needs into its own Redis, `gateway-cache`
@@ -35,9 +37,37 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
   rules refuse is a 422, read back by the caller as a `ValidationException`.
 - **Breaking:** a custom RPC driver implements `Contracts\Rpc\Transport::invoke($module, $name,
   $version, $payload)`.
+- **Breaking:** the HTTP transport owns its own settings. `distributable.rpc.secret` becomes
+  `rpc-http.secret` (the variable `DISTRIBUTABLE_RPC_SECRET` and the `APP_KEY` fallback do not
+  change), and `distributable.rpc.transport` no longer defaults to `http` in the core: `rpc-http`
+  declares its transport and takes it as the default. A custom transport can implement
+  `Contracts\Rpc\ReportsRpcProblems` to tell `modules:doctor` what stops its calls.
 - **Breaking** (starter): `IamService` and `IamRpcService` give way to the messages `FindUser`,
   `FindUserByToken` and `Grants`, answered by handlers in `apps/Iam/app/Rpc/`, and to
   `Foundation\Iam\Services\IamClient`.
+- **Breaking** (starter): the gateway asks iam over RPC (`FindUserByToken`) and signs the X-Identity
+  itself. `GET /iam/api/v1/identity` is gone; the plugin's `iam` setting becomes `rpc` and
+  `rpcSecret`, and Traefik holds the RPC secret (`DISTRIBUTABLE_RPC_SECRET`).
+- **Breaking:** a class says what it is with an attribute, not a method or a property. A copy
+  carries `#[Shadow(module:, table:, migrations:)]`, where it defined `owner()`, `sourceTable()` and
+  `migrations()`; a source model carries `#[ShadowFields('name', 'email')]`, where it set
+  `$shadowed`; an event of the foundation carries `#[Emitter(module: 'iam')]`. `Event::emitter()`
+  is gone, and `Bus::emit()` takes the emitter as an optional second argument.
+- **Breaking:** the package no longer loads or registers the foundation. Map `Foundation\` in
+  `composer.json`, and list the foundation's provider in `bootstrap/providers.php` (a foundation
+  package lists it in `extra.laravel.providers`). `distributable.foundation.namespace` and
+  `declared.{module}.foundation` are gone, and `foundation.path` only says where
+  `modules:doctor` and `Boundaries` look. The class of an event in the foundation no longer says its
+  emitter: give it `#[Emitter]`.
+- `modules:install`, `modules:make` and `modules:delete` write nothing in the foundation.
+- **Breaking:** `modules:make` loses `--database`: it always writes `config/database.php`, with the
+  module's `default` and `owner` connections, like the rest of an application's structure. It also
+  creates `app/Models`, `database/migrations` and `tests/Feature`.
+- **Breaking:** the commands say module, not service. `stream:consume`, `stream:skip` and
+  `stream:republish` lose `--service` and take the `--module` every command has; `stream:export` and
+  `stream:import` filter by `--emitter` where they took `--service`. `ServiceException` is gone
+  into `ModuleException`, `Testing\InteractsWithServices` into `ModuleAware`, and
+  `ShadowSource::sourceService()` becomes `sourceModule()`.
 - **Breaking** (starter): `IamClient::findUser()` and `findUserByToken()` return a `UserData`, where
   they returned an `['id' => …, 'name' => …]` array.
 - **Breaking** (starter): every module's API has one shape: a controller in `Http/Controllers/Api/`,
@@ -104,5 +134,6 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 - `modules:doctor` no longer reports a `database` cache, queue or session driver: the application
   chooses its stores.
 
-[Unreleased]: https://github.com/mk-josias/laravel-distributable/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/mk-josias/laravel-distributable/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/mk-josias/laravel-distributable/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mk-josias/laravel-distributable/compare/v0.2.0...v0.3.0

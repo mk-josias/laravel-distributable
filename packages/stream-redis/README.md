@@ -1,6 +1,6 @@
 # Redis Event Stream
 
-The `redis` events driver of [laravel-microservices](https://github.com/mk-josias/laravel-microservices/tree/main/packages/core), on Redis Streams.
+The `redis` events driver of [laravel-distributable](https://github.com/mk-josias/laravel-distributable/tree/main/packages/core), on Redis Streams.
 
 ```bash
 composer require mk-josias/laravel-distributable-stream-redis
@@ -15,7 +15,7 @@ Its provider is discovered and registers the driver. The shipped `default` strea
     'driver' => env('DISTRIBUTABLE_STREAM_DRIVER', 'array'),
     // a database.redis connection, null for `default`
     'connection' => env('DISTRIBUTABLE_STREAM_CONNECTION'),
-    // the one Redis stream every service writes to
+    // the one Redis stream every module writes to
     'key' => 'distributable:events',
     // how long a read waits, in ms
     'block' => 5_000,
@@ -23,15 +23,16 @@ Its provider is discovered and registers the driver. The shipped `default` strea
     'count' => 50,
     // after how long a dead consumer's pending entries are taken back, in ms
     'claim_after' => 60_000,
-    // block: a failed entry is retried before later ones; skip: later ones go on, the failed one is dropped
+    // block: a failed entry is retried before later ones;
+    // skip: later ones go on, the failed one is dropped
     'on_failure' => 'block',
 ],
 ```
 
 | What it guarantees | |
 |---|---|
-| Order | every service writes to one Redis stream, so its entries keep the order they were published in |
-| A cursor per consumer | one consumer group per consuming service: a new consumer disturbs none of the others |
+| Order | every module writes to one Redis stream, so its entries keep the order they were published in |
+| A cursor per consumer | one consumer group per consuming module: a new consumer disturbs none of the others |
 | At least once | an entry is acknowledged after its handlers succeed; an unacknowledged one comes back |
 | After a failure | `block`: the failed entry is retried before any later one; `skip`: later ones go on, the failed one is dropped |
 

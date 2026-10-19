@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Foundation\Iam\Shadows;
 
+use Distributable\Attributes\Shadow;
 use Distributable\Models\ShadowModel;
 
 /**
@@ -11,20 +12,5 @@ use Distributable\Models\ShadowModel;
  * @property string $name
  * @property string $email
  */
-class UserShadow extends ShadowModel
-{
-    public static function owner(): string
-    {
-        return 'iam';
-    }
-
-    public static function sourceTable(): string
-    {
-        return 'users';
-    }
-
-    public static function migrations(): array
-    {
-        return [__DIR__.'/../database/shadows/users'];
-    }
-}
+#[Shadow(module: 'iam', table: 'users', migrations: [__DIR__.'/../database/shadows/users'])]
+class UserShadow extends ShadowModel {}
