@@ -11,3 +11,6 @@ composer.lock
 /docs-site/README.md
 /docs-site/starter.md
 /docs-site/docs/
+/docs-v2/node_modules
+/docs-v2/.vitepress/cache/
+/docs-v2/.vitepress/dist/
