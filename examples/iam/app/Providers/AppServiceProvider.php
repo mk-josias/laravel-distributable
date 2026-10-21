@@ -10,5 +10,5 @@ use Foundation\Iam\Rpc\FindUserByToken;
 
 final class AppServiceProvider extends ServiceProvider
 {
-    protected array $rpc = [FindUserByToken::class => FindUserByTokenHandler::class];
+    protected array $rpcHandlers = [FindUserByToken::class => FindUserByTokenHandler::class];
 }

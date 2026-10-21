@@ -6,6 +6,86 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ## [Unreleased]
 
+### Added
+
+- `--module` takes several modules, repeated, or `*` for every module the process runs, on every
+  command: the command runs once in each.
+- What the application teaches a service in code, a driver given to `extend()` or a validation
+  rule, reaches each module's own instance of that service, whenever the application learned it.
+- The `local` events driver hands each event to the handlers of the modules the process runs, once
+  the emitter's transaction commits, with no broker and no `stream:consume`.
+- A stream handler that implements `ShouldQueue` runs on the queue, with the options a queued
+  Laravel listener takes (`$tries`, `viaQueue()`, `shouldQueue()`…), still in its module and under
+  the guard, whatever the driver.
+
+### Changed
+
+- **Breaking:** a module's config file applies only while the module runs. Each value it sets
+  replaces the application's, a list or `[]` included, and a key the application doesn't set is no
+  longer added for every module. A list a module used to extend item by item now holds only what
+  the module's file lists: write the whole list there. The files named in the new `shared` setting
+  (`distributable` by default) are still added to the application's.
+- **Breaking:** `per_module` is renamed `module_services`, and lists Laravel's services by default
+  (`db`, the cache, the queue, the mailer, the disks, the log, Redis, broadcasting, auth and the
+  validator): each module gets its own without listing them. Rename the key in your
+  `config/distributable.php`, and keep the package's names next to yours, or remove the key.
+- **Breaking:** `migrate` and its variants are Laravel's own commands, run in the modules `--module`
+  names. Without it they run in no module and throw, as any query there. Replace `php artisan
+  migrate` with `php artisan migrate --module=*`. A test using `RefreshDatabase` passes the module
+  through `migrateFreshUsing()`.
+- **Breaking:** the `owner` key of a module's `config/database.php` and `Module::ownerConnection()`
+  are gone. Name the owner connection `owner` in each module, migrate with `--database=owner`, and
+  write `DB::connection('owner')` where you called `ownerConnection()`. A connection a module
+  declares exists only while it runs, so every module can use the same name.
+- The starter migrates with `migrate --module=* --database=owner`, and each of its modules declares
+  an `owner` connection.
+
+- A failed job is stored on the connection it ran on, and a batch on the connection of its first
+  job's module (or of the running module). Both used to fall back to the first module's database
+  when the job's class belonged to no module; they now throw instead of storing on another module.
+  `queue.failed.database` and `queue.batching.database` are read only from a module's own
+  `config/queue.php`, and name a connection that module declares; there is no application database,
+  so the starter's `config/queue.php` drops them. The `no_module` connection can now be built, and
+  refuses its first query.
+- A job of a batch finds its batch in the database of the module that stored it, instead of asking
+  the database of each module in turn. Looking a batch up from a command still asks them all.
+- The options of the `redis` events driver (`connection`, `block`, `count`, `claim_after`,
+  `on_failure`) are in the driver's own `config/stream-redis.php`, published with
+  `--tag=stream-redis-config`, as `rpc-http` does. What you set in `events.streams.{name}` still
+  wins for that stream, so nothing has to change; `config/distributable.php` keeps only the
+  `driver` of the `default` stream.
+- **Breaking:** an event says what it is with an attribute, as a message does. `#[Emits(name,
+  module, stream)]` replaces `#[Emitter]` and the `name()` and `stream()` methods; `module` is the
+  module of the event's class when it is left out. Move the value `name()` returned into
+  `#[Emits]`, and delete the method. `Event::version()` goes too.
+- **Breaking:** the version of an event is the one of its payload. A payload class carries
+  `#[Payload(event, version)]`, and `Versioned` keeps only `upcast()`: move the value `version()`
+  returned into `#[Payload]` and delete the method. `FoundationServiceProvider::$payloads` is a list
+  of payload classes, no longer a map of event name => class.
+- **Breaking:** the two lists of handlers in a module's provider are named alike. Rename `$rpc` to
+  `$rpcHandlers` (message => handler) and `$handlers` to `$streamHandlers` (event name => handlers).
+- `#[Emits]` and `#[Payload]` take the case of a backed enum as the name, `#[Emits(IamEvent::UserRegistered)]`,
+  or a string.
+- **Breaking:** a source model names its stream with `#[ShadowStream('shadows')]` instead of
+  overriding `shadowStream()`.
+- **Breaking:** `Envelope::for()` is gone, and an `Envelope` is built with its `stream`: no class of
+  the package assumes the default stream is called `default` any more. Use
+  `Services\Stream\EnvelopeFactory::for()`.
+- **Breaking:** `db:seed` in a module (`--module`, or `migrate --seed`) runs the application's
+  `DatabaseSeeder`, then the module's, as `migrate` runs the application's migrations, then the
+  module's. A module without a `DatabaseSeeder` of its own now gets the application's instead of
+  being skipped: keep in the application's seeder only what every module needs.
+- **Breaking:** `vendor:publish --module=iam` publishes into the module everything a package puts
+  under `app/`, `database/`, `config/` or `resources/views`, a config file included; only the
+  migrations used to go there.
+
+### Fixed
+
+- The middleware group of a module's routes file runs in the module: a closure route's `auth`,
+  session or throttle middleware no longer query outside every module.
+- In a module, `view('welcome')` finds the module's `resources/views/welcome.blade.php`, then the
+  application's; a view named without a namespace used to be looked for in the application only.
+
 ## [0.4.0] - 2026-10-19
 
 ### Added

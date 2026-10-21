@@ -35,9 +35,9 @@ it('hands this service the entries of the declared emitters, in order, and ackno
     $transport = app(Transport::class);
 
     foreach ([1, 2] as $order) {
-        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable(), 'default'));
     }
-    $transport->publish(new Envelope((string) Str::uuid7(), 'stranger', 'billing.invoice.paid', ['order_id' => 3], [], now()->toImmutable()));
+    $transport->publish(new Envelope((string) Str::uuid7(), 'stranger', 'billing.invoice.paid', ['order_id' => 3], [], now()->toImmutable(), 'default'));
 
     $seen = 0;
     $transport->consume(['orders'], ['orders', 'billing'], function (Envelope $envelope) use ($transport, &$seen): void {
@@ -58,7 +58,7 @@ it('serves several consumers from one loop, each with its own cursor', function 
     $transport = app(Transport::class);
 
     foreach ([1, 2] as $order) {
-        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable(), 'default'));
     }
 
     $seen = [];
@@ -83,7 +83,7 @@ it('drops a failed entry and goes on with the next one when on_failure is skip',
     $transport = app(Transport::class);
 
     foreach ([1, 2] as $order) {
-        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable(), 'default'));
     }
 
     $seen = [];
@@ -107,7 +107,7 @@ it('drops a failed entry and goes on with the next one when on_failure is skip',
 
 it('keeps a failed entry pending when on_failure is block', function () {
     $transport = app(Transport::class);
-    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable()));
+    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable(), 'default'));
 
     $transport->consume(['orders'], ['billing'], function () use ($transport): void {
         $transport->stop();
@@ -124,7 +124,7 @@ it('skips the failed entry so the next one is read', function () {
     $transport = app(Transport::class);
 
     foreach ([1, 2] as $order) {
-        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable(), 'default'));
     }
 
     $transport->consume(['orders'], ['billing'], function () use ($transport): void {
@@ -152,7 +152,7 @@ it('skips every entry up to a date, read or not, and never moves the cursor back
     $transport = app(Transport::class);
 
     foreach ([1, 2, 3] as $order) {
-        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable(), 'default'));
     }
 
     $transport->consume(['orders'], ['billing'], function () use ($transport): void {
@@ -167,7 +167,7 @@ it('skips every entry up to a date, read or not, and never moves the cursor back
 
     $seen = 0;
     usleep(2000);
-    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 4], [], now()->toImmutable()));
+    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 4], [], now()->toImmutable(), 'default'));
     $transport->consume(['orders'], ['billing'], function () use ($transport, &$seen): void {
         $seen++;
         $transport->stop();
@@ -180,7 +180,7 @@ it('gives its entries back for an archive, and below the acknowledged floor on r
     $transport = app(Transport::class);
 
     foreach ([1, 2, 3] as $order) {
-        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable()));
+        $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => $order], [], now()->toImmutable(), 'default'));
     }
 
     expect(collect($transport->entries(null, null, true))->all())->toBe([]);
@@ -205,7 +205,7 @@ it('deletes the consumption marks of an entry once it is acknowledged when guard
     config()->set('distributable.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
     $transport = app(Transport::class);
     $transport->onAcknowledged(app(Dispatcher::class)->forget(...));
-    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable()));
+    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable(), 'default'));
 
     $transport->consume(['orders'], ['billing'], function (Envelope $envelope, string $consumer) use ($transport): void {
         app(Dispatcher::class)->dispatch($envelope, $consumer);
@@ -221,7 +221,7 @@ it('leaves the consumption marks to stream:prune-consumptions when guard_cleanup
     config()->set('distributable.events.guard', true);
     config()->set('distributable.events.listen', ['billing.invoice.paid' => [OnInvoicePaid::class]]);
     $transport = app(Transport::class);
-    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable()));
+    $transport->publish(new Envelope((string) Str::uuid7(), 'billing', 'billing.invoice.paid', ['order_id' => 1], [], now()->toImmutable(), 'default'));
 
     $transport->consume(['orders'], ['billing'], function (Envelope $envelope, string $consumer) use ($transport): void {
         app(Dispatcher::class)->dispatch($envelope, $consumer);

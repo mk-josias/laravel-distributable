@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Foundation\Iam\Events;
 
-use Distributable\Attributes\Emitter;
+use Distributable\Attributes\Emits;
 use Distributable\Events\Event;
 
-#[Emitter(module: 'iam')]
+#[Emits(UserRegistered::NAME, module: 'iam')]
 final class UserRegistered extends Event
 {
     public const string NAME = 'iam.user.registered';
@@ -18,11 +18,6 @@ final class UserRegistered extends Event
     public static function from(array $payload): self
     {
         return new self((int) $payload['id']);
-    }
-
-    public function name(): string
-    {
-        return self::NAME;
     }
 
     public function payload(): array

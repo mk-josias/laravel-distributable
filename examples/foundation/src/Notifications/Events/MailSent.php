@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Foundation\Notifications\Events;
 
-use Distributable\Attributes\Emitter;
+use Distributable\Attributes\Emits;
 use Distributable\Events\Event;
 
-#[Emitter(module: 'notifications')]
+#[Emits(MailSent::NAME, module: 'notifications')]
 final class MailSent extends Event
 {
     public const string NAME = 'notifications.mail.sent';
@@ -22,11 +22,6 @@ final class MailSent extends Event
     public static function from(array $payload): self
     {
         return new self((int) $payload['notification_id'], (int) $payload['user_id'], (string) $payload['type']);
-    }
-
-    public function name(): string
-    {
-        return self::NAME;
     }
 
     public function payload(): array

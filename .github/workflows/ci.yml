@@ -7,7 +7,7 @@ on:
 jobs:
   core:
     name: Laravel ${{ matrix.laravel }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -22,7 +22,7 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: distributable
 
@@ -49,10 +49,10 @@ jobs:
           examples/run.sh
 
   starter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: distributable
 
@@ -71,13 +71,13 @@ jobs:
 
   # The same journey with every module in one container, then with one container per module, through Traefik.
   together-or-apart:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        compose: [docker-compose.mono.yml, docker-compose.yml]
+        compose: [docker-compose.mono.yml, docker-compose.mesh.yml]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: distributable
 
@@ -87,14 +87,16 @@ jobs:
 
   # The gateway's Traefik plugin (starter/gateway/plugins/auth); the journeys above run it in Traefik.
   gateway-plugin:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.22'
+          # the plugin has no dependency, so no go.sum to key a cache on
+          cache: false
 
       - name: Plugin tests
         working-directory: starter/gateway/plugins/auth
