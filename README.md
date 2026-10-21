@@ -20,12 +20,18 @@ composer create-project mk-josias/laravel-distributable-starter my-app
 
 ## What is in this repository
 
-| Folder | Published as | |
-|---|---|---|
-| `packages/core` | `mk-josias/laravel-distributable` | the package: [README and documentation](packages/core/README.md) |
-| `packages/rpc-http` | `mk-josias/laravel-distributable-rpc-http` | the HTTP transport of the calls between modules |
-| `packages/stream-redis` | `mk-josias/laravel-distributable-stream-redis` | the Redis Streams driver of the events |
-| `starter` | `mk-josias/laravel-distributable-starter` | the example application |
+- **`packages/core`**
+  - Published as: `mk-josias/laravel-distributable`
+  - the package: [README and documentation](packages/core/README.md)
+- **`packages/rpc-http`**
+  - Published as: `mk-josias/laravel-distributable-rpc-http`
+  - the HTTP transport of the calls between modules
+- **`packages/stream-redis`**
+  - Published as: `mk-josias/laravel-distributable-stream-redis`
+  - the Redis Streams driver of the events
+- **`starter`**
+  - Published as: `mk-josias/laravel-distributable-starter`
+  - the example application
 
 ## Developing
 

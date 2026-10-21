@@ -1,0 +1,159 @@
+# Configuration
+
+Every setting of `config/distributable.php`: where it is set, its default, and what it does.
+
+## Where the settings live
+
+Every setting is in `config/distributable.php`, which `php artisan vendor:publish
+--tag=distributable-config` publishes (`modules:install` does too). A setting that changes with the
+environment reads an environment variable, named in its section: set the variable in `.env`, or
+the value in the file. A module can add its own streams in its own `config/distributable.php`.
+The HTTP transport has a file of its own, see [HTTP RPC](/reference/rpc-http), and the Redis stream its
+options in [Redis event stream](/reference/stream-redis). Where a module's files go is in
+[Where things go in a module](/build/layout).
+
+## Modules
+
+Default, then the environment variable if there is one, then what the setting does:
+
+- **`declared`** — Default `[]`. Every module of the application, by name (`apps/Iam` is `iam`). Add
+  an entry to say where a module answers when it runs in another process (`host`), to keep its code
+  elsewhere (`path` and `namespace`), or to change its route `prefix`. See [Where a module's code
+  lives](/run/where#where-a-module-s-code-lives).
+- **`runs`** — Default `*`. Environment variable: `RUN_MODULES`. The modules this process boots: `*`
+  for all, or a comma-separated list.
+- **`modules.path`** — Default `apps`. The directory where modules live: `apps/Iam` for `iam`.
+- **`modules.namespace`** — Default `Apps`. The root namespace of their classes: `Apps\Iam`.
+- **`foundation.path`** — Default `foundation`. The directory of what modules share. Map it in
+  `composer.json` like your own code; `modules:doctor` and `Boundaries` check it.
+- **`routes.prefix`** — Default `{module}/{name}`. The URL of a module's routes file:
+  `routes/api.php` of `iam` is served under `/iam/api/…`. A gateway that routes by path must match
+  it.
+- **`status_route`** — Default `null`. Environment variable: `MODULES_STATUS_ROUTE`. A path that
+  answers which modules this process runs, such as `/`. `null` registers nothing.
+
+## Calls between modules
+
+### Choose the transport calls travel on
+
+- **In `config/distributable.php`:** `rpc.transport`, `null` by default.
+- **In `.env`:** `DISTRIBUTABLE_RPC_TRANSPORT`, not set.
+
+A call to a module that runs in another process goes out on this transport, unless that module's
+`host` names another. With `null`, it is `http` once `mk-josias/laravel-distributable-rpc-http` is
+installed. The transports are listed in `rpc.transports`, each with a `driver` and its options,
+like queue connections; add yours as shown in [Writing a driver](/extend/driver).
+
+### Keep the answers a client received
+
+- **In `config/distributable.php`:** `rpc.cache`, `null` by default.
+- **In `.env`:** `DISTRIBUTABLE_RPC_CACHE_STORE`, not set.
+
+The cache store where a client keeps the answers it got. Use one every process can reach, such as
+Redis: the module that owns the data forgets an answer there when it writes. `null` is the default
+store. See [Keeping an answer](/talk/calls#keep-an-answer).
+
+## Events: sending
+
+### Keep an event until it is sent
+
+- **In `config/distributable.php`:** `events.reliable_publish`, `false` by default.
+- **In `.env`:** `DISTRIBUTABLE_EVENTS_RELIABLE_PUBLISH`, not set.
+
+By default, an event is sent right after the transaction that emitted it commits. If the process
+dies at that moment, or the stream is down, the event is lost. Set it to `true` and the event is
+also written in the module's database, in the same transaction: it stays there until it is sent,
+and `stream:republish` sends the ones that failed.
+
+```dotenv
+DISTRIBUTABLE_EVENTS_RELIABLE_PUBLISH=true
+```
+
+### Choose the stream an event travels on
+
+- **In `config/distributable.php`:** `events.stream`, `default` by default.
+- **In `.env`:** `DISTRIBUTABLE_STREAM`, not set.
+
+An event names its stream with `#[Emits(..., stream: 'audit')]`; without one, this stream is used. The
+streams are listed in `events.streams`, each with a driver and its options (the options of `redis`
+are in [Redis event stream](/reference/stream-redis)). The `default` stream uses the driver named by
+`DISTRIBUTABLE_STREAM_DRIVER`: `array` until you set it to `local` or `redis`.
+
+## Events: receiving
+
+### Say which handler runs for which event
+
+- **In `config/distributable.php`:** `events.listen`, `[]` by default.
+
+```php
+'events' => ['listen' => ['iam.user.registered' => [SendWelcome::class]]],
+```
+
+A module declares its handlers in `$streamHandlers` of its service provider instead. See
+[Handle it in another module](/talk/events#handle-it-in-another-module).
+
+### Handle an event only once
+
+- **In `config/distributable.php`:** `events.guard`, `null` by default.
+- **In `.env`:** `DISTRIBUTABLE_STREAM_GUARD`, not set.
+
+A stream can deliver the same event twice, after a crash or a retry. The guard notes in the
+database that a handler already handled an event, so the second delivery does nothing. Leave it at
+`null`: it turns itself on when the stream can deliver twice. `true` or `false` forces it.
+
+### Clean the guard's notes
+
+- **In `config/distributable.php`:** `events.guard_cleanup`, `prune` by default.
+
+The guard's notes pile up in `event_consumptions`. With `prune`, they stay until you run
+`stream:prune-consumptions`. With `acknowledge`, a note is deleted as soon as the stream confirms
+the event is done, so nothing piles up (Redis only).
+
+## Events: keeping and archiving
+
+### Name the tables
+
+- **In `config/distributable.php`:** `events.tables`, `publications` → `event_publications`, `consumptions` → `event_consumptions` by default.
+
+The two tables written in each module's database: the events waiting to be sent, and the guard's
+notes. Change the names only if they clash with yours.
+
+### Choose where an archive goes
+
+- **In `config/distributable.php`:** `events.archive`, `file` by default.
+- **In `.env`:** `DISTRIBUTABLE_STREAM_ARCHIVE`, not set.
+
+Where `stream:export` and `stream:import` put what they copy when `--store` is not given. `file`
+writes JSON lines; add another store as shown in
+[Operating the event stream](/run/streams#archiving-the-stream).
+
+## Passing context along
+
+- **In `config/distributable.php`:** `events.propagate`, `[]` by default.
+
+```php
+'events' => ['propagate' => ['trace_id', 'locale']],
+```
+
+These keys of Laravel's `Context` are copied into an event's headers when it is emitted, and
+restored around each handler. RPC calls carry them too.
+
+## A module's settings and services
+
+A module's own `config/` folder covers the application's while its code runs
+([A module's settings](/build/settings)).
+
+- **`shared`** — Default `['distributable']`. The config files the process reads whole: each module's
+  values are added to the application's, for every module.
+- **`module_services`** — Default: Laravel's services built from the config. The services built
+  once for each module instead of once for the process; your list replaces the package's, so keep
+  its names next to yours ([A module's services](/build/services)):
+
+```php
+'module_services' => [
+    'db', 'cache', 'cache.store', 'queue', 'queue.connection', 'mail.manager', 'mailer',
+    'filesystem', 'filesystem.disk', 'filesystem.cloud', 'log', 'redis',
+    BroadcastManager::class, Broadcaster::class,
+    'auth', 'auth.driver', 'validator', 'validation.presence',
+],
+```

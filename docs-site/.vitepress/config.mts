@@ -19,24 +19,26 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: 'Introduction',
+        text: 'Understand',
         items: [
-          { text: 'What it is', link: '/' },
+          { text: 'What a module is', link: '/docs/what-is-a-module' },
           { text: 'The charter', link: '/docs/charter' },
+          { text: 'Checking the boundaries', link: '/docs/checking' },
         ],
       },
       {
-        text: 'Try it',
+        text: 'Start',
         items: [
           { text: 'The starter', link: '/starter' },
-          { text: 'Its three modules', link: '/docs/skeleton' },
           { text: 'Adding it to an existing application', link: '/docs/getting-started' },
+          { text: 'The starter\'s three modules', link: '/docs/skeleton' },
         ],
       },
       {
-        text: 'Write a module',
+        text: 'Build a module',
         items: [
           { text: 'Create a module', link: '/docs/modules' },
+          { text: 'Where things go in a module', link: '/docs/module-layout' },
           { text: 'Its settings and services', link: '/docs/module-context' },
           { text: 'Its database', link: '/docs/databases' },
           { text: 'Migrations', link: '/docs/migrations' },
@@ -45,8 +47,9 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Modules talking',
+        text: 'Make modules talk',
         items: [
+          { text: 'What modules share: the foundation', link: '/docs/foundation' },
           { text: 'Calling another module', link: '/docs/rpc' },
           { text: 'Publishing and handling events', link: '/docs/events' },
           { text: "Keeping a copy of another module's data", link: '/docs/shadows' },
@@ -54,20 +57,20 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Starter features',
-        items: [
-          { text: 'Authentication', link: '/docs/authentication' },
-          { text: 'Permissions', link: '/docs/permissions' },
-          { text: 'Docker', link: '/docs/docker' },
-        ],
-      },
-      {
-        text: 'Running in production',
+        text: 'Run it',
         items: [
           { text: 'One application or several', link: '/docs/applications' },
           { text: 'Moving a module out', link: '/docs/moving-a-module' },
           { text: 'Deploying', link: '/docs/deploying' },
           { text: 'Operating the event stream', link: '/docs/operating-streams' },
+          { text: 'Docker (the starter)', link: '/docs/docker' },
+        ],
+      },
+      {
+        text: 'The starter\'s patterns',
+        items: [
+          { text: 'Authentication', link: '/docs/authentication' },
+          { text: 'Permissions', link: '/docs/permissions' },
         ],
       },
       {

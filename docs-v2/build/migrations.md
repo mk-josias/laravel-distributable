@@ -1,0 +1,146 @@
+# Migrations
+
+By the end of this page, `php artisan migrate --module=*` has created the tables of every module on
+its own connection, and you know where each kind of migration goes.
+
+Each module has its own connection, so `migrate` runs in a module: the ones `--module` names, or
+every module the process runs with `--module=*`. Without the option it runs in no module and
+throws, as any query there: there is no connection that belongs to no module.
+
+## What runs on a module's connection
+
+Four sources feed the tables of one module:
+
+- **The application**
+  - Where it lives: `database/migrations`
+  - In the starter: `failed_jobs` and `job_batches`
+  - Why it is in every module's database: a failed job or a batch is stored in the database of the
+  module that owns the job class, so each module database needs the table
+- **The packages**
+  - Where it lives: the paths a package registers
+  - In the starter: the package: `event_consumptions`, unless the guard is off; `event_publications`
+  and its `version` column, only when `DISTRIBUTABLE_EVENTS_RELIABLE_PUBLISH` is on
+  - Why it is in every module's database: the publication row is written in the emitting module's
+  database, in its transaction; the consumption mark is written in the consuming module's database
+- **The module**
+  - Where it lives: `{module}/database/migrations`, and the folders its provider loads with
+  `loadMigrationsFrom()`
+  - In the starter: iam: its users, its permission tables and its access tokens
+  - Why it is in every module's database: the module's own tables; no other module may name them
+- **The copies**
+  - Where it lives: the files or folders the copy's `migrations()` names
+  - In the starter: `iam_users`, copied into analytics and notifications
+  - Why it is in every module's database: the owner publishes the migration, each module that keeps
+  the copy runs it
+
+Laravel sorts every migration of a run by file name, whatever its source. The four sources above say
+where they come from, not the order they run in.
+
+## The starter, module by module
+
+- **`iam`:** 4 files. The application's (`failed_jobs` and `job_batches`), then its own: `iam_users`,
+  the permission tables and `iam_access_tokens`. It keeps no copy.
+- **`analytics`:** 5 files. The application's, then its own `analytics_signups`, `analytics_mails`
+  and `analytics_datasets`, then the copy of `iam_users`.
+- **`notifications`:** 3 files. The application's, its own `notifications_inbox`, then the copy of
+  `iam_users`.
+
+With the starter's settings the package adds no table: events are not published reliably and the
+guard is off. `DISTRIBUTABLE_EVENTS_RELIABLE_PUBLISH=true` adds two migrations (`event_publications`
+and its `version` column), and removing `DISTRIBUTABLE_STREAM_GUARD=false` adds `event_consumptions`.
+The copy exists in `analytics` and `notifications` because their providers list `UserShadow` in
+`$shadows`; iam owns the table and keeps no copy.
+
+## Running them
+
+```bash
+# every module this process runs, one pass each
+php artisan migrate --module=*
+
+# the databases of these modules only; the option can be repeated
+php artisan migrate --module=analytics
+
+# what ran, and what is pending, in each database
+php artisan migrate:status --module=*
+```
+
+These are Laravel's own commands, as are `migrate:rollback`, `migrate:reset`, `migrate:refresh` and
+`migrate:fresh`: they take `--module` like every command. `--seed` seeds each module database with
+the application's `DatabaseSeeder`, then the module's.
+
+- **The connection:** the module's `default`. `--database` names another connection, in each module
+  named: `migrate --module=* --database=owner` migrates every module on the `owner` connection it
+  declares (see [A module's settings](/build/settings#the-connection))
+- **History:** each database keeps its own `migrations` table
+- **`--path`:** only these folders, in each module named
+- **Tests:** `RefreshDatabase` runs `migrate:fresh` before the test enters its module: see
+  [Testing a module](/build/testing#migrate-the-databases)
+
+## Writing a migration
+
+A migration of the module's own tables goes in the module:
+
+```bash
+php artisan make:migration add_archived_at_to_notifications_inbox --module=notifications
+```
+
+It lands in `apps/Notifications/database/migrations`.
+
+The migration of a copy is published by the module that owns the table. The copy names where its
+migrations are in `#[Shadow(migrations: …)]`, next to the `module:` and the `table:`: files or
+folders, as Laravel's `loadMigrationsFrom()`. A folder brings every migration in it, whatever its
+file name.
+
+```php
+// foundation/Iam/Shadows/UserShadow.php
+#[Shadow(module: 'iam', table: 'iam_users', migrations: [__DIR__.'/../database/shadows/users'])]
+class UserShadow extends ShadowModel
+{
+}
+```
+
+The migration is a plain Laravel migration of the copy's table:
+
+```php
+// foundation/Iam/database/shadows/users/2026_01_01_000100_create_iam_users_shadow_table.php
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create((new UserShadow)->getTable(), function (Blueprint $table): void {
+            $table->unsignedBigInteger('id')->primary();
+            $table->string('name');
+            $table->string('email');
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
+            $table->timestamp('deleted_at')->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists((new UserShadow)->getTable());
+    }
+};
+```
+
+The source table is written once, in the copy's `sourceTable()`: renaming it moves neither the
+folder nor the migration. A module whose subclass of the copy sets its own `$table` also overrides
+`migrations()`, and names a migration of its own `database/migrations`. `modules:doctor` reports
+a path a kept copy names that holds no migration.
+
+## Limits
+
+- A module without a database has no migrations. `modules:doctor` reports a module that has some.
+  `--module=*` in a process that runs one throws in that module, as any query there: name the
+  others.
+- The application's `database/migrations` run in every module database. Keep that folder to what
+  every module needs.
+- A module cannot name a table that another module's migrations create. `Boundaries` reports it.
+  The table of a copy the module keeps is its own.
+- The `database` drivers of the cache, the queue and the session need a `connection` naming a
+  module's: outside a module, the default connection is `no_module`.
+
+## Next
+
+[Test a module](/build/testing).

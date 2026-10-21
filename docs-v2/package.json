@@ -1,0 +1,9 @@
+{
+  "name": "laravel-distributable-docs-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev . --port 4174",
+    "build": "vitepress build ."
+  }
+}

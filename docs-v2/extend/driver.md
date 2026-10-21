@@ -1,0 +1,95 @@
+# Writing a driver
+
+By the end of this page, you know what to implement to carry calls or events on another protocol or broker.
+
+Calls and events travel through drivers installed next to the package:
+[`http`](/reference/rpc-http) for calls, [`redis`](/reference/stream-redis) for events. This page is for writing your
+own, on another broker or another protocol.
+
+## A transport for calls
+
+Register it under a name, and name it on the module it reaches:
+
+```php
+// config/distributable.php: only the name of the transport, and which module uses it
+'declared' => ['billing' => ['host' => ['url' => 'grpc://billing.internal', 'transport' => 'grpc']]],
+'rpc'      => ['transports' => ['grpc' => ['driver' => 'grpc']]],
+
+// config/rpc-grpc.php: the driver's own settings, like config/rpc-http.php
+return ['port' => env('DISTRIBUTABLE_RPC_PORT', 50051)];
+```
+
+```php
+// in a service provider; GrpcTransport is yours to write
+app(\Distributable\Services\Rpc\TransportManager::class)
+    ->extend('grpc', fn ($app) => new GrpcTransport(config('rpc-grpc')));
+```
+
+The driver reads its own settings from its own file, as `rpc-http` and `stream-redis` do.
+`distributable.rpc.transports` only gives it a name.
+
+The calling side implements `Contracts\Rpc\Transport::invoke(string $module, string $name,
+int $version, array $payload)`. The called side hands the same four values to
+`MessageRegistry::answer()`, as the HTTP endpoint does.
+
+Two optional interfaces:
+
+- `Contracts\Rpc\ServesRpc`: the transport answers in a process of its own, which `rpc:serve`
+  starts;
+- `Contracts\Rpc\ReportsRpcProblems`: the transport can tell what stops its calls from working, and
+  `modules:doctor` reports it.
+
+## A transport for events
+
+```php
+// in a service provider
+app(\Distributable\Services\Stream\TransportManager::class)
+    ->extend('kafka', fn ($app, array $options, string $stream) => new KafkaTransport(config('stream-kafka')));
+```
+
+A stream in `distributable.events.streams` then uses it with `'driver' => 'kafka'`; its brokers and
+other settings are in the driver's own file, `config/stream-kafka.php`.
+
+It implements `Contracts\Stream\Transport`:
+
+- `publish()` writes the envelope as `Envelope::toJson()` does, so programs in other languages and
+  other drivers read the same thing;
+- `consume()` loops until `stop()`, keeps one cursor per consumer, and hands the callback each
+  envelope whose emitter is among the channels, with the consumer it was read for. When the callback
+  returns, the entry is acknowledged; when it throws, it isn't. A consumer that fails must not hold
+  back the others;
+- `stop()` lets the current entry finish, then returns from `consume()`: it is what a `SIGTERM`
+  calls.
+
+It should keep three guarantees, and say in its README which ones it keeps:
+
+- **order within a stream, including after a failure.** A consumer that reads a copy filled by an
+  earlier event (a welcome mail reading the user's copy) depends on it. Without it, an event can
+  overtake the one it depends on;
+- **at least once**: an unacknowledged entry comes back. Without it, an event can be lost when a
+  handler or a process fails;
+- **one cursor per consumer**: a new consumer disturbs none of the others. Without it, consumers
+  steal each other's entries.
+
+The commands that need more ask for it through an interface of `Distributable\Contracts\Stream`:
+
+- `TrimsStreams`, for `stream:trim`;
+- `ArchivesStreams`, for `stream:export`, which reads the entries the stream keeps;
+- `ReportsAcknowledgements`, for `guard_cleanup => acknowledge`, which deletes a consumption mark
+  once its entry is acknowledged. Without it, the marks stay until `stream:prune-consumptions`;
+- `RedeliversEnvelopes`, which turns the consumption guard on. Without it, the guard stays off
+  unless events are published reliably;
+- `SkipsEntries`, for `stream:skip`.
+
+Without the interface, the command says the transport can't do it.
+
+## An archive store
+
+`stream:export` and `stream:import` write to a store: `file` ships, and `distributable.events.archive`
+names the default. Another store implements `Contracts\Stream\ArchiveStore`
+(`write($target, $rows)`, `read($source)`) and is registered by name:
+
+```php
+app(\Distributable\Services\Stream\ArchiveStores::class)
+    ->extend('s3', fn ($app) => new S3ArchiveStore($app->make('filesystem')->disk('s3')));
+```
