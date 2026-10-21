@@ -71,7 +71,7 @@ php artisan tinker --module=billing
 php artisan model:show Invoice --module=billing
 php artisan db:seed --module=billing
 php artisan migrate --module=billing
-php artisan migrate --module=*
+php artisan migrate --module='*'
 ```
 
 - `migrate` et ses variantes migrent seulement la connexion de chaque module nommé.

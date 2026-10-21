@@ -75,7 +75,7 @@ avec ses `migrations:`. `modules:doctor` signale deux copies dans une même tabl
 ## Créer sa table
 
 Le propriétaire publie la migration, et `migrations:` dans `#[Shadow]` dit où elle est : des fichiers
-ou des dossiers, comme le `loadMigrationsFrom()` de Laravel. `php artisan migrate --module=*` l’exécute
+ou des dossiers, comme le `loadMigrationsFrom()` de Laravel. `php artisan migrate --module='*'` l’exécute
 dans chaque module qui garde la copie. Voir
 [Migrations](/fr/build/migrations#ecrire-une-migration).
 

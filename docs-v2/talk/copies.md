@@ -74,7 +74,7 @@ class is one table: two forms of one source need two `$table`s, each with its `m
 ## Create its table
 
 The owner publishes the migration, and `migrations:` in `#[Shadow]` says where it is: files or
-folders, as Laravel's `loadMigrationsFrom()`. `php artisan migrate --module=*` runs it in every module
+folders, as Laravel's `loadMigrationsFrom()`. `php artisan migrate --module='*'` runs it in every module
 that keeps the copy. See [Migrations](/build/migrations#writing-a-migration).
 
 ## Read it

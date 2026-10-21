@@ -1,12 +1,13 @@
 # Migrations
 
-À la fin de cette page, `php artisan migrate --module=*` a créé les tables de chaque module sur sa
+À la fin de cette page, `php artisan migrate --module='*'` a créé les tables de chaque module sur sa
 propre connexion, et vous savez où va chaque sorte de migration.
 
 Chaque module a sa propre connexion, donc `migrate` s’exécute dans un module : ceux que nomme
 `--module`, ou chaque module que le processus exécute avec `--module=*`. Sans l’option, il
 s’exécute dans aucun module et lève une exception, comme toute requête à cet endroit : aucune
-connexion n’appartient à aucun module.
+connexion n’appartient à aucun module. Dans un terminal, écrivez `--module='*'` : sans guillemets,
+zsh lit `*` comme des noms de fichiers et s’arrête sur `no matches found`.
 
 ## Ce qui s’exécute sur la connexion d’un module
 
@@ -58,13 +59,13 @@ et ne garde aucune copie.
 
 ```bash
 # chaque module que ce processus exécute, une passe chacun
-php artisan migrate --module=*
+php artisan migrate --module='*'
 
 # ces modules seulement ; l'option peut être répétée
 php artisan migrate --module=analytics
 
 # ce qui a été exécuté, et ce qui reste en attente, pour chaque module
-php artisan migrate:status --module=*
+php artisan migrate:status --module='*'
 ```
 
 Ce sont les commandes de Laravel, comme `migrate:rollback`, `migrate:reset`, `migrate:refresh` et
@@ -72,7 +73,7 @@ Ce sont les commandes de Laravel, comme `migrate:rollback`, `migrate:reset`, `mi
 le `DatabaseSeeder` de l’application, puis celui du module.
 
 - **La connexion :** le `default` du module. `--database` nomme une autre connexion, dans chaque
-  module nommé : `migrate --module=* --database=owner` migre chaque module sur la connexion `owner`
+  module nommé : `migrate --module='*' --database=owner` migre chaque module sur la connexion `owner`
   qu’il déclare (voir [Les réglages d’un module](/fr/build/settings#la-connexion))
 - **L’historique :** chaque connexion garde sa propre table `migrations`
 - **`--path` :** seulement ces dossiers, dans chaque module nommé

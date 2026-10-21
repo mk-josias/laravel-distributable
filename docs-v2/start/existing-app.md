@@ -69,7 +69,7 @@ return [
 
 ```bash
 # migrates each module's database on its own `owner` connection, see Migrations
-php artisan migrate --module=* --database=owner
+php artisan migrate --module='*' --database=owner
 ```
 
 ## Announce an event, and handle it in another module

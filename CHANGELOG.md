@@ -31,13 +31,13 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
   `config/distributable.php`, and keep the package's names next to yours, or remove the key.
 - **Breaking:** `migrate` and its variants are Laravel's own commands, run in the modules `--module`
   names. Without it they run in no module and throw, as any query there. Replace `php artisan
-  migrate` with `php artisan migrate --module=*`. A test using `RefreshDatabase` passes the module
+  migrate` with `php artisan migrate --module='*'`. A test using `RefreshDatabase` passes the module
   through `migrateFreshUsing()`.
 - **Breaking:** the `owner` key of a module's `config/database.php` and `Module::ownerConnection()`
   are gone. Name the owner connection `owner` in each module, migrate with `--database=owner`, and
   write `DB::connection('owner')` where you called `ownerConnection()`. A connection a module
   declares exists only while it runs, so every module can use the same name.
-- The starter migrates with `migrate --module=* --database=owner`, and each of its modules declares
+- The starter migrates with `migrate --module='*' --database=owner`, and each of its modules declares
   an `owner` connection.
 
 - A failed job is stored on the connection it ran on, and a batch on the connection of its first

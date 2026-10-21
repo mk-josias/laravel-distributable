@@ -23,7 +23,7 @@ IAM_HOST=http://iam.internal:8000
 `config/distributable.php` declares every module in every process, so each process still knows the
 others exist. A process that runs a module needs:
 
-- the connection of each module it runs. `migrate --module=*` makes one pass per module it runs, so
+- the connection of each module it runs. `migrate --module='*'` makes one pass per module it runs, so
   two processes never migrate the same one;
 - the event stream, shared by every process (Redis in the starter);
 - `declared.{module}.host` for each module it calls but doesn't run. `modules:doctor` reports a

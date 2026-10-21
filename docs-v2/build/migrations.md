@@ -1,11 +1,12 @@
 # Migrations
 
-By the end of this page, `php artisan migrate --module=*` has created the tables of every module on
+By the end of this page, `php artisan migrate --module='*'` has created the tables of every module on
 its own connection, and you know where each kind of migration goes.
 
 Each module has its own connection, so `migrate` runs in a module: the ones `--module` names, or
 every module the process runs with `--module=*`. Without the option it runs in no module and
-throws, as any query there: there is no connection that belongs to no module.
+throws, as any query there: there is no connection that belongs to no module. In a terminal, write
+`--module='*'`: unquoted, zsh reads `*` as file names and stops with `no matches found`.
 
 ## What runs on a module's connection
 
@@ -55,13 +56,13 @@ The copy exists in `analytics` and `notifications` because their providers list 
 
 ```bash
 # every module this process runs, one pass each
-php artisan migrate --module=*
+php artisan migrate --module='*'
 
 # the databases of these modules only; the option can be repeated
 php artisan migrate --module=analytics
 
 # what ran, and what is pending, in each database
-php artisan migrate:status --module=*
+php artisan migrate:status --module='*'
 ```
 
 These are Laravel's own commands, as are `migrate:rollback`, `migrate:reset`, `migrate:refresh` and
@@ -69,7 +70,7 @@ These are Laravel's own commands, as are `migrate:rollback`, `migrate:reset`, `m
 the application's `DatabaseSeeder`, then the module's.
 
 - **The connection:** the module's `default`. `--database` names another connection, in each module
-  named: `migrate --module=* --database=owner` migrates every module on the `owner` connection it
+  named: `migrate --module='*' --database=owner` migrates every module on the `owner` connection it
   declares (see [A module's settings](/build/settings#the-connection))
 - **History:** each database keeps its own `migrations` table
 - **`--path`:** only these folders, in each module named
