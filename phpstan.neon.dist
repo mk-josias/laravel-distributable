@@ -20,5 +20,7 @@ parameters:
         - packages/rpc-http/tests/TestCase.php
         - packages/stream-redis/src
         - packages/stream-redis/tests/TestCase.php
+        - packages/stream-in-process/src
+        - packages/stream-in-process/tests/TestCase.php
     excludePaths:
         - packages/core/tests/Fixtures/apps/*/tests/*

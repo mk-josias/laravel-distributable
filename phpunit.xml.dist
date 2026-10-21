@@ -9,6 +9,7 @@
             <directory>packages/core/tests/Feature</directory>
             <directory>packages/rpc-http/tests/Feature</directory>
             <directory>packages/stream-redis/tests/Feature</directory>
+            <directory>packages/stream-in-process/tests/Feature</directory>
         </testsuite>
         <testsuite name="Integration">
             <directory>packages/core/tests/Integration</directory>
@@ -21,6 +22,7 @@
             <directory>packages/core/src</directory>
             <directory>packages/rpc-http/src</directory>
             <directory>packages/stream-redis/src</directory>
+            <directory>packages/stream-in-process/src</directory>
         </include>
     </source>
 </phpunit>

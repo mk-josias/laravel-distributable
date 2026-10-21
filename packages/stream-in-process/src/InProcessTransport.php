@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Distributable\Transports\Stream;
+namespace Distributable\Stream\InProcess;
 
 use Distributable\Contracts\Stream\Transport;
 use Distributable\Data\Envelope;
@@ -14,7 +14,7 @@ use Illuminate\Contracts\Container\Container;
  * No broker: an envelope goes to the handlers of the modules this process runs, as stream:consume would hand it over,
  * once the emitter's transaction has committed. A module another process runs never gets it.
  */
-final class LocalTransport implements Transport
+final class InProcessTransport implements Transport
 {
     public function __construct(
         private readonly ModuleRegistry $registry,

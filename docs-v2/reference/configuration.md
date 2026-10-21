@@ -77,7 +77,7 @@ DISTRIBUTABLE_EVENTS_RELIABLE_PUBLISH=true
 An event names its stream with `#[Emits(..., stream: 'audit')]`; without one, this stream is used. The
 streams are listed in `events.streams`, each with a driver and its options (the options of `redis`
 are in [Redis event stream](/reference/stream-redis)). The `default` stream uses the driver named by
-`DISTRIBUTABLE_STREAM_DRIVER`: `array` until you set it to `local` or `redis`.
+`DISTRIBUTABLE_STREAM_DRIVER`: `array` until you set it to `in-process` or `redis`, each once its package is installed.
 
 ## Events: receiving
 

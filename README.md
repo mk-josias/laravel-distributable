@@ -29,6 +29,9 @@ composer create-project mk-josias/laravel-distributable-starter my-app
 - **`packages/stream-redis`**
   - Published as: `mk-josias/laravel-distributable-stream-redis`
   - the Redis Streams driver of the events
+- **`packages/stream-in-process`**
+  - Published as: `mk-josias/laravel-distributable-stream-in-process`
+  - the in-process driver of the events, with no broker
 - **`starter`**
   - Published as: `mk-josias/laravel-distributable-starter`
   - the example application

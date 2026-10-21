@@ -130,7 +130,7 @@ Les événements circulent sur le flux `default`. Réglez son pilote dans `.env`
 DISTRIBUTABLE_STREAM_DRIVER=redis
 ```
 
-`local` remet chaque événement aux handlers des modules que le processus exécute, une fois la
+`in-process`, de mk-josias/laravel-distributable-stream-in-process, remet chaque événement aux handlers des modules que le processus exécute, une fois la
 transaction validée, sans courtier ni consommateur à lancer ; un module qu’un autre processus exécute
 ne le reçoit jamais. `array` garde les événements en mémoire, pour les tests ; `null` les abandonne.
 Un flux à vous est une

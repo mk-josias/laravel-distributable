@@ -12,8 +12,10 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
   command: the command runs once in each.
 - What the application teaches a service in code, a driver given to `extend()` or a validation
   rule, reaches each module's own instance of that service, whenever the application learned it.
-- The `local` events driver hands each event to the handlers of the modules the process runs, once
-  the emitter's transaction commits, with no broker and no `stream:consume`.
+- The `in-process` events driver, in its own package
+  (`composer require mk-josias/laravel-distributable-stream-in-process`), hands each event to the
+  handlers of the modules the process runs, once the emitter's transaction commits, with no broker
+  and no `stream:consume`.
 - A stream handler that implements `ShouldQueue` runs on the queue, with the options a queued
   Laravel listener takes (`$tries`, `viaQueue()`, `shouldQueue()`…), still in its module and under
   the guard, whatever the driver.

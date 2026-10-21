@@ -124,7 +124,7 @@ Events travel on the `default` stream. Set its driver in `.env`:
 DISTRIBUTABLE_STREAM_DRIVER=redis
 ```
 
-`local` hands each event to the handlers of the modules the process runs, once the transaction
+`in-process`, from mk-josias/laravel-distributable-stream-in-process, hands each event to the handlers of the modules the process runs, once the transaction
 commits, with no broker and no consumer to run; a module another process runs never gets it.
 `array` keeps events in memory, for tests; `null` drops them. A stream of its own is an entry in
 `distributable.events.streams`, and an event picks it with `#[Emits(..., stream: 'audit')]`. Order is kept only within one

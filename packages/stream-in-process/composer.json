@@ -1,0 +1,36 @@
+{
+    "name": "mk-josias/laravel-distributable-stream-in-process",
+    "description": "In-process driver for the events of mk-josias/laravel-distributable: each event goes to the handlers of the modules the process runs, once the emitter's transaction commits, with no broker.",
+    "homepage": "https://mk-josias.github.io/laravel-distributable/",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "microservices",
+        "events",
+        "stream-in-process"
+    ],
+    "authors": [
+        {
+            "name": "Josias Mekontso",
+            "email": "josiasmekontso.it@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "mk-josias/laravel-distributable": "self.version"
+    },
+    "autoload": {
+        "psr-4": {
+            "Distributable\\Stream\\InProcess\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Distributable\\Stream\\InProcess\\StreamInProcessServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}

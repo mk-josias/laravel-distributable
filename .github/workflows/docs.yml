@@ -9,6 +9,7 @@ on:
       - starter/README.md
       - packages/rpc-http/README.md
       - packages/stream-redis/README.md
+      - packages/stream-in-process/README.md
       - starter/docs/**
       - docs-site/**
       - .github/workflows/docs.yml
