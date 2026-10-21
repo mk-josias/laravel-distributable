@@ -4,16 +4,16 @@ By the end of this page, you can create a module, generate code in it, run a com
 remove it.
 
 ```bash
-php artisan modules:make billing
+php artisan modules:make payments
 ```
 
-This creates the module in `apps/Billing` and declares it in `config/distributable.php`:
+This creates the module in `apps/Payments` and declares it in `config/distributable.php`:
 
 ```
-apps/Billing/
+apps/Payments/
 ├── app/
 │   ├── Models/
-│   └── Providers/BillingServiceProvider.php
+│   └── Providers/PaymentsServiceProvider.php
 ├── bootstrap/providers.php
 ├── config/database.php
 ├── database/migrations/
@@ -32,11 +32,11 @@ Laravel's own `make:*` commands take `--module`. They write in the module, under
 exactly what they write in `app/` without the option:
 
 ```bash
-# apps/Billing/app/Models/Invoice.php, its migration and its factory
-php artisan make:model Invoice -mf --module=billing
-php artisan make:controller InvoiceController --module=billing
+# apps/Payments/app/Models/Payment.php, its migration and its factory
+php artisan make:model Payment -mf --module=payments
+php artisan make:controller PaymentController --module=payments
 # a new column on a table of the module
-php artisan make:migration add_paid_at_to_invoices --module=billing
+php artisan make:migration add_refunded_at_to_payments --module=payments
 ```
 
 - `make:model`, `controller`, `request`, `resource`, `job`, `event`, `listener`, `policy`, `rule`,
@@ -47,14 +47,14 @@ php artisan make:migration add_paid_at_to_invoices --module=billing
 - `make:config` writes in `{module}/config`.
 - `make:view`, `make:component`, and `--markdown` on `make:mail` and `make:notification`, write in
   `{module}/resources/views`. The class that renders the view names it with the module:
-  `view('billing::components.alert')`.
+  `view('payments::components.alert')`.
 - `make:test`, and `--test` on the other generators, write in `{module}/tests/Feature` or
   `tests/Unit`.
 - `make:provider` has no `--module`: write the provider in `{module}/app/Providers` and list it in
   `{module}/bootstrap/providers.php`.
 
-A model's factory is found without any code: `Invoice::factory()` resolves
-`Apps\Billing\Database\Factories\InvoiceFactory`, and that factory resolves its model. Laravel's
+A model's factory is found without any code: `Payment::factory()` resolves
+`Apps\Payments\Database\Factories\PaymentFactory`, and that factory resolves its model. Laravel's
 `#[UseFactory]` on a model still wins, and so does a resolver of your own; yours can fall back on
 `Distributable\Context\ModuleFactories::factoryName()` and `modelName()`.
 
@@ -64,21 +64,21 @@ A model's factory is found without any code: `Invoice::factory()` resolves
 for every module the process runs, and the command runs once in each:
 
 ```bash
-# Invoice::count() reads billing's connection
-php artisan tinker --module=billing
-php artisan model:show Invoice --module=billing
-php artisan db:seed --module=billing
-php artisan migrate --module=billing
+# Payment::count() reads payments' connection
+php artisan tinker --module=payments
+php artisan model:show Payment --module=payments
+php artisan db:seed --module=payments
+php artisan migrate --module=payments
 php artisan migrate --module='*'
 ```
 
 - `migrate` and its variants migrate the connection of each module named only.
 - `db:seed` runs the application's `Database\Seeders\DatabaseSeeder`, then
-  `Apps\Billing\Database\Seeders\DatabaseSeeder`, as `migrate` runs the application's migrations,
-  then the module's. `--class=InvoiceSeeder` names the module's seeder, or the application's when
+  `Apps\Payments\Database\Seeders\DatabaseSeeder`, as `migrate` runs the application's migrations,
+  then the module's. `--class=PaymentSeeder` names the module's seeder, or the application's when
   the module has none of that name.
 - `model:prune` and `model:show` find the models in the module's `app/Models`, so `model:show
-  Invoice` needs no namespace.
+  Payment` needs no namespace.
 - Any other command, yours or a package's, runs in the module's context.
 
 Without the option, a command that isn't a module's own runs in no module: `model:show` on a
@@ -100,14 +100,14 @@ foundation in the root file, and each module in its own `composer.json`, merged 
 ```
 
 ```json
-// apps/Billing/composer.json
+// apps/Payments/composer.json
 {
     "autoload": { "psr-4": {
-        "Apps\\Billing\\": "app/",
-        "Apps\\Billing\\Database\\Factories\\": "database/factories/",
-        "Apps\\Billing\\Database\\Seeders\\": "database/seeders/"
+        "Apps\\Payments\\": "app/",
+        "Apps\\Payments\\Database\\Factories\\": "database/factories/",
+        "Apps\\Payments\\Database\\Seeders\\": "database/seeders/"
     } },
-    "autoload-dev": { "psr-4": { "Apps\\Billing\\Tests\\": "tests/" } }
+    "autoload-dev": { "psr-4": { "Apps\\Payments\\Tests\\": "tests/" } }
 }
 ```
 
@@ -118,7 +118,7 @@ it is deleted.
 
 ```bash
 # deletes its folders and its declaration; its database is left as it is
-php artisan modules:delete billing
+php artisan modules:delete payments
 ```
 
 ## Next

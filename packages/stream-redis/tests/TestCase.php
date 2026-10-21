@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Distributable\Stream\Redis\Tests;
 
 use Distributable\Stream\Redis\StreamRedisServiceProvider;
-use Distributable\Tests\OrdersAppTestCase as CoreTestCase;
+use Distributable\Tests\PaymentsAppTestCase as CoreTestCase;
 
-/** The core's `orders` application, with the redis driver installed. */
+/** The core's `payments` application, with the redis driver installed. */
 abstract class TestCase extends CoreTestCase
 {
     /** @return list<class-string> */

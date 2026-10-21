@@ -1,7 +1,7 @@
 # Les mots employés
 
-- **Module :** une zone de l’application avec sa propre frontière, un domaine métier (commandes,
-  facturation) ou un domaine de support sur lequel les autres s’appuient (identité, notifications) :
+- **Module :** une zone de l’application avec sa propre frontière, un domaine métier (paiements,
+  messagerie) ou un domaine de support sur lequel les autres s’appuient (identité, notifications) :
   son code, ses routes, son contexte. `iam`, `analytics`, `notifications`.
 - **Contexte :** ce que le code d’un module lit pendant qu’il s’exécute : ses connexions, sa
   configuration et ses services (cache, mailer, disques). [Réglages](/fr/build/settings),

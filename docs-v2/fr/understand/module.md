@@ -4,7 +4,7 @@
 comment `analytics` l’atteint, ce que les deux partagent, et où chacun s’exécute.
 
 Un module est une zone autonome de votre application, avec sa propre frontière : un domaine métier
-(commandes, facturation), ou un domaine de support sur lequel les autres s’appuient (identité,
+(paiements, messagerie), ou un domaine de support sur lequel les autres s’appuient (identité,
 notifications). Il est construit comme un microservice : il possède son code, ses données et ses
 contrats, et peut être déployé seul. Le paquet ajoute ce qui rend cette frontière réelle : tant que le code d’un module
 s’exécute, il s’exécute dans un contexte qui lui est propre.

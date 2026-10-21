@@ -4,7 +4,7 @@ By the end of this page, you can read the `iam` module of the starter and say wh
 `analytics` reaches it, what the two share, and where each of them runs.
 
 A module is an autonomous area of your application, with a boundary of its own: a business domain
-(orders, billing), or a supporting domain the others rely on (identity, notifications). It is built
+(payments, messaging), or a supporting domain the others rely on (identity, notifications). It is built
 like a microservice: it owns its code, its data and its contracts, and it can be deployed on its own. The package
 adds what makes that boundary real: while a module's code runs, it runs in a context of its own.
 

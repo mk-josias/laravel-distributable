@@ -1,6 +1,6 @@
 # A new application
 
-By the end of this page, you have a Laravel application with a module `billing` that answers a
+By the end of this page, you have a Laravel application with a module `payments` that answers a
 route, on its own connection.
 
 ## Install the package
@@ -21,14 +21,14 @@ needs neither yet.
 ## Create the first module
 
 ```bash
-php artisan modules:make billing
+php artisan modules:make payments
 ```
 
 ```
-apps/Billing/
+apps/Payments/
 ├── app/
 │   ├── Models/
-│   └── Providers/BillingServiceProvider.php
+│   └── Providers/PaymentsServiceProvider.php
 ├── bootstrap/providers.php
 ├── config/database.php
 ├── database/migrations/
@@ -45,11 +45,11 @@ out like an application: a model in `app/Models`, a route in `routes/api.php`, a
 `config/database.php` names the connection the module's code runs on. Edit it to point to yours:
 
 ```php
-// apps/Billing/config/database.php
+// apps/Payments/config/database.php
 return [
-    'default' => 'billing',
+    'default' => 'payments',
     'connections' => [
-        'billing' => ['driver' => 'pgsql', 'database' => 'billing', 'username' => 'billing_app'],
+        'payments' => ['driver' => 'pgsql', 'database' => 'payments', 'username' => 'payments_app'],
     ],
 ];
 ```
@@ -57,13 +57,13 @@ return [
 ## Write a route and a model
 
 ```bash
-php artisan make:model Invoice -mf --module=billing
-php artisan make:controller InvoiceController --module=billing
-php artisan migrate --module=billing
+php artisan make:model Payment -mf --module=payments
+php artisan make:controller PaymentController --module=payments
+php artisan migrate --module=payments
 ```
 
-`routes/api.php` is served under `/billing/api/…`. The model needs no connection: while billing's
-code runs, Laravel's default connection is `billing`.
+`routes/api.php` is served under `/payments/api/…`. The model needs no connection: while payments'
+code runs, Laravel's default connection is `payments`.
 
 ## Check it
 

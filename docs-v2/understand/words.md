@@ -1,7 +1,7 @@
 # The words used
 
-- **Module:** an area of the application with a boundary of its own, a business domain (orders,
-  billing) or a supporting domain the others rely on (identity, notifications): its code, its
+- **Module:** an area of the application with a boundary of its own, a business domain (payments,
+  messaging) or a supporting domain the others rely on (identity, notifications): its code, its
   routes, its context. `iam`, `analytics`, `notifications`.
 - **Context:** what a module's code reads while it runs: its connections, its configuration and its
   services (cache, mailer, disks). [Settings](/build/settings), [services](/build/services).

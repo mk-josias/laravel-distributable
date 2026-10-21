@@ -15,7 +15,7 @@ parameters:
         - packages/core/tests/Doubles
         - packages/core/tests/ModuleAppTestCase.php
         - packages/core/tests/WithoutIamTestCase.php
-        - packages/core/tests/OrdersAppTestCase.php
+        - packages/core/tests/PaymentsAppTestCase.php
         - packages/rpc-http/src
         - packages/rpc-http/tests/TestCase.php
         - packages/stream-redis/src

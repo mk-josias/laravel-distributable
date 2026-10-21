@@ -12,7 +12,7 @@ Register it under a name, and name it on the module it reaches:
 
 ```php
 // config/distributable.php: only the name of the transport, and which module uses it
-'declared' => ['billing' => ['host' => ['url' => 'grpc://billing.internal', 'transport' => 'grpc']]],
+'declared' => ['payments' => ['host' => ['url' => 'grpc://payments.internal', 'transport' => 'grpc']]],
 'rpc'      => ['transports' => ['grpc' => ['driver' => 'grpc']]],
 
 // config/rpc-grpc.php: the driver's own settings, like config/rpc-http.php

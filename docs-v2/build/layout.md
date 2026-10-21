@@ -62,7 +62,7 @@ final class IamServiceProvider extends ServiceProvider
 
     // stream events the module handles: event name => Handler classes
     protected array $streamHandlers = [
-        'billing.invoice.paid' => [\Apps\Iam\Handlers\UpdatePlan::class],
+        'payments.payment.captured' => [\Apps\Iam\Handlers\UpdatePlan::class],
     ];
 
     // messages the module answers: message => Handler class

@@ -1,7 +1,7 @@
 # Laravel Distributable
 
 laravel-distributable apporte une fondation sur laquelle construire des modules distribuables : des
-zones autonomes, chacune un domaine métier (commandes, facturation) ou un domaine de support sur lequel les autres s’appuient
+zones autonomes, chacune un domaine métier (paiements, messagerie) ou un domaine de support sur lequel les autres s’appuient
 (identité, notifications), avec sa propre frontière, construites comme des microservices. Groupés
 dans une application, répartis sur plusieurs, ou un par application : cela ne change rien pour le
 paquet. Il fournit ce que ce modèle exige, un contexte séparé pour chaque module, et le code des

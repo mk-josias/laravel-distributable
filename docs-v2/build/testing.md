@@ -14,7 +14,7 @@ A module's tests extend your `Tests\TestCase`. PHPUnit runs them once `phpunit.x
 ```
 
 Keep in a module the tests that only need that module, and in `tests/` the ones that cross modules.
-`php artisan make:test InvoiceTest --module=billing` writes one in the module.
+`php artisan make:test PaymentTest --module=payments` writes one in the module.
 
 A test in a module's folder runs in that module's context. A test of `tests/` enters a module
 through `ModuleAware`:
@@ -47,7 +47,7 @@ use RefreshDatabase {
 
 protected function migrateFreshUsing(): array
 {
-    return [...$this->laravelMigrateFreshUsing(), '--module' => ['billing']];
+    return [...$this->laravelMigrateFreshUsing(), '--module' => ['payments']];
 }
 ```
 

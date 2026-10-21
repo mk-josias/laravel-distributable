@@ -1,6 +1,6 @@
 # Une nouvelle application
 
-À la fin de cette page, vous avez une application Laravel avec un module `billing` qui répond à une
+À la fin de cette page, vous avez une application Laravel avec un module `payments` qui répond à une
 route, sur sa propre connexion.
 
 ## Installer le paquet
@@ -21,14 +21,14 @@ processus séparés. Un module seul n’en a pas encore besoin.
 ## Créer le premier module
 
 ```bash
-php artisan modules:make billing
+php artisan modules:make payments
 ```
 
 ```
-apps/Billing/
+apps/Payments/
 ├── app/
 │   ├── Models/
-│   └── Providers/BillingServiceProvider.php
+│   └── Providers/PaymentsServiceProvider.php
 ├── bootstrap/providers.php
 ├── config/database.php
 ├── database/migrations/
@@ -46,11 +46,11 @@ migration dans `database/migrations`. Le paquet les trouve à partir du dossier.
 qu’il pointe vers la vôtre :
 
 ```php
-// apps/Billing/config/database.php
+// apps/Payments/config/database.php
 return [
-    'default' => 'billing',
+    'default' => 'payments',
     'connections' => [
-        'billing' => ['driver' => 'pgsql', 'database' => 'billing', 'username' => 'billing_app'],
+        'payments' => ['driver' => 'pgsql', 'database' => 'payments', 'username' => 'payments_app'],
     ],
 ];
 ```
@@ -58,13 +58,13 @@ return [
 ## Écrire une route et un modèle
 
 ```bash
-php artisan make:model Invoice -mf --module=billing
-php artisan make:controller InvoiceController --module=billing
-php artisan migrate --module=billing
+php artisan make:model Payment -mf --module=payments
+php artisan make:controller PaymentController --module=payments
+php artisan migrate --module=payments
 ```
 
-`routes/api.php` est servie sous `/billing/api/…`. Le modèle n’a pas besoin de connexion : tant que le
-code de `billing` s’exécute, la connexion par défaut de Laravel est `billing`.
+`routes/api.php` est servie sous `/payments/api/…`. Le modèle n’a pas besoin de connexion : tant que le
+code de `payments` s’exécute, la connexion par défaut de Laravel est `payments`.
 
 ## Le vérifier
 

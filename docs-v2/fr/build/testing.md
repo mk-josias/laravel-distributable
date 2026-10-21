@@ -15,7 +15,7 @@ liste :
 ```
 
 Gardez dans un module les tests qui n’ont besoin que de ce module, et dans `tests/` ceux qui
-traversent des modules. `php artisan make:test InvoiceTest --module=billing` en écrit un dans le
+traversent des modules. `php artisan make:test PaymentTest --module=payments` en écrit un dans le
 module.
 
 Un test du dossier d’un module s’exécute dans le contexte de ce module. Un test de `tests/` entre dans
@@ -50,7 +50,7 @@ use RefreshDatabase {
 
 protected function migrateFreshUsing(): array
 {
-    return [...$this->laravelMigrateFreshUsing(), '--module' => ['billing']];
+    return [...$this->laravelMigrateFreshUsing(), '--module' => ['payments']];
 }
 ```
 

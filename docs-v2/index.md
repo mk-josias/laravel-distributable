@@ -1,7 +1,7 @@
 # Laravel Distributable
 
 laravel-distributable provides the foundation for distributable modules: autonomous areas, each a
-business domain (orders, billing) or a supporting domain the others rely on (identity, notifications), with
+business domain (payments, messaging) or a supporting domain the others rely on (identity, notifications), with
 a boundary of its own, built like microservices. Grouped in one application,
 spread over several, or one per application: it makes no difference to the package. It brings what
 this model requires, a separate context for each module, and the code of the modules is the same
