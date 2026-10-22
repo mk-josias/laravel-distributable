@@ -1,14 +1,77 @@
 # Les réglages d’un module
 
-À la fin de cette page, vous savez donner à un module sa propre configuration et ses propres
-connexions, et vous savez quand elles s’appliquent.
+À la fin de cette page, vous savez dans quel module s’exécute chaque morceau de code, et comment
+donner à un module sa propre configuration et ses propres connexions.
 
-Le code d’un module reste du Laravel ordinaire : `User::query()`, `DB::transaction()`,
-`Cache::get()`, sans qu’aucune connexion ni aucun réglage soit nommé. Quelle que soit la façon dont
-son code démarre (une requête, un job, une commande, un événement, un appel d’un autre module), il
-s’exécute avec ses propres réglages, et ceux du module précédent reviennent ensuite.
+Un module a son propre contexte : sa configuration, ses connexions, ses services et ses chemins
+(`app_path()`, `database_path()`). Une seule règle décide lequel s’applique : le code s’exécute dans
+le contexte du module qui le contient. Une requête, un job, une commande, un événement ou un appel
+d’un autre module entre dans le module dont le dossier ou l’espace de noms contient son code. Le
+contexte précédent revient ensuite.
+
+Le reste de la page en découle. Le code d’un module reste du Laravel ordinaire (`User::query()`,
+`DB::transaction()`, `Cache::get()`) sans nommer aucune connexion, parce que pendant qu’il
+s’exécute, la connexion par défaut de Laravel est la sienne.
 
 ![analytics appelle iam par son client : le même DB::transaction() atterrit sur la connexion d'iam, puis les réglages d'analytics reviennent ; hors de tout module, toute requête lève une exception](/images/module-context.png)
+
+## Quand le code d’un module s’exécute
+
+Vous ne basculez rien vous-même. Le code s’exécute dans un module quand c’est :
+
+- une requête sur une route dont le code est celui du module : une closure écrite dans le dossier
+  du module, ou un contrôleur de son espace de noms, où que la route soit déclarée ;
+- un job, une commande, un handler d’événement du module ;
+- un écouteur Laravel que le module déclare dans `$listen`, une tâche qu’il planifie dans
+  `schedule()` ;
+- un appel qu’un autre module lui envoie, depuis ce processus ou un autre ;
+- une closure en file, `defer()`, `Concurrency::run()` ou `Octane::concurrently()` démarrés dans le
+  module.
+
+Quand analytics appelle `IamClient::findUser()` et qu’iam s’exécute dans le même processus, le
+handler d’iam s’exécute avec les réglages d’iam, et ceux d’analytics reviennent quand la méthode
+retourne.
+
+Une closure envoyée à un autre processus (tâches Octane, `Concurrency`, closures en file) est
+reconstruite à partir de sa ligne dans le fichier : gardez une seule closure par ligne, sinon le
+worker risque de reconstruire la mauvaise.
+
+### Le travail qui s’exécute plus tard
+
+Pour une closure à vous qui s’exécute plus tard ou ailleurs, `ModuleContext::bind()` emporte avec
+elle le module courant :
+
+```php
+$task = app(\Distributable\Context\ModuleContext::class)->bind(fn () => Report::rebuild());
+```
+
+`ModuleContext::current()` renvoie le module qui s’exécute maintenant, ou `null` hors de tout module.
+
+## Hors d’un module
+
+Hors d’un module il n’y a pas de connexion par défaut : une closure de route dans `routes/web.php`, la
+route d’un autre paquet, ou Tinker sans `--module` lève `ModuleException` (« No module runs here ») à
+sa première requête. Passez plutôt par le client du module, qui fonctionne encore quand le module
+s’exécute ailleurs :
+
+```php
+// jamais Apps\Iam\Models\User::find($id)
+app(\Foundation\Iam\Services\IamClient::class)->findUser($id);
+```
+
+Il n’y a pas de clés étrangères entre modules. Référencez les lignes d’un autre module par leur id,
+ou gardez-en une [copie](/fr/talk/copies).
+
+Un processus qui n’exécute qu’un module n’a pas de dehors : tout ce qui y démarre s’exécute dans ce
+module. C’est le cas d’une application qui est son propre module (`'path' => '.'`), et d’un
+conteneur démarré avec `RUN_MODULES=iam`. Là, `php artisan migrate`, `tinker` et le
+`routes/web.php` de l’application n’ont pas besoin de `--module`.
+
+## Atteindre un autre module
+
+Un module ne peut pas exécuter son code avec les réglages d’un autre module : `within()`, appelé
+depuis le code d’un autre module ou depuis la fondation, lève une `ModuleException`. La voie vers un
+autre module, ce sont ses messages, voir [Appeler un autre module](/fr/talk/calls).
 
 ## Donner à un module ses propres réglages
 
@@ -111,59 +174,6 @@ protected $connection = 'warehouse';
 ```
 
 Une migration qui règle `$connection = 'warehouse'` s’exécute là.
-
-## Quand les réglages d’un module s’appliquent
-
-Vous ne basculez rien vous-même. Les réglages d’un module s’appliquent à :
-
-- une requête sur les routes du module, ou sur toute route dont le contrôleur est une classe du
-  module ;
-- un job, une commande, un handler d’événement du module ;
-- un écouteur Laravel que le module déclare dans `$listen`, une tâche qu’il planifie dans
-  `schedule()` ;
-- un appel qu’un autre module lui envoie, depuis ce processus ou un autre ;
-- une closure en file, `defer()`, `Concurrency::run()` ou `Octane::concurrently()` démarrés dans le
-  module.
-
-Quand analytics appelle `IamClient::findUser()` et qu’iam s’exécute dans le même processus, le
-handler d’iam s’exécute avec les réglages d’iam, et ceux d’analytics reviennent quand la méthode
-retourne.
-
-Une closure envoyée à un autre processus (tâches Octane, `Concurrency`, closures en file) est
-reconstruite à partir de sa ligne dans le fichier : gardez une seule closure par ligne, sinon le
-worker risque de reconstruire la mauvaise.
-
-### Le travail qui s’exécute plus tard
-
-Pour une closure à vous qui s’exécute plus tard ou ailleurs, `ModuleContext::bind()` emporte avec
-elle le module courant :
-
-```php
-$task = app(\Distributable\Context\ModuleContext::class)->bind(fn () => Report::rebuild());
-```
-
-`ModuleContext::current()` renvoie le module qui s’exécute maintenant, ou `null` hors de tout module.
-
-## Hors d’un module
-
-Hors d’un module il n’y a pas de connexion par défaut : une closure de route dans `routes/web.php`, la
-route d’un autre paquet, ou Tinker sans `--module` lève `ModuleException` (« No module runs here ») à
-sa première requête. Passez plutôt par le client du module, qui fonctionne encore quand le module
-s’exécute ailleurs :
-
-```php
-// jamais Apps\Iam\Models\User::find($id)
-app(\Foundation\Iam\Services\IamClient::class)->findUser($id);
-```
-
-Il n’y a pas de clés étrangères entre modules. Référencez les lignes d’un autre module par leur id,
-ou gardez-en une [copie](/fr/talk/copies).
-
-## Atteindre un autre module
-
-Un module ne peut pas exécuter son code avec les réglages d’un autre module : `within()`, appelé
-depuis le code d’un autre module ou depuis la fondation, lève une `ModuleException`. La voie vers un
-autre module, ce sont ses messages, voir [Appeler un autre module](/fr/talk/calls).
 
 ## Jobs échoués et lots
 

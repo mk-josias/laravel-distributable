@@ -44,7 +44,8 @@ are the same: give them the connection of one module, in their own config file.
 
 ## Packages that serve their own routes (admin panels, Livewire)
 
-A request runs in the module of its route's controller. Filament, Nova or Livewire serve routes
+A request runs in the module that holds its route's code: its controller's class, or the file its
+closure is written in. Filament, Nova or Livewire serve routes
 whose controllers belong to no module, so their requests run outside every module and any query
 they make fails. Give their routes a module by adding the module's middleware to them, for a
 Filament panel:

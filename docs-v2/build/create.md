@@ -81,8 +81,8 @@ php artisan migrate --module='*'
   Payment` needs no namespace.
 - Any other command, yours or a package's, runs in the module's context.
 
-Without the option, a command that isn't a module's own runs in no module: `model:show` on a
-module's model then throws `ModuleException`, since no connection is set for it.
+Without the option, in a process that runs several modules, a command that isn't a module's own
+runs in no module: `model:show` on a module's model then throws `ModuleException`, since no connection is set for it.
 `migrate --seed` and `migrate:fresh --seed` seed each module the same way; a module without a
 `DatabaseSeeder` of its own gets the application's.
 

@@ -83,8 +83,8 @@ php artisan migrate --module='*'
   `model:show Payment` n’a pas besoin d’espace de noms.
 - Toute autre commande, la vôtre ou celle d’un paquet, s’exécute dans le contexte du module.
 
-Sans l’option, une commande qui n’est pas celle d’un module s’exécute dans aucun module :
-`model:show` sur un modèle de module lève alors `ModuleException`, puisqu’aucune connexion n’est
+Sans l’option, dans un processus qui exécute plusieurs modules, une commande qui n’est pas celle
+d’un module s’exécute dans aucun module : `model:show` sur un modèle de module lève alors `ModuleException`, puisqu’aucune connexion n’est
 réglée pour lui. `migrate --seed` et `migrate:fresh --seed` alimentent chaque module de la même
 façon ; un module sans `DatabaseSeeder` à lui reçoit celui de l’application.
 

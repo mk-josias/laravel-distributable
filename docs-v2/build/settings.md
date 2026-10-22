@@ -1,14 +1,74 @@
 # A module's settings
 
-By the end of this page, you can give a module its own configuration and its own connections, and
-you know when they apply.
+By the end of this page, you know which module each piece of code runs in, and how to give a module
+its own configuration and its own connections.
 
-A module's code stays ordinary Laravel: `User::query()`, `DB::transaction()`, `Cache::get()`, with
-no connection or setting named anywhere. Whichever way its code starts (a request, a job, a
-command, an event, a call from another module), it runs with its own settings, and the previous
-module's come back afterwards.
+A module has its own context: its configuration, its connections, its services and its paths
+(`app_path()`, `database_path()`). One rule decides which one applies: code runs in the context of
+the module that holds it. A request, a job, a command, an event or a call from another module
+enters the module whose folder or namespace holds its code. The previous context comes back
+afterwards.
+
+The rest of the page follows from it. A module's code stays ordinary Laravel (`User::query()`,
+`DB::transaction()`, `Cache::get()`) with no connection named, because while it runs, Laravel's
+default connection is its own.
 
 ![analytics calls iam through its client: the same DB::transaction() lands in iam's connection, then analytics' settings come back; outside any module any query throws](/images/module-context.png)
+
+## When a module's code runs
+
+You don't switch anything yourself. Code runs in a module when it is:
+
+- a request on a route whose code is the module's: a closure written in the module's folder, or a
+  controller of its namespace, wherever the route is declared;
+- a job, a command, an event handler of the module;
+- a Laravel listener the module declares in `$listen`, a task it schedules in `schedule()`;
+- a call another module sends it, from this process or another;
+- a queued closure, `defer()`, `Concurrency::run()` or `Octane::concurrently()` started in the
+  module.
+
+When analytics calls `IamClient::findUser()` and iam runs in the same process, iam's handler runs
+with iam's settings, and analytics' come back when the method returns.
+
+A closure sent to another process (Octane tasks, `Concurrency`, queued closures) is rebuilt from its
+line in the file: keep one closure per line, or the worker may rebuild the wrong one.
+
+### Work that runs later
+
+For a closure of yours that runs later or elsewhere, `ModuleContext::bind()` keeps the current
+module with it:
+
+```php
+$task = app(\Distributable\Context\ModuleContext::class)->bind(fn () => Report::rebuild());
+```
+
+`ModuleContext::current()` returns the module running now, or `null` outside any module.
+
+## Outside a module
+
+Outside a module there is no default connection: a route closure in `routes/web.php`, another
+package's route, or Tinker without `--module` throws `ModuleException` ("No module runs here") on
+its first query. Go through the module's client instead, which still works when the module runs
+elsewhere:
+
+```php
+// never Apps\Iam\Models\User::find($id)
+app(\Foundation\Iam\Services\IamClient::class)->findUser($id);
+```
+
+There are no foreign keys between modules. Reference another module's rows by id, or keep a
+[copy](/talk/copies) of them.
+
+A process that runs one module has no outside: everything that starts in it runs in that module.
+That is the case of an application that is its own module (`'path' => '.'`), and of a container
+started with `RUN_MODULES=iam`. There, `php artisan migrate`, `tinker` and the application's
+`routes/web.php` need no `--module`.
+
+## Reaching another module
+
+A module can't run its code with another module's settings: `within()`, called from another
+module's code or from the foundation, throws a `ModuleException`. The way into another module is
+its messages, see [Calling another module](/talk/calls).
 
 ## Give a module its own settings
 
@@ -107,55 +167,6 @@ protected $connection = 'warehouse';
 ```
 
 A migration that sets `$connection = 'warehouse'` runs there.
-
-## When a module's settings apply
-
-You don't switch anything yourself. A module's settings apply to:
-
-- a request on the module's routes, or on any route whose controller is a module's class;
-- a job, a command, an event handler of the module;
-- a Laravel listener the module declares in `$listen`, a task it schedules in `schedule()`;
-- a call another module sends it, from this process or another;
-- a queued closure, `defer()`, `Concurrency::run()` or `Octane::concurrently()` started in the
-  module.
-
-When analytics calls `IamClient::findUser()` and iam runs in the same process, iam's handler runs
-with iam's settings, and analytics' come back when the method returns.
-
-A closure sent to another process (Octane tasks, `Concurrency`, queued closures) is rebuilt from its
-line in the file: keep one closure per line, or the worker may rebuild the wrong one.
-
-### Work that runs later
-
-For a closure of yours that runs later or elsewhere, `ModuleContext::bind()` keeps the current
-module with it:
-
-```php
-$task = app(\Distributable\Context\ModuleContext::class)->bind(fn () => Report::rebuild());
-```
-
-`ModuleContext::current()` returns the module running now, or `null` outside any module.
-
-## Outside a module
-
-Outside a module there is no default connection: a route closure in `routes/web.php`, another
-package's route, or Tinker without `--module` throws `ModuleException` ("No module runs here") on
-its first query. Go through the module's client instead, which still works when the module runs
-elsewhere:
-
-```php
-// never Apps\Iam\Models\User::find($id)
-app(\Foundation\Iam\Services\IamClient::class)->findUser($id);
-```
-
-There are no foreign keys between modules. Reference another module's rows by id, or keep a
-[copy](/talk/copies) of them.
-
-## Reaching another module
-
-A module can't run its code with another module's settings: `within()`, called from another
-module's code or from the foundation, throws a `ModuleException`. The way into another module is
-its messages, see [Calling another module](/talk/calls).
 
 ## Failed jobs and batches
 

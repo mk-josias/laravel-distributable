@@ -22,6 +22,11 @@ Notable changes to `mk-josias/laravel-distributable` and its starter. The format
 
 ### Changed
 
+- A process that runs one module runs everything in it: in an application that is its own module
+  (`'path' => '.'`), or a container started with `RUN_MODULES=iam`, `migrate`, `tinker` and
+  `routes/web.php` need no `--module`.
+- A closure route runs in the module whose folder holds the file it is written in, as a controller
+  runs in the module of its class, `route:cache` included.
 - **Breaking:** a module's config file applies only while the module runs. Each value it sets
   replaces the application's, a list or `[]` included, and a key the application doesn't set is no
   longer added for every module. A list a module used to extend item by item now holds only what
