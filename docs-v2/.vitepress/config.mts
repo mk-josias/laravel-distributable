@@ -26,6 +26,7 @@ export default defineConfig({
           { text: 'Construire', link: '/fr/build/create' },
           { text: 'Dialoguer', link: '/fr/talk/choosing' },
           { text: 'Exécuter', link: '/fr/run/where' },
+          { text: 'Référence', link: '/fr/reference/commands' },
         ],
         sidebar: [
           {
@@ -85,6 +86,22 @@ export default defineConfig({
               { text: 'Docker', link: '/fr/starter/docker' },
               { text: 'Tests', link: '/fr/starter/tests' },
               { text: 'Ajouter du code', link: '/fr/starter/adding-code' },
+            ],
+          },
+          {
+            text: '7. Étendre',
+            items: [
+              { text: 'Travailler avec d’autres paquets', link: '/fr/extend/packages' },
+              { text: 'Écrire un pilote', link: '/fr/extend/driver' },
+            ],
+          },
+          {
+            text: '8. Référence',
+            items: [
+              { text: 'Commandes', link: '/fr/reference/commands' },
+              { text: 'Configuration', link: '/fr/reference/configuration' },
+              { text: 'RPC en HTTP', link: '/fr/reference/rpc-http' },
+              { text: 'Flux d’événements Redis', link: '/fr/reference/stream-redis' },
             ],
           },
         ],

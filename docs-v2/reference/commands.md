@@ -2,8 +2,8 @@
 
 Every command the package adds or changes, with its options.
 
-`--module=<name>` is on every Artisan command, and always names one module: a generator writes in
-it, any other command runs in its context. See
+`--module=<name>` is on every Artisan command. A generator writes in the module named; any other
+command runs in its context, once per module when the option is repeated or is `*`. See
 [Running a command in a module](/build/create#run-a-command-in-a-module).
 
 ## Modules
